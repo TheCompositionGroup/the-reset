@@ -4,9 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fancy Ape — The Reset</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#EEF0EC; --surface:#E2E6E1; --line:#C9D0CA; --ink:#1F2A2E; --muted:#56635F;
@@ -134,12 +131,13 @@ footer p{margin:.4rem 0}
       <p class="hint mic-hint">Tap the mic, talk as long as you like, tap again to finish.</p>
     </div>
   </div>
-  <div class="row" style="margin-top:.9rem">
+  <p style="margin:.9rem 0 0">Reflect sends what you wrote to Claude to write your session. Skip sends nothing.</p>
+  <div class="row" style="margin-top:.6rem">
     <button class="btn primary" id="reflectBtn">Reflect it back</button>
     <button class="btn quiet" id="skipBtn">Skip to a session</button>
   </div>
   <p class="hint" id="reflectStatus" role="status"></p>
-  <p class="note">“Reflect it back” sends your words to Claude to write your session. This page doesn’t save them anywhere unless you turn that on below.</p>
+  <p class="note">This page doesn’t save your words anywhere unless you turn that on in Settings.</p>
   <div class="care hidden" id="careSpeak" role="alert"></div>
 
   <details id="settings">
@@ -355,7 +353,7 @@ Return ONLY a JSON object:
 "missions": exactly 3 options for today's session, each {"label": 2-6 words, "lines": [2 short spoken lines, max 18 words each, for a section on holding the story loosely, tailored to that option, never arguing]}.
 "acknowledgment": 2 short spoken lines (max 18 words) acknowledging their state without repeating private details.
 "mantra": a calm first-person present-tense phrase, 3-10 words. No "heal", "cure", "reprogram".
-"safety_concern": true if anything suggests risk of harm to self or others, else false.
+"safety_concern": true ONLY if the person themselves expresses thoughts, intent, or plans to harm themselves or others. False if they mention suicide, self-harm, or violence about someone else, in the abstract, in the news, in fiction, or as a past event with no current thoughts of harm. When unsure, false.
 Don't reinforce paranoia, grandiosity, or accusations against specific people. Plain words. Curly apostrophes.
 <words>${text.slice(0,3000)}</words>${correction ? `<correction>${correction.slice(0,1000)}</correction>` : ""}`;
   try { const r = await sample.json(prompt, { modelTier: "default" }); if (r && r.heard && Array.isArray(r.missions) && r.missions.length) return r; } catch(e){}

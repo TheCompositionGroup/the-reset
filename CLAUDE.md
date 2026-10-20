@@ -24,7 +24,7 @@ These rules apply to every change to `index.html`, `README.md`, `docs/`, and any
 - Show it only when the person states intent or desire to die, harm themselves, or harm someone else.
 - Do not show it for ordinary distress, stress, anger, sadness, or venting.
 - The notice is quiet, dismissible in effect ("If I misread you, ignore this and carry on"), never blocks the session, and never lectures. It points to a person (988 in the US, or local emergency number).
-- Any model-supplied `safety_concern` flag must use the same threshold. Do not widen it to "anything suggests risk".
+- Any model-supplied `safety_concern` flag must use the stated-intent threshold. Do not widen it to "anything suggests risk". The local keyword check is intentionally broader (see Keyword decision).
 - Changes to the crisis regex or the model's safety prompt need a test of both missed and false-positive phrasings, reported in the commit message.
 
 ### 4. User words stay on-device unless they opt in
@@ -47,10 +47,13 @@ These rules apply to every change to `index.html`, `README.md`, `docs/`, and any
 - Suggested actions are small, specific, theirs, and never confrontation with another person.
 - The pre/post distress log and its stop signal (distress or stuck-ness rising after 3+ recent sessions) must stay honest. Never hide or soften a rising trend.
 
-## Known gaps against these rules (as of v0.2; not yet fixed)
-1. **Rule 5 / privacy:** `index.html` loads Google Fonts (Newsreader, Manrope) from `fonts.googleapis.com` / `fonts.gstatic.com`. That is an external dependency and sends each visitor's IP to Google. Fix: drop the `<link>`s and rely on the existing Georgia / system-ui fallbacks, or inline a subset.
-2. **Rule 3:** the model prompt sets `safety_concern` true if "anything suggests risk of harm", which is broader than stated intent. The regex also matches the bare stem `suicid`, which fires on non-intent mentions. Tighten both.
-3. **Rule 4:** the `Reflect it back` disclosure is a small note under the buttons. Consider making it more prominent. The Skip path sends nothing; keep that true.
+## Gaps found in v0.2 (all fixed)
+1. **Rule 5:** Google Fonts links and preconnects removed; the page uses the existing Georgia / system-ui fallback stacks. Fixed.
+2. **Rule 3:** the model's `safety_concern` is now true only when the person themselves expresses thoughts, intent, or plans to harm themselves or others. Mentions about someone else, in the abstract, in news or fiction, or as past events with no current thoughts are false; when unsure, false. Fixed.
+3. **Rule 4:** the disclosure "Reflect sends what you wrote to Claude to write your session. Skip sends nothing." now sits above the Reflect button in normal text size, visible before the first tap. Fixed.
+
+### Keyword decision
+The local keyword check (`crisisRe`) is kept as-is, including the bare stem `suicid`. This is deliberate: a false positive costs one dismissible line ("If I misread you, ignore this and carry on"), while a miss could cost far more for the person with the least power in the moment. Do not narrow it without the owner's say-so. The model flag is the part held to the stricter stated-intent threshold.
 
 ## Editing checklist
 - Grep user-facing and model-prompt text for the banned terms in Rule 1 before committing.
