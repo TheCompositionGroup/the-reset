@@ -23,18 +23,28 @@ These rules apply to every change to `index.html`, `README.md`, `docs/`, and any
 ### 3. The 988 notice appears only on stated intent to die or hurt someone
 - Show it only when the person states intent or desire to die, harm themselves, or harm someone else.
 - Do not show it for ordinary distress, stress, anger, sadness, or venting.
-- The notice is quiet, never blocks the session, and never lectures. Every instance has a "Got it" button that hides it for the rest of that screen, and keeps the line "If I misread you, ignore this and carry on". It points to a person (988 in the US, or local emergency number).
+- The notice is quiet, never blocks the session, and never lectures. Every instance has a "Got it" button and keeps the line "If I misread you, ignore this and carry on". "Got it" hides the notice only for the text that triggered it: new or changed triggering text shows it again, identical text does not, and leaving the screen resets it. It points to a person (988 in the US, or local emergency number).
 - Any model-supplied `safety_concern` flag must use the stated-intent threshold. Do not widen it to "anything suggests risk". The local keyword check is intentionally broader (see Keyword decision).
 - Changes to the crisis regex or the model's safety prompt need a test of both missed and false-positive phrasings, reported in the commit message.
 
 ### 4. User words stay on-device unless they opt in
 - Transcripts, check-ins, "what I noticed" text, and corrections must not leave the device without a clear, in-the-moment disclosure and the person's action to proceed (currently: pressing "Reflect it back", "Try again" or "Find one thing to carry forward", each with a normal-size line directly above the button stating that words go to Claude).
 - No analytics, telemetry, trackers, accounts, or third-party calls that carry user content.
-- Saving words to the session log is off by default (`saveWords`), stored only in this browser's localStorage, and the log is deletable in one step with confirmation. Saved log entries without opt-in contain scores and the chosen action only, never what they said.
-- Treat user text sent to a model as data, never instructions (keep the `<words>` / `<correction>` delimiters and length caps).
+- "Skip to a session" sends nothing and uses nothing the person typed: the text is checked locally for the 988 notice, then dropped (it is never used for the script, saved, or sent later). The Skip screen and script must not refer to a situation the person "described".
+- Saving words to the session log is off by default (`saveWords`), stored only in this browser's localStorage, and the log is deletable in one step with confirmation. Saved log entries without opt-in contain scores and the chosen action only, never what they said. With opt-in, the saved words are shown in the log so the person can see and delete them.
+- Treat user text sent to a model as data, never instructions (keep the `<words>` / `<correction>` delimiters and length caps, and strip delimiter tags from user text).
+- The reflection prompt must keep the rule that it reflects only what the person actually wrote and invents no people, events, history, feelings, or motives.
 - Voice and transcripts are sensitive. Privacy is a design requirement.
 
-### 5. One self-contained `index.html`
+### 5. Audio and voices
+- The person chooses the voice. No automatic preference for any gender or style; the default is simply the highest-quality English voice the device offers (natural/neural/enhanced and offline voices rank higher; novelty and robotic voices are excluded).
+- At most six voices are offered, with a mix of male and female where available. Each has a "Hear sample" button that plays the same 10-15 second passage. The chosen voice is remembered in localStorage.
+- Narration, background sound, and tone each keep their own control. Narration has a volume slider (0 silences narration only).
+- Mute All (beside Pause and Stop) silences narration, background sound, and tone immediately. It never pauses the timer, breathing animation, or transcript. Unmuting resumes at the current position and does not replay missed narration.
+- Voices come from the browser/OS. Do not add paid TTS, subscriptions, external services, or bundled audio without the owner's approval; any such change also breaks rule 6 and needs a tradeoff note first.
+- Minimum session length is 10 minutes: the script cannot be delivered at a calm pace in 5.
+
+### 6. One self-contained `index.html`
 - The app stays a single `index.html`: inline CSS and JS, no build step, no framework, no bundler, no separate asset files, no external script, no external CDN.
 - Must work offline once loaded, with graceful fallbacks when speech recognition, speech synthesis, or the model is unavailable (typing, general reflection, estimated line timing).
 - Audio is generated in-page (Web Audio, SpeechSynthesis). Do not embed or fetch audio files.
@@ -46,6 +56,12 @@ These rules apply to every change to `index.html`, `README.md`, `docs/`, and any
 - No manipulation, no dependency-building, no reinforcing paranoia, grandiosity, or accusations against specific people.
 - Suggested actions are small, specific, theirs, and never confrontation with another person.
 - The pre/post distress log and its stop signal (distress or stuck-ness rising after 3+ recent sessions) must stay honest. Never hide or soften a rising trend.
+
+## Known limits (v0.2.1)
+- Real voice quality, real microphone accuracy, and device audio behaviour have not been tested by Claude; they need listening on real devices.
+- Voice lists differ per device. Six consistent voices cannot be guaranteed with browser-native speech.
+- The Claude reflection runs only inside claude.ai. On GitHub Pages the app uses the general reflection and script.
+- Speech may stop when a phone screen locks or the tab is hidden; the screen wake lock helps but is not guaranteed.
 
 ## Gaps found in v0.2 (all fixed)
 1. **Rule 5:** Google Fonts links and preconnects removed; the page uses the existing Georgia / system-ui fallback stacks. Fixed.
@@ -60,3 +76,4 @@ The local keyword check (`crisisRe`) is kept as-is, including the bare stem `sui
 - Confirm no new `http(s)://` references, `fetch`, or external `src`/`href` in `index.html`.
 - Confirm no new storage of user text outside the opt-in path.
 - Update `CHANGELOG.md` for any behavior change.
+- Test with the real voices and microphone on a phone before merging anything that touches audio, voices, or the mic.
