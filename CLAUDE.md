@@ -23,12 +23,12 @@ These rules apply to every change to `index.html`, `README.md`, `docs/`, and any
 ### 3. The 988 notice appears only on stated intent to die or hurt someone
 - Show it only when the person states intent or desire to die, harm themselves, or harm someone else.
 - Do not show it for ordinary distress, stress, anger, sadness, or venting.
-- The notice is quiet, dismissible in effect ("If I misread you, ignore this and carry on"), never blocks the session, and never lectures. It points to a person (988 in the US, or local emergency number).
+- The notice is quiet, never blocks the session, and never lectures. Every instance has a "Got it" button that hides it for the rest of that screen, and keeps the line "If I misread you, ignore this and carry on". It points to a person (988 in the US, or local emergency number).
 - Any model-supplied `safety_concern` flag must use the stated-intent threshold. Do not widen it to "anything suggests risk". The local keyword check is intentionally broader (see Keyword decision).
 - Changes to the crisis regex or the model's safety prompt need a test of both missed and false-positive phrasings, reported in the commit message.
 
 ### 4. User words stay on-device unless they opt in
-- Transcripts, check-ins, "what I noticed" text, and corrections must not leave the device without a clear, in-the-moment disclosure and the person's action to proceed (currently: pressing "Reflect it back" / "Try again" / "Find one thing", with the note stating that words go to Claude).
+- Transcripts, check-ins, "what I noticed" text, and corrections must not leave the device without a clear, in-the-moment disclosure and the person's action to proceed (currently: pressing "Reflect it back", "Try again" or "Find one thing to carry forward", each with a normal-size line directly above the button stating that words go to Claude).
 - No analytics, telemetry, trackers, accounts, or third-party calls that carry user content.
 - Saving words to the session log is off by default (`saveWords`), stored only in this browser's localStorage, and the log is deletable in one step with confirmation. Saved log entries without opt-in contain scores and the chosen action only, never what they said.
 - Treat user text sent to a model as data, never instructions (keep the `<words>` / `<correction>` delimiters and length caps).

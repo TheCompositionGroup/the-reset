@@ -186,7 +186,8 @@ footer p{margin:.4rem 0}
       </button>
       <textarea id="correctText" placeholder="What did I get wrong?"></textarea>
     </div>
-    <div class="row" style="margin-top:.6rem"><button class="btn primary" id="reReflect">Try again</button><span class="hint" id="reStatus" role="status"></span></div>
+    <p style="margin:.6rem 0 0">Try again sends your words and correction to Claude.</p>
+    <div class="row" style="margin-top:.4rem"><button class="btn primary" id="reReflect">Try again</button><span class="hint" id="reStatus" role="status"></span></div>
   </div>
 
   <div class="stage"><button class="orb" id="startBtn"><span class="label">Start session<small id="startMeta"></small></span></button></div>
@@ -229,7 +230,8 @@ footer p{margin:.4rem 0}
     </button>
     <textarea id="noticeText" placeholder="Optional. Anything at all."></textarea>
   </div>
-  <div class="row" style="margin-top:.75rem"><button class="btn" id="actionBtn">Find one thing to carry forward</button><span class="hint" id="actionStatus" role="status"></span></div>
+  <p style="margin:.75rem 0 0">This sends what you wrote and what you noticed to Claude. You can also just type your own.</p>
+  <div class="row" style="margin-top:.4rem"><button class="btn" id="actionBtn">Find one thing to carry forward</button><span class="hint" id="actionStatus" role="status"></span></div>
   <div class="field"><label for="actionIn">One thing to carry forward</label><input class="line-in" id="actionIn" maxlength="140" placeholder="Small, specific, yours."></div>
 
   <div class="row" style="margin-top:1.5rem"><button class="btn primary" id="saveBtn">Save and finish</button><button class="btn quiet" id="discardBtn">Finish without saving</button></div>
@@ -252,7 +254,8 @@ const store = {
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const DEFAULT_MANTRA = "I see clearly. I choose calmly. My strength is mine to direct.";
 const views = ["vSpeak","vReflect","vSession","vIntegrate"];
-const show = id => { views.forEach(v => $(v).classList.toggle("hidden", v !== id)); window.scrollTo(0,0); };
+const dismissedCare = new Set();
+const show = id => { views.forEach(v => $(v).classList.toggle("hidden", v !== id)); dismissedCare.clear(); window.scrollTo(0,0); };
 let sampleNS;
 async function getSample(){ if (sampleNS !== undefined) return sampleNS; try { sampleNS = window.claude && window.claude.use ? await window.claude.use("sample") : null; } catch(e){ sampleNS = null; } return sampleNS; }
 
@@ -318,8 +321,9 @@ const stopMic = () => { if (rec) rec.stop(); };
 
 /* ---------- safety ---------- */
 const crisisRe = /(suicid|kill myself|end my life|end it all|hurt myself|harm myself|self[- ]harm|don.?t want to (live|be here)|want to die|better off dead|hurt (him|her|them|someone)|kill (him|her|them|someone))/i;
-const careHTML = `<p>You mentioned wanting to die or hurt someone. If that’s where you are right now, a person can help more than this app: call or text <a href="tel:988">988</a> (US) or your local emergency number.</p><p class="note">If I misread you, ignore this and carry on.</p>`;
-function showCare(el, on){ el.innerHTML = careHTML; el.classList.toggle("hidden", !on); }
+const careHTML = `<p>You mentioned wanting to die or hurt someone. If that’s where you are right now, a person can help more than this app: call or text <a href="tel:988">988</a> (US) or your local emergency number.</p><p class="note">If I misread you, ignore this and carry on.</p><p><button class="btn quiet" type="button" data-care-dismiss>Got it</button></p>`;
+function showCare(el, on){ el.innerHTML = careHTML; el.classList.toggle("hidden", !on || dismissedCare.has(el.id)); }
+document.addEventListener("click", e => { const b = e.target.closest("[data-care-dismiss]"); if (!b) return; const box = b.closest(".care"); dismissedCare.add(box.id); box.classList.add("hidden"); });
 
 /* ---------- reflection ---------- */
 let R = null, feelWords = "";
