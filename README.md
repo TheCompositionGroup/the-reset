@@ -6,7 +6,7 @@ A free, private, sound-only web app. Turn the dial, choose a time, press play, l
 
 ## What it does
 1. **Turn the dial** to one of seven stops: Ground, Flow, Power, Heart, Voice, Vision, Stillness. Each stop shows its frequency (396 to 963 Hz) and a chakra name.
-2. **Choose a time:** 5, 10, 15, or 20 minutes, or ∞ to play until you press Pause or Stop (the clock counts up).
+2. **Choose a time:** roll the time wheel beside Play to 5, 10, 15, 20, 30, 45 or 60 minutes, or ∞ to play until you press Pause or Stop (the clock counts up). It starts at 15.
 3. **Choose a sound:** *Tone* (a soft sine at the stop's frequency) or *Atmosphere* (a soft layered drone built around it).
 4. **Press play.** The volume swells slowly in and out and the glow follows. **Intensity** sets how deep that pulse is and how full the atmosphere is: low is smooth and steady, high is a deeper pulse. Loudness is your device volume. Pause, Stop, Intensity, and Mute are on the same screen.
    - **+5 min** adds five minutes at any time without interrupting the sound. In the last minute a quiet "Extend? +5" appears and goes away if ignored.
