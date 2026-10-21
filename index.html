@@ -143,8 +143,8 @@ footer p{margin:.4rem 0}
       <p class="hint mic-hint" role="status">Tap the mic and talk. It keeps listening until you tap it again.</p>
     </div>
   </div>
-  <p style="margin:.9rem 0 0">Reflect sends what you wrote to Claude to write your session. Skip sends nothing.</p>
-  <p class="hidden" id="aiNotice" style="margin:.5rem 0 0">Personal AI reflection isn’t available on this site yet. You’ll get a general reflection instead.</p>
+  <p id="sendNote" style="margin:.9rem 0 0">Reflect sends what you wrote to Claude to write your session. Skip sends nothing.</p>
+  <p class="hidden" id="aiNotice" style="margin:.9rem 0 0">Personal AI reflection isn’t available on this site yet. You’ll get a general reflection instead.</p>
   <div class="row" style="margin-top:.6rem">
     <button class="btn primary" id="reflectBtn">Reflect it back</button>
     <button class="btn quiet" id="skipBtn">Skip to a session</button>
@@ -276,7 +276,7 @@ const careDismissed = new Map();
 const show = id => { views.forEach(v => $(v).classList.toggle("hidden", v !== id)); careDismissed.clear(); window.scrollTo(0,0); };
 let sampleNS;
 const aiHere = () => !!(window.claude && window.claude.use);
-function syncAiNotice(){ $("aiNotice").classList.toggle("hidden", aiHere()); }
+function syncAiNotice(){ $("aiNotice").classList.toggle("hidden", aiHere()); $("sendNote").classList.toggle("hidden", !aiHere()); }
 syncAiNotice(); window.addEventListener("load", syncAiNotice);
 async function getSample(){ if (sampleNS !== undefined) return sampleNS; try { sampleNS = window.claude && window.claude.use ? await window.claude.use("sample") : null; } catch(e){ sampleNS = null; } return sampleNS; }
 
@@ -429,7 +429,7 @@ const stopMic = () => { if (rec){ rec.halt = true; rec.stop(); } };
 document.addEventListener("visibilitychange", () => { if (document.hidden) stopMic(); });
 
 /* ---------- safety ---------- */
-const crisisRe = /(suicid|kill myself|end my life|end it all|hurt myself|harm myself|self[- ]harm|don.?t want to (live|be here)|want to die|better off dead|hurt (him|her|them|someone)|kill (him|her|them|someone)|better off without me|everyone (would|will) be better off|(won.?t|will not|not) be (around|here)( much)? longer|no reason to (live|keep going|go on)|can.?t (do this|go on|keep going) any ?more|(go to sleep|fall asleep) and (not|never) wake up|\bkms\b|unaliv|\bend (things|everything)\b)/i;
+const crisisRe = /(suicid|kill myself|end my life|end it all|hurt myself|harm myself|self[- ]harm|don.?t want to (live|be here)|want to die|better off dead|hurt (him|her|them|someone)|kill (him|her|them|someone)|better off without me|everyone (would|will) be better off|\bi( might| may| probably| will|.?ll)? (not|won.?t|will not) be (around|here)( much)? longer|no reason to (live|keep going|go on)|can.?t (do this|go on|keep going) any ?more|(go to sleep|fall asleep) and (not|never) wake up|(^|[^\w\s]\s*|[a-z_]\w*\s+)kms\b|unaliv|\bend (things|everything)\b(?! with (?!myself\b)))/i;
 const careHTML = `<p>You mentioned wanting to die or hurt someone. If that’s where you are right now, a person can help more than this app: call or text <a href="tel:988">988</a> (US) or your local emergency number.</p><p class="note">If I misread you, ignore this and carry on.</p><p><button class="btn quiet" type="button" data-care-dismiss>Got it</button></p>`;
 /* "Got it" hides the notice only for the text that triggered it; different triggering text shows it again. */
 function showCare(el, on, key){
