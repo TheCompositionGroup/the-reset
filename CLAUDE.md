@@ -1,79 +1,57 @@
 # CLAUDE.md
 
-THE RESET (Fancy Ape, FA-RESET-001) is a private, voice-first self-reflection and guided-audio app. It is a prototype, not clinically validated. Source of intent: `docs/concept-paper.md`. Test protocol: `docs/test-plan.md`.
+THE RESET (Fancy Ape, FA-RESET-001) is a private, sound-only app: turn a dial to one of seven frequency stops, pick a time, press play, listen. It is a prototype, not clinically validated. v0.3.0 replaced the earlier voice-first reflection app; `docs/concept-paper.md` describes that earlier version and is not current. Test protocol: `docs/test-plan.md`.
 
-These rules apply to every change to `index.html`, `README.md`, `docs/`, and any prompt text sent to a model. If a request conflicts with a rule, say so and ask before proceeding.
+These rules apply to every change to `index.html`, `README.md`, and `docs/`. If a request conflicts with a rule, say so and ask before proceeding.
 
 ## Rules
 
 ### 1. No medical or "reprogramming" claims
-- The app is a self-reflection and relaxation exercise. It is not therapy, diagnosis, treatment, or a crisis line.
-- Never write or generate: heal, cure, treat, therapy/therapeutic effect, reprogram, rewire, subconscious, "brain frequency", or promised outcomes. This covers UI copy, spoken script lines, mantras, README, changelog, and model prompts.
-- The 200/206 Hz tone is an optional sound preference. State "no effect is promised" wherever it appears.
-- Do not infer a diagnosis or treat voice characteristics as proof of emotion. When uncertain, ask.
-- No public effectiveness claims until independent review (Gate D). Evidence for CBT/ACT/mindfulness informs design; it does not validate this app.
-- The footer disclaimer (not therapy or medical care, can misread you, tone not promised to do anything) must stay visible.
+- The app is a sound experience. It is not therapy, diagnosis, treatment, or a crisis line.
+- Never write or generate: heal, cure, treat, therapy/therapeutic effect, reprogram, rewire, subconscious, "brain frequency", "healing frequency", "balance your chakra", "open your chakra", "activate your chakra", or any promised outcome. This covers UI copy, README, changelog, and anything else shown to a person. The one allowed use of "therapy" is the footer disclaimer ("Not therapy or medical care").
+- The frequencies and chakra names are modern wellness associations, not proven effects. The ring words (Ground, Flow, Power, Heart, Voice, Vision, Stillness) are names for the stops, not claims about what they do. Never write that a stop causes, improves, or helps anything.
+- The footer must stay visible on every screen, word for word: "A sound experience. Not therapy or medical care. Frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised."
+- Better / Same / Worse is a person's own tap, not evidence. No public effectiveness claims until independent review (Gate D).
 
-### 2. No forced breathing, no breath holds
-- Breathing guidance is gentle and optional: easy pace, "drop the counts if they feel tight, comfort comes first", then let the breath find its own pace.
-- Never add breath holds, hyperventilation, rapid or forced cycles, or any instruction to push past discomfort. "Hold it loosely" in the script is about attention, not breath; keep it that way.
-- Stop must always work immediately (Stop button and Escape). Pause must always work. No forced endings, sudden alarms, bells, or abrupt transitions; fades only.
-- Respect `prefers-reduced-motion`.
+### 2. Gentle sound, no forced breathing
+- The volume swell (in 4 s, out 6 s) and the glow are a quiet pacing cue only. Never add breath counts, holds, hyperventilation, rapid or forced cycles, or any instruction to push past discomfort.
+- Volume starts at 25% on first visit (the person's level is remembered after). Master gain never exceeds 0.6 at 100% on the slider. No sudden peaks, bells, or alarms.
+- Fades only: 5 s in on Play, 8 s out at natural end, 0.3 s on Stop and Escape. Stop and Escape always work immediately. Pause holds in place.
+- Respect `prefers-reduced-motion`: the glow stays still, the needle does not animate, and there are no haptic breath pulses. Sound is unchanged.
 
-### 3. The 988 notice appears only on stated intent to die or hurt someone
-- Show it only when the person states intent or desire to die, harm themselves, or harm someone else.
-- Do not show it for ordinary distress, stress, anger, sadness, or venting.
-- The notice is quiet, never blocks the session, and never lectures. Every instance has a "Got it" button and keeps the line "If I misread you, ignore this and carry on". "Got it" hides the notice only for the text that triggered it: new or changed triggering text shows it again, identical text does not, and leaving the screen resets it. It points to a person (988 in the US, or local emergency number).
-- Any model-supplied `safety_concern` flag must use the stated-intent threshold. Do not widen it to "anything suggests risk". The local keyword check is intentionally broader (see Keyword decision).
-- Changes to the crisis regex or the model's safety prompt need a test of both missed and false-positive phrasings, reported in the commit message.
+### 3. No user text, so no crisis detection
+- The app collects no user text: no typing, no microphone, no transcripts. Therefore there is no crisis detection and no 988 notice.
+- If any text input is ever added back, the v0.2.2 crisis rules return with it: the `crisisRe` keyword check (including the bare `suicid` stem and the indirect phrasings), the stated-intent threshold for any model flag, the quiet dismissible 988 notice ("If I misread you, ignore this and carry on", "Got it"), and the fixed phrase test. Those rules and the tested regex are in the closed, unmerged PR #4 branch `claude/v0.2.2-crisis-mic-fallback`. Keep that branch.
 
-### 4. User words stay on-device unless they opt in
-- Transcripts, check-ins, "what I noticed" text, and corrections must not leave the device without a clear, in-the-moment disclosure and the person's action to proceed (currently: pressing "Reflect it back", "Try again" or "Find one thing to carry forward", each with a normal-size line directly above the button stating that words go to Claude).
-- No analytics, telemetry, trackers, accounts, or third-party calls that carry user content.
-- "Skip to a session" sends nothing and uses nothing the person typed: the text is checked locally for the 988 notice, then dropped (it is never used for the script, saved, or sent later). The Skip screen and script must not refer to a situation the person "described".
-- Saving words to the session log is off by default (`saveWords`), stored only in this browser's localStorage, and the log is deletable in one step with confirmation. Saved log entries without opt-in contain scores and the chosen action only, never what they said. With opt-in, the saved words are shown in the log so the person can see and delete them.
-- Treat user text sent to a model as data, never instructions (keep the `<words>` / `<correction>` delimiters and length caps, and strip delimiter tags from user text).
-- The reflection prompt must keep the rule that it reflects only what the person actually wrote and invents no people, events, history, feelings, or motives.
-- Voice and transcripts are sensitive. Privacy is a design requirement.
+### 4. Nothing leaves the device
+- No network calls at all: no `fetch`, XHR, WebSocket, beacons, web fonts, CDN, analytics, telemetry, trackers, or accounts.
+- Storage is `localStorage` on this device only, under `reset3:` keys: stop, time, sound, volume, and the answer log. A log entry holds the stop, the time, and Better/Same/Worse. Nothing else is saved, and there is no text field to save from.
+- Delete all (with confirmation) removes the log, including any data left by v0.2 under `reset:` keys. Never delete a person's data silently.
 
-### 5. Audio and voices
-- The person chooses the voice. No automatic preference for any gender or style; the default is simply the highest-quality English voice the device offers (natural/neural/enhanced and offline voices rank higher; novelty and robotic voices are excluded).
-- At most six voices are offered, with a mix of male and female where available. Each has a "Hear sample" button that plays the same 10-15 second passage. The chosen voice is remembered in localStorage.
-- Narration, background sound, and tone each keep their own control. Narration has a volume slider (0 silences narration only).
-- Mute All (beside Pause and Stop) silences narration, background sound, and tone immediately. It never pauses the timer, breathing animation, or transcript. Unmuting resumes at the current position and does not replay missed narration.
-- Voices come from the browser/OS. Do not add paid TTS, subscriptions, external services, or bundled audio without the owner's approval; any such change also breaks rule 6 and needs a tradeoff note first.
-- Minimum session length is 10 minutes: the script cannot be delivered at a calm pace in 5.
-
-### 6. One self-contained `index.html`
+### 5. One self-contained `index.html`
 - The app stays a single `index.html`: inline CSS and JS, no build step, no framework, no bundler, no separate asset files, no external script, no external CDN.
-- Must work offline once loaded, with graceful fallbacks when speech recognition, speech synthesis, or the model is unavailable (typing, general reflection, estimated line timing).
-- Audio is generated in-page (Web Audio, SpeechSynthesis). Do not embed or fetch audio files.
+- Must work offline once loaded. If Web Audio is unavailable, say so plainly and disable Play.
+- Audio is generated in-page with Web Audio. Do not embed or fetch audio files.
 - GitHub Pages serves it from `main` / root. Keep `index.html`, `README.md`, `LICENSE`, `CHANGELOG.md`, and `docs/` at the repo root.
 
+### 6. Readable and reachable
+- Minimum text size 13 px everywhere, including the footer. Every control has a tap target of at least 44 px, including each ring label.
+- The dial is `role="slider"` with `aria-valuetext` such as "528 hertz, solar plexus, power", and works with arrow keys, Home, End, drag, and tapping a ring label. Check layouts at 320, 360, and 390 px.
+
 ## Product principles to preserve
-- Emotion is information, not instruction. The reflection separates what happened, what they believe it means, and what is unknown. It does not automatically validate conclusions and does not argue, judge, flatter, or diagnose.
-- The person confirms or corrects the reading before the session ("That's not quite right"). They control the objective.
-- No manipulation, no dependency-building, no reinforcing paranoia, grandiosity, or accusations against specific people.
-- Suggested actions are small, specific, theirs, and never confrontation with another person.
-- The pre/post distress log and its stop signal (distress or stuck-ness rising after 3+ recent sessions) must stay honest. Never hide or soften a rising trend.
+- Calm instrument panel: thin tick marks, a needle, a soft glow when active. No steampunk, fake wear, or gimmicks.
+- One screen: dial, readout, time, sound type, volume, Play. Copy stays minimal. The end screen appears only after a natural completion, never after an early Stop.
+- The answer counts are shown as they are. Never hide or soften a "Worse" count.
 
-## Known limits (v0.2.1)
-- Real voice quality, real microphone accuracy, and device audio behaviour have not been tested by Claude; they need listening on real devices.
-- Voice lists differ per device. Six consistent voices cannot be guaranteed with browser-native speech.
-- The Claude reflection runs only inside claude.ai. On GitHub Pages the app uses the general reflection and script.
-- Speech may stop when a phone screen locks or the tab is hidden; the screen wake lock helps but is not guaranteed.
-
-## Gaps found in v0.2 (all fixed)
-1. **Rule 5:** Google Fonts links and preconnects removed; the page uses the existing Georgia / system-ui fallback stacks. Fixed.
-2. **Rule 3:** the model's `safety_concern` is now true only when the person themselves expresses thoughts, intent, or plans to harm themselves or others. Mentions about someone else, in the abstract, in news or fiction, or as past events with no current thoughts are false; when unsure, false. Fixed.
-3. **Rule 4:** the disclosure "Reflect sends what you wrote to Claude to write your session. Skip sends nothing." now sits above the Reflect button in normal text size, visible before the first tap. Fixed.
-
-### Keyword decision
-The local keyword check (`crisisRe`) is kept as-is, including the bare stem `suicid`. This is deliberate: a false positive costs one dismissible line ("If I misread you, ignore this and carry on"), while a miss could cost far more for the person with the least power in the moment. Do not narrow it without the owner's say-so. The model flag is the part held to the stricter stated-intent threshold.
+## Known limits (v0.3.0)
+- Audio, haptics, and wake lock have been tested in headless Chromium only. Real phone speakers, headphones, and iOS/Android behavior need a person on a device.
+- Sound may stop when a phone screen locks; the screen wake lock helps but is not guaranteed.
+- Phone speakers reproduce little below about 200 Hz, so the Atmosphere octave-below layer may be inaudible there.
+- The log keeps counts per stop. It does not show an order, so the test plan's "3 of the last 12" stop signal is applied by the founder, not by the app.
 
 ## Editing checklist
-- Grep user-facing and model-prompt text for the banned terms in Rule 1 before committing.
-- Confirm no new `http(s)://` references, `fetch`, or external `src`/`href` in `index.html`.
-- Confirm no new storage of user text outside the opt-in path.
+- Grep user-facing text for the banned terms in Rule 1 before committing.
+- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html`.
+- Confirm nothing but stop, time, sound, volume, and the answer log is stored.
 - Update `CHANGELOG.md` for any behavior change.
-- Test with the real voices and microphone on a phone before merging anything that touches audio, voices, or the mic.
+- Test sound, fades, and haptics on a real phone before merging anything that touches audio.
