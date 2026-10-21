@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.3.0 — 2026-10-21
+Rebuilt as a sound-only experience on one screen.
+- New: a rotary dial with seven snap stops on a 270° clockwise arc (gap at the bottom): Ground 396 Hz, Flow 417, Power 528, Heart 639, Voice 741, Vision 852, Stillness 963. Drag anywhere on the face, tap a ring label, or use the arrow keys; thin tick marks, a needle, and a notch highlight on each snap. `role="slider"` with spoken values like "528 hertz, solar plexus, power". Android: a 10 ms tap on each snap.
+- New: timer pills (5, 10, 15, 20, ∞) and a Tone | Atmosphere toggle (default Atmosphere). Tone is a soft sine at the stop's frequency. Atmosphere is a layered drone: octave below, two slightly detuned fundamentals, quiet harmonics, and a filtered noise bed.
+- New: breath pacing. The volume swells in over 4 s and out over 6 s, and the glow follows. Android: a light pulse at each in-breath, kept on under reduced motion (only visuals stop). No counts, no holds.
+- New: 5 s fade-in, 8 s fade-out at the natural end, 0.3 s fade on Stop and Escape. Pause holds in place. Turning the dial (or changing the sound) while playing crossfades over 2 s; the timer keeps running.
+- New: volume slider (starts at 25% on first visit, then remembered) and a Mute button. Master gain tops out at 0.6, with a gentle compressor as a safety net.
+- New: the AudioContext is created in the Play tap; a screen wake lock is requested while playing and released on Pause, Stop, and end; silent fallback if unsupported.
+- New: the last stop, time, sound, and volume are remembered in this browser.
+- New: ∞ plays until Pause or Stop and counts up (h:mm:ss). Stop on ∞ fades over 8 s, then shows the end screen if it ran 5 minutes or more; the log keeps the actual minutes played. Escape is always a fast stop with no prompt.
+- New: the glow takes the active stop's color. Only opacity and transform are animated (no blur, no animated shadow or stroke); the notch feedback is a small marker that scales in.
+- New: end screen after a timed completion (or an ∞ Stop at 5+ minutes) only: "How do you feel now?" Better / Same / Worse (optional). Saves one ordered, dated entry (stop, minutes, answer, date and time) and nothing else, with a count per stop and a Delete all button (with confirmation). "Worse" shows: "Noted. Try a different stop or a shorter time, or stop for today." An early Stop goes straight back to the dial.
+- New: footer disclaimer on every screen (in normal flow, not sticky); minimum text size 13 px; 44 px tap targets. On short screens the dial and spacing shrink so Play is in view without scrolling at 320×640 and 360×740.
+- Removed: narration and the voice picker, speech synthesis, microphone and transcription, AI reflection and every Claude call, the typed check-in, missions, the phrase, the carry-forward action, the transcript, the 0–10 before/after ratings, the 988 notice and `crisisRe` (no text is collected any more), the 200/206 Hz tone pair, the background-sound and loop settings, and the settings area.
+- Stop signal restored: when 3 or more of the last 12 saved sessions are "Worse", a quiet notice shows on the dial screen and the end screen. It has no dismiss button.
+- Measure changed: the 0–10 distress and stuck-ness ratings are replaced by one optional Better / Same / Worse tap (see `docs/test-plan.md`).
+- Data note: v0.2 saved its log under `reset:` keys. v0.3.0 does not read or delete them; *Delete all* removes them.
+- Docs: README and `CLAUDE.md` gain "Where the frequencies come from"; `CLAUDE.md` separates acoustics, symbolism, and intention for each stop and bans describing a frequency as a body part's natural resonance.
+- Rewrote `CLAUDE.md` for the new app. The v0.2.2 crisis-detection rules are kept in `docs/crisis-rules.md`, to return if text input is ever added back.
+
 ## v0.2.1 — 2026-10-20
 - Voices: removed the automatic "calm male voice" preference. Up to six curated English voices, each with a "Hear sample" button (same ~12 s passage). Default is the best-ranked voice on the device; the choice is remembered.
 - Added Mute/Unmute beside Pause and Stop. It silences narration, background sound and tone at once without pausing the timer, animation or transcript, and does not replay missed narration on unmute.
