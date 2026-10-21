@@ -81,18 +81,19 @@ button{cursor:pointer}
 .icon-btn svg{width:1.4rem;height:1.4rem}
 .icon-btn[data-muted="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .transport{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;margin:.5rem 0 0}
-/* time wheel: three rows (one faded value above and below), same height as the row it sits in, never taller than Play */
-.wheel{--rh:1.5rem;justify-self:end;position:relative;width:5rem;height:calc(var(--rh) * 3);border-radius:.6rem;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:ns-resize;font-variant-numeric:tabular-nums}
-.wheel:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
-.wview{position:absolute;inset:0;overflow:hidden;border-top:1px solid transparent}
+/* time wheel: three visible rows (one faded value above and below), as tall as the row it sits in. The box itself has 12px of invisible padding top and bottom (cancelled by negative margins) so each half is a 44px touch target. */
+.wheel{--rh:1.5rem;--pad:12px;justify-self:end;position:relative;width:5rem;height:calc(var(--rh) * 3 + var(--pad) * 2);margin:calc(var(--pad) * -1) 0;border-radius:.6rem;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:ns-resize;font-variant-numeric:tabular-nums}
+.wheel:focus-visible{outline:none}
+.wheel:focus-visible .wview{outline:2px solid var(--brass);outline-offset:3px;border-radius:.6rem}
+.wview{position:absolute;inset:var(--pad) 0;overflow:hidden;border-top:1px solid transparent}
 .wview::before{content:"";position:absolute;left:.4rem;right:.4rem;top:var(--rh);height:var(--rh);border-top:1px solid var(--line);border-bottom:1px solid var(--line);pointer-events:none}
 .wtrack{position:absolute;left:0;right:0;top:0;transform:translateY(calc(var(--rh) * (1 - var(--p,0))));transition:transform .18s ease-out}
 .wi{height:var(--rh);line-height:var(--rh);text-align:center;font-size:1.125rem;color:var(--ink);opacity:.4;font-weight:400;transition:opacity .18s ease-out}
 .wi.sel{font-weight:600}
 .wheel.drag .wtrack,.wheel.drag .wi{transition:none}
-.wunit{position:absolute;top:var(--rh);height:var(--rh);line-height:var(--rh);left:calc(50% + 1rem);font-size:.8125rem;color:var(--muted);pointer-events:none}
-.wclock{position:absolute;inset:0;display:grid;place-items:center;font-size:1.0625rem;color:var(--muted);visibility:hidden}
-.wheel.run{cursor:default}
+.wunit{position:absolute;top:calc(var(--pad) + var(--rh));height:var(--rh);line-height:var(--rh);left:calc(50% + 1rem);font-size:.8125rem;color:var(--muted);pointer-events:none}
+.wclock{position:absolute;inset:var(--pad) 0;display:grid;place-items:center;font-size:1.0625rem;color:var(--muted);visibility:hidden}
+.wheel.run{cursor:default;pointer-events:none}
 .wheel.run .wview,.wheel.run .wunit{visibility:hidden}
 .wheel.run .wclock{visibility:visible}
 .play{width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;padding:0}
@@ -147,7 +148,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
   .qual{font-size:1.125rem}
   .seg{margin:.4rem 0 0}
   .mix{margin:.2rem 0 0}
-  .transport{margin:.3rem 0 0}
+  .transport{margin:.65rem 0 0}
   .playwrap{width:4.75rem;height:4.75rem}
   .play{width:4.75rem;height:4.75rem}
   .hint{margin:.3rem 0 0}
@@ -270,7 +271,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
 
 <footer>
   <p>A sound experience. Not therapy or medical care. Frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised.</p>
-  <p class="credit">A <a href="https://fancyape.com" target="_blank" rel="noopener noreferrer">Fancy Ape</a> project · The Composition Group</p>
+  <p class="credit">A <a href="https://fancyape.com" target="_blank" rel="noopener noreferrer">Fancy Ape</a>® project · The Composition Group</p>
 </footer>
 
 <script>
@@ -438,14 +439,14 @@ wheelEl.addEventListener("pointermove", e => {
   if (!wDrag) return;
   const dy = e.clientY - wDrag.y;
   if (!wDrag.moved && Math.abs(dy) > 4){ wDrag.moved = true; wheelEl.classList.add("drag"); }
-  if (wDrag.moved){ wPos = clamp(wDrag.p - dy / (wheelEl.clientHeight / 3), 0, WN); paintWheel(); }
+  if (wDrag.moved){ wPos = clamp(wDrag.p - dy / wItems[0].offsetHeight, 0, WN); paintWheel(); }
 });
 const wheelEnd = e => {
   if (!wDrag) return;
   const d = wDrag; wDrag = null; wheelEl.classList.remove("drag");
   if (d.moved || e.type === "pointercancel"){ wheelTo(Math.round(wPos)); return; }
-  const r = wheelEl.getBoundingClientRect(), y = e.clientY - r.top;   /* a click on the faded value above or below */
-  if (y < r.height * .4) wheelStep(-1); else if (y > r.height * .6) wheelStep(1);
+  const r = wheelEl.getBoundingClientRect(), y = e.clientY - r.top;   /* a click above or below the selected value: each side is a 44px target */
+  if (y < r.height / 2 - 4) wheelStep(-1); else if (y > r.height / 2 + 4) wheelStep(1);
 };
 wheelEl.addEventListener("pointerup", wheelEnd); wheelEl.addEventListener("pointercancel", wheelEnd);
 wheelEl.addEventListener("wheel", e => {
@@ -459,8 +460,8 @@ wheelEl.addEventListener("wheel", e => {
 wheelEl.addEventListener("keydown", e => {
   if (S.active) return;
   const k = e.key; let moved = null;
-  if (k === "ArrowDown" || k === "ArrowRight" || k === "PageDown") moved = wheelStep(1);
-  else if (k === "ArrowUp" || k === "ArrowLeft" || k === "PageUp") moved = wheelStep(-1);
+  if (k === "ArrowUp" || k === "ArrowRight" || k === "PageUp") moved = wheelStep(1);   /* standard spinbutton: Up increases */
+  else if (k === "ArrowDown" || k === "ArrowLeft" || k === "PageDown") moved = wheelStep(-1);
   else if (k === "Home"){ wheelTo(0); moved = true; } else if (k === "End"){ wheelTo(WN); moved = true; }
   if (moved !== null) e.preventDefault();
 });

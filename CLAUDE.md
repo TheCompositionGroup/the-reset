@@ -12,7 +12,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - The frequencies and chakra names are modern wellness associations, not proven effects. The ring words (Ground, Flow, Power, Heart, Voice, Vision, Stillness) are names for the stops, not claims about what they do. Never write that a stop causes, improves, or helps anything.
 - Never describe a frequency as the natural resonance of a body part or organ. Never call a frequency "healing", "balancing", or "activating".
 - Each stop is three separate things, and copy must keep them apart: **acoustics** (the real frequency in Hz, a fact about the sound), **symbolism** (the modern chakra pairing, a cultural association), and **intention** (the ring word, an interpretive theme, not an effect).
-- The footer must be present on every screen, word for word: "A sound experience. Not therapy or medical care. Frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised."
+- The footer must be present on every screen, word for word: "A sound experience. Not therapy or medical care. Frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised." Under it, the credit line reads "A Fancy Ape® project · The Composition Group", with "Fancy Ape" linked (Rule 4). The ® is allowed here only: Fancy Ape is a registered mark.
 - Better / Same / Worse is a person's own tap, not evidence. No public effectiveness claims until independent review (Gate D).
 
 ### 2. Gentle sound, no forced breathing
