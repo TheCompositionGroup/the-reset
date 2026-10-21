@@ -21,10 +21,10 @@ These rules apply to every change to `index.html`, `README.md`, `docs/`, and any
 - Respect `prefers-reduced-motion`.
 
 ### 3. The 988 notice appears only on stated intent to die or hurt someone
-- Show it only when the person states intent or desire to die, harm themselves, or harm someone else.
+- Show it only when the person states intent or desire to die, harm themselves, or harm someone else. Stated intent includes indirect or veiled statements of current intent (for example "everyone would be better off without me", "I won't be around much longer", "I can't go on anymore"). It does not include mentions about someone else, the abstract, news, fiction, or past events with no current thoughts.
 - Do not show it for ordinary distress, stress, anger, sadness, or venting.
 - The notice is quiet, never blocks the session, and never lectures. Every instance has a "Got it" button and keeps the line "If I misread you, ignore this and carry on". "Got it" hides the notice only for the text that triggered it: new or changed triggering text shows it again, identical text does not, and leaving the screen resets it. It points to a person (988 in the US, or local emergency number).
-- Any model-supplied `safety_concern` flag must use the stated-intent threshold. Do not widen it to "anything suggests risk". The local keyword check is intentionally broader (see Keyword decision).
+- Any model-supplied `safety_concern` flag must use the stated-intent threshold, which includes indirect or veiled phrasing of the person's own current thoughts, intent, or plans. Do not widen it to "anything suggests risk". The local keyword check is intentionally broader (see Keyword decision).
 - Changes to the crisis regex or the model's safety prompt need a test of both missed and false-positive phrasings, reported in the commit message.
 
 ### 4. User words stay on-device unless they opt in
@@ -46,7 +46,7 @@ These rules apply to every change to `index.html`, `README.md`, `docs/`, and any
 
 ### 6. One self-contained `index.html`
 - The app stays a single `index.html`: inline CSS and JS, no build step, no framework, no bundler, no separate asset files, no external script, no external CDN.
-- Must work offline once loaded, with graceful fallbacks when speech recognition, speech synthesis, or the model is unavailable (typing, general reflection, estimated line timing).
+- Must work offline once loaded, with graceful fallbacks when speech recognition, speech synthesis, or the model is unavailable (typing, general reflection, estimated line timing). Outside claude.ai the Reflect screen says plainly, before the first tap, that personal AI reflection is not available and a general reflection is used instead.
 - Audio is generated in-page (Web Audio, SpeechSynthesis). Do not embed or fetch audio files.
 - GitHub Pages serves it from `main` / root. Keep `index.html`, `README.md`, `LICENSE`, `CHANGELOG.md`, and `docs/` at the repo root.
 
@@ -54,22 +54,23 @@ These rules apply to every change to `index.html`, `README.md`, `docs/`, and any
 - Emotion is information, not instruction. The reflection separates what happened, what they believe it means, and what is unknown. It does not automatically validate conclusions and does not argue, judge, flatter, or diagnose.
 - The person confirms or corrects the reading before the session ("That's not quite right"). They control the objective.
 - No manipulation, no dependency-building, no reinforcing paranoia, grandiosity, or accusations against specific people.
-- Suggested actions are small, specific, theirs, and never confrontation with another person.
+- Suggested actions are small, specific, theirs, and never confrontation with another person. The fallback action (when Claude is unavailable) is neutral and never assumes a feeling the person did not state.
 - The pre/post distress log and its stop signal (distress or stuck-ness rising after 3+ recent sessions) must stay honest. Never hide or soften a rising trend.
 
-## Known limits (v0.2.1)
+## Known limits (v0.2.2)
 - Real voice quality, real microphone accuracy, and device audio behaviour have not been tested by Claude; they need listening on real devices.
 - Voice lists differ per device. Six consistent voices cannot be guaranteed with browser-native speech.
 - The Claude reflection runs only inside claude.ai. On GitHub Pages the app uses the general reflection and script.
 - Speech may stop when a phone screen locks or the tab is hidden; the screen wake lock helps but is not guaranteed.
+- Microphone input has no time limit: when the browser ends recognition on its own, the app restarts it and keeps the words already in the box, until the person taps stop (or the tab is hidden). Real-device behaviour is untested.
 
 ## Gaps found in v0.2 (all fixed)
 1. **Rule 5:** Google Fonts links and preconnects removed; the page uses the existing Georgia / system-ui fallback stacks. Fixed.
-2. **Rule 3:** the model's `safety_concern` is now true only when the person themselves expresses thoughts, intent, or plans to harm themselves or others. Mentions about someone else, in the abstract, in news or fiction, or as past events with no current thoughts are false; when unsure, false. Fixed.
+2. **Rule 3:** the model's `safety_concern` is now true only when the person themselves expresses thoughts, intent, or plans to harm themselves or others. Mentions about someone else, in the abstract, in news or fiction, or as past events with no current thoughts are false. Fixed. (v0.2.2: "when unsure, false" removed, and indirect or veiled phrasing now counts.)
 3. **Rule 4:** the disclosure "Reflect sends what you wrote to Claude to write your session. Skip sends nothing." now sits above the Reflect button in normal text size, visible before the first tap. Fixed.
 
 ### Keyword decision
-The local keyword check (`crisisRe`) is kept as-is, including the bare stem `suicid`. This is deliberate: a false positive costs one dismissible line ("If I misread you, ignore this and carry on"), while a miss could cost far more for the person with the least power in the moment. Do not narrow it without the owner's say-so. The model flag is the part held to the stricter stated-intent threshold.
+The local keyword check (`crisisRe`) keeps every earlier pattern, including the bare stem `suicid`. This is deliberate: a false positive costs one dismissible line ("If I misread you, ignore this and carry on"), while a miss could cost far more for the person with the least power in the moment. Do not narrow it without the owner's say-so. v0.2.2 (owner-approved) added indirect phrasings; the fixed phrase list is in `docs/test-plan.md`. Known consequences: "suicid" fires on mentions about other people, and `kms`, `end things`, "won't be around much longer" and "can't do this anymore" can fire on unrelated uses. The model flag is the part held to the stated-intent threshold.
 
 ## Editing checklist
 - Grep user-facing and model-prompt text for the banned terms in Rule 1 before committing.

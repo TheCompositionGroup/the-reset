@@ -9,7 +9,7 @@
   --bg:#EEF0EC; --surface:#E2E6E1; --line:#C9D0CA; --ink:#1F2A2E; --muted:#56635F;
   --accent:#4F6F64; --accent-ink:#F3F5F2; --brass:#9A7642; --danger:#A4483B; --danger-ink:#FFF;
   --serif:"Newsreader", Georgia, "Times New Roman", serif;
-  --sans:"Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --sans:system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color-scheme:light; box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -140,10 +140,11 @@ footer p{margin:.4rem 0}
     </button>
     <div>
       <textarea id="feelText" placeholder="Talk or type. Pauses, half-thoughts and corrections are fine."></textarea>
-      <p class="hint mic-hint" role="status">Tap the mic, talk as long as you like, tap again to finish.</p>
+      <p class="hint mic-hint" role="status">Tap the mic and talk. It keeps listening until you tap it again.</p>
     </div>
   </div>
   <p style="margin:.9rem 0 0">Reflect sends what you wrote to Claude to write your session. Skip sends nothing.</p>
+  <p class="hidden" id="aiNotice" style="margin:.5rem 0 0">Personal AI reflection isn’t available on this site yet. You’ll get a general reflection instead.</p>
   <div class="row" style="margin-top:.6rem">
     <button class="btn primary" id="reflectBtn">Reflect it back</button>
     <button class="btn quiet" id="skipBtn">Skip to a session</button>
@@ -255,7 +256,7 @@ footer p{margin:.4rem 0}
 
 <footer>
   <p>Free. No account. The Reset is a guided self-reflection and relaxation exercise. It isn’t therapy or medical care, it can misread you, and the tone isn’t promised to do anything. Breathe at an easy pace and stop any time.</p>
-  <p>FA-RESET-001 · prototype v0.2.1</p>
+  <p>FA-RESET-001 · prototype v0.2.2</p>
 </footer>
 </main>
 
@@ -268,11 +269,15 @@ const store = {
   del(k){ try{ localStorage.removeItem("reset:"+k);}catch(e){} }
 };
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const FALLBACK_ACTION = "Pick one small thing you noticed today and do it once before tomorrow.";
 const DEFAULT_MANTRA = "I see clearly. I choose calmly. My strength is mine to direct.";
 const views = ["vSpeak","vReflect","vSession","vIntegrate"];
 const careDismissed = new Map();
 const show = id => { views.forEach(v => $(v).classList.toggle("hidden", v !== id)); careDismissed.clear(); window.scrollTo(0,0); };
 let sampleNS;
+const aiHere = () => !!(window.claude && window.claude.use);
+function syncAiNotice(){ $("aiNotice").classList.toggle("hidden", aiHere()); }
+syncAiNotice(); window.addEventListener("load", syncAiNotice);
 async function getSample(){ if (sampleNS !== undefined) return sampleNS; try { sampleNS = window.claude && window.claude.use ? await window.claude.use("sample") : null; } catch(e){ sampleNS = null; } return sampleNS; }
 
 /* ---------- settings ---------- */
@@ -378,27 +383,53 @@ if (synth) synth.onvoiceschanged = loadVoices;
 
 /* ---------- mic (shared) ---------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null, recBtn = null, recTimer;
+let rec = null, recBtn = null;
 const hintOf = btn => btn.closest(".checkin").querySelector(".mic-hint");
 document.querySelectorAll(".mic-hint").forEach(h => h.dataset.idle = h.textContent);
 const setHint = (btn, t) => { const h = hintOf(btn); if (h) h.textContent = t; };
 const idleHint = btn => { const h = hintOf(btn); if (h) h.textContent = h.dataset.idle || ""; };
+/* Browsers end recognition on their own (silence, length limits). Until the person taps stop, start a fresh
+   recognizer from whatever is already in the box: each one only reports its own words, so nothing is lost or repeated. */
+function micStart(btn, quick){
+  const ta = $(btn.dataset.target); const base = ta.value.trim() ? ta.value.trim()+" " : "";
+  const r = new SR(); r.lang = navigator.language || "en-US"; r.continuous = true; r.interimResults = true;
+  r.t0 = Date.now(); r.heard = false;
+  r.onresult = ev => { r.heard = true; let t = ""; for (let i=0;i<ev.results.length;i++) t += ev.results[i][0].transcript; ta.value = base + t.trim(); ta.dispatchEvent(new Event("input")); };
+  r.onerror = ev => {
+    if (/no-speech|aborted/.test(ev.error)) return;
+    r.failed = true; setHint(btn, /not-allowed|service-not-allowed/.test(ev.error) ? "Microphone blocked. Allow it in browser settings, or type instead." : "Couldn’t hear that. Tap the mic to try again, or type.");
+  };
+  r.onend = () => {
+    if (rec !== r){ btn.setAttribute("aria-pressed","false"); if (!r.failed) idleHint(btn); return; }
+    if (!r.halt && !r.failed){
+      const instant = !r.heard && Date.now() - r.t0 < 1000;
+      micFast = instant ? micFast + 1 : 0;
+      if (micFast < 3){ setTimeout(() => { if (rec === r){ try { micStart(btn); } catch(e){ micEnd(r, btn, "Couldn’t keep the microphone on. Tap the mic to try again, or type."); } } }, 250); return; }
+      r.failed = true; setHint(btn, "Voice input stopped. Tap the mic to try again, or type.");
+    }
+    micEnd(r, btn);
+  };
+  rec = r; recBtn = btn;
+  try { r.start(); btn.setAttribute("aria-pressed","true"); setHint(btn, "Listening… tap the mic again to finish."); }
+  catch(e){ rec = null; recBtn = null; btn.setAttribute("aria-pressed","false"); setHint(btn, "Couldn’t start the microphone. Type instead."); }
+}
+let micFast = 0;
+function micEnd(r, btn, msg){
+  btn.setAttribute("aria-pressed","false"); if (rec === r){ rec = null; recBtn = null; }
+  if (msg) setHint(btn, msg); else if (!r.failed) idleHint(btn);
+}
 document.querySelectorAll(".mic").forEach(btn => {
   if (!SR){ btn.disabled = true; setHint(btn, "Voice input isn’t supported in this browser. Type instead."); return; }
   btn.onclick = () => {
-    if (rec){ const same = recBtn === btn; rec.stop(); if (same) return; }
-    const ta = $(btn.dataset.target); const base = ta.value.trim() ? ta.value.trim()+" " : "";
-    const r = new SR(); r.lang = navigator.language || "en-US"; r.continuous = true; r.interimResults = true;
-    r.onresult = ev => { let t = ""; for (let i=0;i<ev.results.length;i++) t += ev.results[i][0].transcript; ta.value = base + t.trim(); ta.dispatchEvent(new Event("input")); };
-    r.onerror = ev => { r.failed = true; setHint(btn, /not-allowed|service-not-allowed/.test(ev.error) ? "Microphone blocked. Allow it in browser settings, or type instead." : /no-speech/.test(ev.error) ? "Didn’t hear anything. Tap the mic to try again, or type." : "Couldn’t hear that. Try again, or type."); };
-    r.onend = () => { btn.setAttribute("aria-pressed","false"); if (!r.failed) idleHint(btn); if (rec === r){ rec = null; recBtn = null; } clearTimeout(recTimer); };
-    try { r.start(); rec = r; recBtn = btn; btn.setAttribute("aria-pressed","true"); setHint(btn, "Listening… tap the mic again to finish."); recTimer = setTimeout(() => r.stop(), 180000); } catch(e){ setHint(btn, "Couldn’t start the microphone. Type instead."); }
+    if (rec){ const same = recBtn === btn; stopMic(); if (same) return; }
+    micFast = 0; micStart(btn);
   };
 });
-const stopMic = () => { if (rec) rec.stop(); };
+const stopMic = () => { if (rec){ rec.halt = true; rec.stop(); } };
+document.addEventListener("visibilitychange", () => { if (document.hidden) stopMic(); });
 
 /* ---------- safety ---------- */
-const crisisRe = /(suicid|kill myself|end my life|end it all|hurt myself|harm myself|self[- ]harm|don.?t want to (live|be here)|want to die|better off dead|hurt (him|her|them|someone)|kill (him|her|them|someone))/i;
+const crisisRe = /(suicid|kill myself|end my life|end it all|hurt myself|harm myself|self[- ]harm|don.?t want to (live|be here)|want to die|better off dead|hurt (him|her|them|someone)|kill (him|her|them|someone)|better off without me|everyone (would|will) be better off|(won.?t|will not|not) be (around|here)( much)? longer|no reason to (live|keep going|go on)|can.?t (do this|go on|keep going) any ?more|(go to sleep|fall asleep) and (not|never) wake up|\bkms\b|unaliv|\bend (things|everything)\b)/i;
 const careHTML = `<p>You mentioned wanting to die or hurt someone. If that’s where you are right now, a person can help more than this app: call or text <a href="tel:988">988</a> (US) or your local emergency number.</p><p class="note">If I misread you, ignore this and carry on.</p><p><button class="btn quiet" type="button" data-care-dismiss>Got it</button></p>`;
 /* "Got it" hides the notice only for the text that triggered it; different triggering text shows it again. */
 function showCare(el, on, key){
@@ -454,7 +485,7 @@ Return ONLY a JSON object:
 "missions": exactly 3 options for today's session, each {"label": 2-6 words, "lines": [2 short spoken lines, max 18 words each, for a section on holding the story loosely, tailored to that option and based only on what they wrote, never arguing]}.
 "acknowledgment": 2 short spoken lines (max 18 words) acknowledging their state without repeating private details.
 "mantra": a calm first-person present-tense phrase, 3-10 words. No "heal", "cure", "reprogram".
-"safety_concern": true ONLY if the person themselves expresses thoughts, intent, or plans to harm themselves or others. False if they mention suicide, self-harm, or violence about someone else, in the abstract, in the news, in fiction, or as a past event with no current thoughts of harm. When unsure, false.
+"safety_concern": true if the person themselves expresses current thoughts, intent, or plans to harm themselves or others, including indirect or veiled phrasing (for example, saying others would be better off without them, that they won't be around much longer, or that they can't go on). False if they mention suicide, self-harm, or violence about someone else, in the abstract, in the news, in fiction, or as a past event with no current thoughts of harm.
 Use only what the person actually wrote. Do not invent or assume people, events, circumstances, history, feelings, or motives they did not state. If something is not stated, leave it out or list it under "unknown". If they wrote very little, return fewer items rather than filling space.
 Don't reinforce paranoia, grandiosity, or accusations against specific people. Plain words. Curly apostrophes.
 <words>${clean(text).slice(0,3000)}</words>${correction ? `<correction>${clean(correction).slice(0,1000)}</correction>` : ""}`;
@@ -743,7 +774,7 @@ Return ONLY JSON: {"action": "..."}`, { modelTier: "quick" });
       action = r && r.action;
     } catch(e){}
   }
-  $("actionIn").value = action || "The next time irritation starts, name it silently and take one long out-breath before you answer.";
+  $("actionIn").value = action || FALLBACK_ACTION;
   $("actionStatus").textContent = action ? "" : "Couldn’t reach Claude; here’s a general one. Edit it to fit.";
   $("actionBtn").disabled = false;
   updateEndCare(notice);
