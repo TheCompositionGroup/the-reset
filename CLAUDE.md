@@ -27,7 +27,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - If any text input is ever added back, the v0.2.2 crisis rules return with it, all together: the `crisisRe` keyword check (including the bare `suicid` stem and the indirect phrasings), the stated-intent threshold for any model flag, the quiet dismissible 988 notice, and the fixed phrase test. The full rules, regex, notice text, prompt line, and phrase list are in `docs/crisis-rules.md`.
 
 ### 4. Nothing leaves the device
-- No network calls at all: no `fetch`, XHR, WebSocket, beacons, web fonts, CDN, analytics, telemetry, trackers, or accounts. The one exception is a plain link the person taps ("Suggest a change" to the repo's GitHub Issues page, opened in a new tab with `noopener noreferrer`); the page itself sends nothing.
+- No network calls at all: no `fetch`, XHR, WebSocket, beacons, web fonts, CDN, analytics, telemetry, trackers, or accounts. The only exceptions are exactly two plain links the person taps, each opened in a new tab with `noopener noreferrer`: "Suggest a change" (the repo's GitHub Issues page) and the footer "Fancy Ape" link (https://fancyape.com). Nothing else; the page itself sends nothing.
 - Storage is `localStorage` on this device only, under `reset3:` keys: stop, time, sound, intensity, facts on/off, the closing-line position, and the answer log. Each log entry is ordered and dated: the stop, the minutes, Better/Same/Worse, and the date and time. Nothing else is saved, and there is no text field to save from.
 - Delete all (with confirmation) removes the log, including any data left by v0.2 under `reset:` keys. Never delete a person's data silently.
 
@@ -65,7 +65,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ## Editing checklist
 - Grep user-facing text for the banned terms in Rule 1 before committing (the cited book title is the one allowed hit for "healing").
-- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html` (the "Suggest a change" link is the one allowed `href`).
+- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html` (the "Suggest a change" and footer "Fancy Ape" links are the only two allowed `href`s).
 - Confirm nothing but stop, time, sound, intensity, facts on/off, closing-line position, and the answer log is stored.
 - Update `CHANGELOG.md` for any behavior change.
 - Test sound, fades, and haptics on a real phone before merging anything that touches audio.
