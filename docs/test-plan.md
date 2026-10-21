@@ -13,6 +13,9 @@ v0.2 asked for two 0–10 ratings (distress and "stuck on it") before and after 
 - Two sliders before and after is a lot to ask of someone about to listen to a tone. One tap fits a sound-only screen and is easier to answer honestly.
 - The cost: the new measure is coarser (three answers), is taken only after, and only after a full session. It cannot show change from a starting level, and an early Stop records nothing. Results from v0.2 and v0.3.0 are not comparable. Read Better / Same / Worse as a rough self-report, not as evidence of an effect.
 
+## Later (v0.4)
+- Blind comparison of 528 Hz, 639 Hz, and a neutral control tone, at the same level, length, and soundscape, with the stop labels hidden. Same Better / Same / Worse tap afterwards. This is the first test that could separate a frequency from the setting, the soundscape, or expectation. v0.3.0 cannot.
+
 ## Device checks (people, on real phones; not covered by the automated runs)
 - [ ] Play: first sound within a few seconds on iPhone Safari and Android Chrome; no pop at start or stop.
 - [ ] Listen at the 25% starting volume and at 100% on 852 and 963 Hz in Tone mode: no harshness or spike.
@@ -21,5 +24,6 @@ v0.2 asked for two 0–10 ratings (distress and "stuck on it") before and after 
 - [ ] Pause, Resume, Stop, Escape (keyboard) behave as described; Stop gives a short fade.
 - [ ] Lock the screen mid-session: note whether sound stops; wake lock keeps the screen on while unlocked.
 - [ ] Android: a tap on each snap and each in-breath. iPhone: no error.
+- [ ] ∞: let it run 20+ minutes, then Stop: the 8 s fade, then the end screen.
 - [ ] Reduced motion on: the glow stays still; sound and the Android breath pulses unchanged.
 - [ ] Thumb reach and legibility at 320, 360, and 390 px.

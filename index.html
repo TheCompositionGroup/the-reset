@@ -39,14 +39,15 @@ button{cursor:pointer}
 .dial{position:relative;width:min(80vw,19rem,38svh);min-width:14rem;aspect-ratio:1;margin:.5rem auto 0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border-radius:50%;cursor:grab}
 .dial:active{cursor:grabbing}
 .dial svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible}
-.glow{fill:url(#glowGrad);opacity:calc(var(--glow,0) * .9)}
+.aura{position:absolute;inset:-6%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 55%,transparent) 52%,transparent 70%);will-change:opacity,transform}
 .ring{fill:none;stroke:var(--line);stroke-width:1}
 .face{fill:var(--surface);stroke:var(--line);stroke-width:1}
 .tick{stroke:var(--muted);stroke-width:1;opacity:.55}
 .tick.major{stroke-width:1.5;opacity:.8}
 .tick.on{stroke:var(--accent);opacity:1;stroke-width:2.5}
-.tick.on.snap{animation:notch .28s ease-out}
-@keyframes notch{from{stroke-width:6}to{stroke-width:2.5}}
+.notch{fill:var(--accent);transform-box:fill-box;transform-origin:center}
+.notch.pop{animation:notchPop .28s ease-out}
+@keyframes notchPop{from{transform:scale(2.4);opacity:.25}to{transform:scale(1);opacity:1}}
 .needle{transform-origin:170px 170px;transition:transform .22s ease-out}
 .needle line{stroke:var(--accent);stroke-width:2.5;stroke-linecap:round}
 .needle circle{fill:var(--accent)}
@@ -77,7 +78,9 @@ button{cursor:pointer}
 .left{justify-self:end;color:var(--muted);font-variant-numeric:tabular-nums;font-size:1.0625rem}
 .play{width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;padding:0}
 .play svg{width:2.1rem;height:2.1rem}
-.play.active{box-shadow:0 0 calc(8px + var(--glow,0) * 30px) color-mix(in srgb,var(--accent) calc(30% + var(--glow,0) * 40%),transparent)}
+.playwrap{position:relative;width:5.5rem;height:5.5rem}
+.halo{position:absolute;inset:-22%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 60%,transparent) 50%,transparent 70%);will-change:opacity,transform}
+.play{position:relative}
 .stop{justify-self:start;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem 1.1rem;min-height:2.75rem;font-weight:500}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem 1.1rem;min-height:2.75rem;font-weight:500}
 .btn[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
@@ -99,7 +102,7 @@ button{cursor:pointer}
 footer{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:.6rem 1.25rem calc(.6rem + env(safe-area-inset-bottom,0px));font-size:.8125rem;line-height:1.4;color:var(--muted);text-align:center}
 footer p{margin:0 auto;max-width:30rem}
 
-@media (prefers-reduced-motion: reduce){.needle{transition:none}.tick.on.snap{animation:none}}
+@media (prefers-reduced-motion: reduce){.needle{transition:none}.notch.pop{animation:none}}
 </style>
 </head>
 <body>
@@ -112,11 +115,11 @@ footer p{margin:0 auto;max-width:30rem}
     <p class="signal" id="signalMain" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
 
     <div class="dial" id="dial" role="slider" tabindex="0" aria-label="Frequency dial" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0">
+      <div class="aura" id="aura"></div>
       <svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
-        <defs><radialGradient id="glowGrad"><stop offset="55%" stop-color="var(--accent)" stop-opacity=".55"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></radialGradient></defs>
-        <circle class="glow" cx="170" cy="170" r="150"/>
         <circle class="ring" cx="170" cy="170" r="112"/>
         <g id="ticks"></g>
+        <g id="notchG"><circle class="notch" id="notch" cx="0" cy="0" r="3.2"/></g>
         <circle class="face" cx="170" cy="170" r="88"/>
         <g class="needle" id="needle"><line x1="170" y1="170" x2="170" y2="96"/><circle cx="170" cy="92" r="5"/></g>
         <circle class="hub" cx="170" cy="170" r="10"/>
@@ -131,10 +134,11 @@ footer p{margin:0 auto;max-width:30rem}
     </div>
 
     <div class="seg" id="times" role="radiogroup" aria-label="Time">
-      <button class="pill" role="radio" data-v="5">5 min</button>
-      <button class="pill" role="radio" data-v="10">10 min</button>
-      <button class="pill" role="radio" data-v="15">15 min</button>
-      <button class="pill" role="radio" data-v="20">20 min</button>
+      <button class="pill" role="radio" data-v="5" aria-label="5 minutes">5</button>
+      <button class="pill" role="radio" data-v="10" aria-label="10 minutes">10</button>
+      <button class="pill" role="radio" data-v="15" aria-label="15 minutes">15</button>
+      <button class="pill" role="radio" data-v="20" aria-label="20 minutes">20</button>
+      <button class="pill" role="radio" data-v="0" aria-label="No time limit">∞</button>
     </div>
 
     <div class="seg" id="modes" role="radiogroup" aria-label="Sound">
@@ -153,9 +157,10 @@ footer p{margin:0 auto;max-width:30rem}
 
     <div class="transport">
       <span class="left" id="left" aria-hidden="true"></span>
+      <div class="playwrap"><span class="halo" id="halo"></span>
       <button class="play" id="playBtn" aria-label="Play">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
-      </button>
+      </button></div>
       <span><button class="stop" id="stopBtn" hidden>Stop</button></span>
     </div>
 
@@ -210,18 +215,18 @@ const store = {
 
 /* ---------- data ---------- */
 const STOPS = [
-  { hz:396, chakra:"ROOT",         name:"Ground" },
-  { hz:417, chakra:"SACRAL",       name:"Flow" },
-  { hz:528, chakra:"SOLAR PLEXUS", name:"Power" },
-  { hz:639, chakra:"HEART",        name:"Heart" },
-  { hz:741, chakra:"THROAT",       name:"Voice" },
-  { hz:852, chakra:"THIRD EYE",    name:"Vision" },
-  { hz:963, chakra:"CROWN",        name:"Stillness" }
+  { hz:396, chakra:"ROOT",         name:"Ground",    c:"#B5523F" },
+  { hz:417, chakra:"SACRAL",       name:"Flow",      c:"#C7803A" },
+  { hz:528, chakra:"SOLAR PLEXUS", name:"Power",     c:"#BFA23A" },
+  { hz:639, chakra:"HEART",        name:"Heart",     c:"#5E9B6B" },
+  { hz:741, chakra:"THROAT",       name:"Voice",     c:"#4F8FB0" },
+  { hz:852, chakra:"THIRD EYE",    name:"Vision",    c:"#6C6BB5" },
+  { hz:963, chakra:"CROWN",        name:"Stillness", c:"#9068B0" }
 ];
 /* 270 degree arc, clockwise, gap centred at the bottom: Ground at lower left, Stillness at lower right */
 const ARC0 = -135, STEP = 45, CX = 170, CY = 170, LAB_R = 146;
 const pol = (deg, r) => { const a = deg * Math.PI / 180; return [CX + r * Math.sin(a), CY - r * Math.cos(a)]; };
-const MINS = [5,10,15,20], MODES = ["tone","atmosphere"];
+const MINS = [5,10,15,20,0], MODES   /* 0 = no time limit */ = ["tone","atmosphere"];
 
 const st = {
   stop: clamp(+store.get("stop", 0) | 0, 0, 6),
@@ -250,7 +255,10 @@ function renderDial(snap){
   dial.setAttribute("aria-valuenow", st.stop);
   dial.setAttribute("aria-valuetext", `${s.hz} hertz, ${s.chakra.toLowerCase()}, ${s.name.toLowerCase()}`);
   document.querySelectorAll("#labels .lab").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
-  document.querySelectorAll("#ticks .tick.major").forEach(e => { const on = +e.dataset.i === st.stop; e.classList.remove("snap"); e.classList.toggle("on", on); if (on && snap){ void e.getBoundingClientRect(); e.classList.add("snap"); } });
+  document.querySelectorAll("#ticks .tick.major").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
+  const [nx, ny] = pol(ARC0 + st.stop * STEP, 118); $("notchG").setAttribute("transform", `translate(${nx.toFixed(2)} ${ny.toFixed(2)})`);
+  const nt = $("notch"); nt.classList.remove("pop"); if (snap){ void nt.getBoundingClientRect(); nt.classList.add("pop"); }
+  rootEl.style.setProperty("--glow-c", s.c);
 }
 function setStop(i){
   i = clamp(i, 0, 6); if (i === st.stop) return;
@@ -296,7 +304,7 @@ function radioGroup(id, get, set){
   });
   sync(); return sync;
 }
-radioGroup("times", () => st.min, v => { if (S.active) return; st.min = +v; store.set("min", st.min); });
+radioGroup("times", () => st.min, v => { if (S.active) return; st.min = +v; store.set("min", st.min); paintSession(); });
 radioGroup("modes", () => st.mode, v => { if (v === st.mode) return; st.mode = v; store.set("mode", v); requestVoice(); });
 
 /* ---------- sound (Web Audio, generated here; no audio files) ---------- */
@@ -309,11 +317,12 @@ const ease = x => (1 - Math.cos(Math.PI * clamp(x, 0, 1))) / 2;
 const breathAt = t => { const c = ((t % CYCLE) + CYCLE) % CYCLE; return c < IN_S ? ease(c / IN_S) : 1 - ease((c - IN_S) / OUT_S); };
 const mkCurve = (n, fn) => { const a = new Float32Array(n); for (let i = 0; i < n; i++) a[i] = fn(i / (n - 1)); return a; };
 const XF_IN = mkCurve(100, x => Math.sin(x * Math.PI / 2)), XF_OUT = mkCurve(100, x => Math.cos(x * Math.PI / 2));
+const FADE_DOWN = mkCurve(320, x => 1 - ease(x));
 const BREATH = mkCurve(400, x => LO + (HI - LO) * breathAt(x * CYCLE));
 const MASTER_MAX = .6;               /* master gain ceiling: the slider's 100% */
 const volGain = v => MASTER_MAX * Math.pow(v / 100, 1.6);
 
-const S = { active:false, paused:false, ctx:null, g:null, voice:null, dying:[], t0:0, T:0, nextBreath:0, lastCycle:-1, timer:0, raf:0, lock:null, busy:false, pendingSwap:false, xf:0, xfEnd:0 };
+const S = { active:false, paused:false, ctx:null, g:null, voice:null, dying:[], t0:0, T:0, nextBreath:0, lastCycle:-1, timer:0, raf:0, lock:null, busy:false, pendingSwap:false, xf:0, xfEnd:0, ending:false, endAt:0 };
 
 function noiseBuffer(ctx){
   const n = ctx.sampleRate * 8, f = Math.floor(ctx.sampleRate * .5), raw = new Float32Array(n);
@@ -363,10 +372,10 @@ function crossfade(){
 function reapVoices(){ if (!S.ctx) return; S.dying = S.dying.filter(d => { if (S.ctx.currentTime < d.at) return true; d.v.dispose(); return false; }); }
 function buildGraph(){
   const ctx = new AC({ latencyHint:"playback" });
-  const g = { breath:ctx.createGain(), env:ctx.createGain(), stop:ctx.createGain(), vol:ctx.createGain(), comp:ctx.createDynamicsCompressor() };
-  g.breath.gain.value = LO; g.env.gain.value = 0; g.stop.gain.value = 1; g.vol.gain.value = targetVol();
+  const g = { breath:ctx.createGain(), env:ctx.createGain(), stop:ctx.createGain(), cut:ctx.createGain(), vol:ctx.createGain(), comp:ctx.createDynamicsCompressor() };
+  g.breath.gain.value = LO; g.env.gain.value = 0; g.stop.gain.value = 1; g.cut.gain.value = 1; g.vol.gain.value = targetVol();
   g.comp.threshold.value = -18; g.comp.knee.value = 24; g.comp.ratio.value = 3; g.comp.attack.value = .02; g.comp.release.value = .3;
-  g.breath.connect(g.env); g.env.connect(g.stop); g.stop.connect(g.vol); g.vol.connect(g.comp); g.comp.connect(ctx.destination);
+  g.breath.connect(g.env); g.env.connect(g.stop); g.stop.connect(g.cut); g.cut.connect(g.vol); g.vol.connect(g.comp); g.comp.connect(ctx.destination);
   S.ctx = ctx; S.g = g;
   ctx.onstatechange = () => { if (S.active && !S.paused && !S.busy && (ctx.state === "suspended" || ctx.state === "interrupted")) setPaused(true); };
 }
@@ -378,18 +387,20 @@ function scheduleBreath(){
 }
 
 /* ---------- session ---------- */
-const fmt = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const fmt = s => { s = Math.max(0, Math.ceil(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s % 60).padStart(2, "0"); };
 const elapsed = () => S.ctx ? Math.max(0, S.ctx.currentTime - S.t0) : 0;
-const rootEl = document.documentElement;
-const setGlow = v => rootEl.style.setProperty("--glow", v.toFixed(3));
+const rootEl = document.documentElement, aura = $("aura"), halo = $("halo");
+/* glow: opacity and transform only */
+const setGlow = v => { aura.style.opacity = (v * .5).toFixed(3); aura.style.transform = `scale(${(.94 + v * .06).toFixed(3)})`; halo.style.opacity = (v * .8).toFixed(3); halo.style.transform = `scale(${(.92 + v * .12).toFixed(3)})`; };
+function clockText(){ if (!S.active) return st.min ? st.min + " min" : "No limit"; const e = elapsed(); return S.T === Infinity ? fmt(Math.floor(e)) : fmt(S.T - e); }
 function paintSession(){
   const playing = S.active && !S.paused;
   $("playIcon").setAttribute("d", playing ? "M6 5h4v14H6zM14 5h4v14h-4z" : "M8 5v14l11-7z");
   $("playBtn").setAttribute("aria-label", playing ? "Pause" : "Play");
-  $("playBtn").classList.toggle("active", S.active);
+  $("playBtn").disabled = !AC || S.ending;
   $("stopBtn").hidden = !S.active;
   $("times").querySelectorAll("button").forEach(b => b.disabled = S.active);
-  $("left").textContent = S.active ? fmt(S.T - elapsed()) : "";
+  $("left").textContent = clockText();
   if (!playing) setGlow(S.active ? .35 : 0);
 }
 function frame(){
@@ -404,10 +415,11 @@ function tick(){
   if (!S.active) return;
   const e = elapsed();
   scheduleBreath(); reapVoices();
-  $("left").textContent = fmt(S.T - e);
+  if (S.ending && S.ctx.currentTime >= S.endAt){ finish("inf"); return; }
+  $("left").textContent = clockText();
   const c = Math.floor(e / CYCLE);
-  if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (e < S.T - FADE_OUT) buzz(15); }   /* light pulse at each in-breath (Android) */
-  if (e >= S.T) finish(true);
+  if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (!S.ending && (S.T === Infinity || e < S.T - FADE_OUT)) buzz(15); }   /* light pulse at each in-breath (Android) */
+  if (e >= S.T) finish("done");
 }
 async function takeLock(){ try { if (navigator.wakeLock && !S.lock){ const l = await navigator.wakeLock.request("screen"); S.lock = l; l.addEventListener("release", () => { if (S.lock === l) S.lock = null; }); } } catch(e){ S.lock = null; } }
 function dropLock(){ try { if (S.lock) S.lock.release(); } catch(e){} S.lock = null; }
@@ -418,11 +430,11 @@ async function start(){
   buildGraph();                                   /* created inside the Play tap */
   const ready = S.ctx.resume();
   const ctx = S.ctx, g = S.g;
-  S.T = st.min * 60; S.t0 = ctx.currentTime + .1; S.nextBreath = S.t0; S.lastCycle = -1; S.paused = false; S.active = true; S.pendingSwap = false; S.xfEnd = 0;
+  S.T = st.min ? st.min * 60 : Infinity; S.ending = false; S.t0 = ctx.currentTime + .1; S.nextBreath = S.t0; S.lastCycle = -1; S.paused = false; S.active = true; S.pendingSwap = false; S.xfEnd = 0;
   g.env.gain.setValueAtTime(0, S.t0);
   g.env.gain.setValueCurveAtTime(mkCurve(200, x => ease(x)), S.t0, FADE_IN);
   g.env.gain.setValueAtTime(1, S.t0 + FADE_IN);
-  g.env.gain.setValueCurveAtTime(mkCurve(320, x => 1 - ease(x)), S.t0 + S.T - FADE_OUT, FADE_OUT);
+  if (S.T !== Infinity) g.env.gain.setValueCurveAtTime(FADE_DOWN, S.t0 + S.T - FADE_OUT, FADE_OUT);   /* timed end: 8 s fade-out */
   S.voice = makeVoice(st.mode, STOPS[st.stop].hz); S.voice.out.gain.value = S.voice.level;
   scheduleBreath();
   S.timer = setInterval(tick, 200);
@@ -449,24 +461,38 @@ async function resume(){
   S.busy = false;
   if (S.pendingSwap){ S.pendingSwap = false; crossfade(); }
 }
-function finish(natural){
+/* kind: "done" timed end · "cancel" early Stop or Escape (0.3 s, no prompt) · "inf" Stop on no-limit (8 s fade first) */
+function finish(kind, quick){
   if (!S.active) return;
-  const ended = { stop:st.stop, min:st.min };
+  const played = S.T === Infinity ? elapsed() : Math.min(elapsed(), S.T);
+  const ended = { stop:st.stop, min:S.T === Infinity ? Math.round(played / 60) : st.min };
+  const showIt = kind === "done" || (kind === "inf" && played >= 300);
+  const fast = kind === "cancel" || !!quick;
   const ctx = S.ctx, g = S.g, voices = [S.voice].concat(S.dying.map(d => d.v));
-  S.active = false; S.paused = false; S.busy = false; S.pendingSwap = false; clearInterval(S.timer); clearTimeout(S.xf);
+  S.active = false; S.paused = false; S.busy = false; S.ending = false; S.pendingSwap = false; clearInterval(S.timer); clearTimeout(S.xf);
   if (S.raf) cancelAnimationFrame(S.raf); S.raf = 0; dropLock();
   if (ctx){
-    if (!natural && ctx.state === "running") g.stop.gain.setTargetAtTime(0, ctx.currentTime, .06);   /* 0.3 s fade */
+    if (fast && ctx.state === "running") g.cut.gain.setTargetAtTime(0, ctx.currentTime, .06);   /* 0.3 s fade */
     ctx.onstatechange = null;
-    setTimeout(() => { voices.forEach(v => v && v.dispose()); try { ctx.close(); } catch(e){} }, natural ? 300 : 450);
+    setTimeout(() => { voices.forEach(v => v && v.dispose()); try { ctx.close(); } catch(e){} }, fast ? 450 : 300);
   }
   S.ctx = null; S.g = null; S.voice = null; S.dying = [];
   setGlow(0); paintSession();
-  if (natural) showEnd(ended);                      /* early Stop goes straight back to the dial, no prompt */
+  if (showIt) showEnd(ended);                       /* otherwise straight back to the dial, no prompt */
 }
-$("playBtn").onclick = () => { if (!S.active) start(); else if (S.paused) resume(); else setPaused(false); };
-$("stopBtn").onclick = () => finish(false);
-document.addEventListener("keydown", e => { if (e.key === "Escape" && S.active){ e.preventDefault(); finish(false); } });
+function stopPressed(){
+  if (!S.active) return;
+  if (S.T !== Infinity) return finish("cancel");
+  if (S.paused) return finish("inf");               /* already silent */
+  if (S.ending) return finish("inf", true);         /* second press: short fade */
+  S.ending = true; S.endAt = S.ctx.currentTime + FADE_OUT;
+  S.g.stop.gain.cancelScheduledValues(S.ctx.currentTime);
+  S.g.stop.gain.setValueCurveAtTime(FADE_DOWN, S.ctx.currentTime, FADE_OUT);   /* 8 s fade, then the end screen if it ran 5+ minutes */
+  paintSession();
+}
+$("playBtn").onclick = () => { if (S.ending) return; if (!S.active) start(); else if (S.paused) resume(); else setPaused(false); };
+$("stopBtn").onclick = stopPressed;
+document.addEventListener("keydown", e => { if (e.key === "Escape" && S.active){ e.preventDefault(); finish("cancel"); } });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return;
   if (S.active && !S.paused){ startFrames(); takeLock(); if (S.ctx && S.ctx.state !== "running") S.ctx.resume().catch(() => {}); }

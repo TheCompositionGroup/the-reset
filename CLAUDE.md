@@ -8,15 +8,18 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ### 1. No medical or "reprogramming" claims
 - The app is a sound experience. It is not therapy, diagnosis, treatment, or a crisis line.
-- Never write or generate: heal, cure, treat, therapy/therapeutic effect, reprogram, rewire, subconscious, "brain frequency", "healing frequency", "balance your chakra", "open your chakra", "activate your chakra", or any promised outcome. This covers UI copy, README, changelog, and anything else shown to a person. The one allowed use of "therapy" is the footer disclaimer ("Not therapy or medical care").
+- Never write or generate: heal, cure, treat, therapy/therapeutic effect, reprogram, rewire, subconscious, "brain frequency", "healing frequency", "balance your chakra", "open your chakra", "activate your chakra", or any promised outcome. This covers UI copy, README, changelog, and anything else shown to a person. The only allowed uses are the footer disclaimer ("Not therapy or medical care") and the cited book title in "Where the frequencies come from".
 - The frequencies and chakra names are modern wellness associations, not proven effects. The ring words (Ground, Flow, Power, Heart, Voice, Vision, Stillness) are names for the stops, not claims about what they do. Never write that a stop causes, improves, or helps anything.
+- Never describe a frequency as the natural resonance of a body part or organ. Never call a frequency "healing", "balancing", or "activating".
+- Each stop is three separate things, and copy must keep them apart: **acoustics** (the real frequency in Hz, a fact about the sound), **symbolism** (the modern chakra pairing, a cultural association), and **intention** (the ring word, an interpretive theme, not an effect).
 - The footer must stay visible on every screen, word for word: "A sound experience. Not therapy or medical care. Frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised."
 - Better / Same / Worse is a person's own tap, not evidence. No public effectiveness claims until independent review (Gate D).
 
 ### 2. Gentle sound, no forced breathing
-- The volume swell (in 4 s, out 6 s) and the glow are a quiet pacing cue only. Never add breath counts, holds, hyperventilation, rapid or forced cycles, or any instruction to push past discomfort.
+- The volume swell (up 4 s, down 6 s) and the glow are a rhythm, not a breathing technique or treatment. Never add breath counts, holds, hyperventilation, rapid or forced cycles, or any instruction to push past discomfort.
 - Volume starts at 25% on first visit (the person's level is remembered after). Master gain never exceeds 0.6 at 100% on the slider. No sudden peaks, bells, or alarms.
-- Fades only: 5 s in on Play, 8 s out at natural end, 0.3 s on Stop and Escape. Stop and Escape always work immediately. Pause holds in place.
+- Fades only: 5 s in on Play, 8 s out at a timed end, 0.3 s on Stop (timed) and Escape, about 0.45 s on Pause, 8 s on Stop for ∞. Stop and Escape always work immediately; a second Stop press during the ∞ fade ends it at once. Pause holds in place.
+- Don't assume every device reproduces every frequency or harmonic equally.
 - Respect `prefers-reduced-motion`: the glow stays still and the needle does not animate. Only visuals stop; sound and the Android breath pulses are unchanged.
 
 ### 3. No user text, so no crisis detection
@@ -40,17 +43,23 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ## Product principles to preserve
 - Calm instrument panel: thin tick marks, a needle, a soft glow when active. No steampunk, fake wear, or gimmicks.
-- One screen: dial, readout, time, sound type, volume, Play. Copy stays minimal. The end screen appears only after a natural completion, never after an early Stop.
+- One screen: dial, readout, time, sound type, volume, Play. Copy stays minimal. The end screen appears only after a timed completion, or after stopping ∞ at 5 minutes or more, never after an early Stop on a timed session or Escape. ∞ plays until Pause or Stop and counts up; the log keeps the actual minutes played.
+- Animate only opacity and transform. No animated blur, shadow, filter, or stroke, so cheap phones stay smooth. The glow takes the active stop's color.
 - The answer counts are shown as they are. Never hide or soften a "Worse" count.
 - Stop signal: when 3 or more of the last 12 saved sessions are "Worse", a quiet notice shows on the dial screen and the end screen. It has no dismiss button and is never softened or hidden. Only answered sessions are saved, so only they count.
+
+## Where the frequencies come from
+- 396, 417, 528, 639, 741, and 852 Hz are the modern Solfeggio set popularised by Joseph Puleo and Leonard Horowitz in *Healing Codes for the Biological Apocalypse* (1999). 963 Hz is a later addition. Nothing in this app claims these tones do what that book says.
+- Hz-to-chakra pairings are modern. Traditional sources use bija (seed) sounds, not hertz.
+- NCCIH, "Music and Health: What the Science Says", reviews research on music in general (for example relaxation and mood; the evidence is described as preliminary and mixed). It does not show frequency-specific effects. Better / Same / Worse in this app is a rough self-report and is never presented as proof that a frequency works.
 
 ## Known limits (v0.3.0)
 - Audio, haptics, and wake lock have been tested in headless Chromium only. Real phone speakers, headphones, and iOS/Android behavior need a person on a device.
 - Sound may stop when a phone screen locks; the screen wake lock helps but is not guaranteed.
-- Phone speakers reproduce little below about 200 Hz, so the Atmosphere octave-below layer may be inaudible there.
+- Phone speakers reproduce little below about 200 Hz, so the Atmosphere octave-below layer may be inaudible there, and quiet harmonics may be uneven on other devices.
 
 ## Editing checklist
-- Grep user-facing text for the banned terms in Rule 1 before committing.
+- Grep user-facing text for the banned terms in Rule 1 before committing (the cited book title is the one allowed hit for "healing").
 - Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html`.
 - Confirm nothing but stop, time, sound, volume, and the answer log is stored.
 - Update `CHANGELOG.md` for any behavior change.
