@@ -17,15 +17,15 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - The volume swell (in 4 s, out 6 s) and the glow are a quiet pacing cue only. Never add breath counts, holds, hyperventilation, rapid or forced cycles, or any instruction to push past discomfort.
 - Volume starts at 25% on first visit (the person's level is remembered after). Master gain never exceeds 0.6 at 100% on the slider. No sudden peaks, bells, or alarms.
 - Fades only: 5 s in on Play, 8 s out at natural end, 0.3 s on Stop and Escape. Stop and Escape always work immediately. Pause holds in place.
-- Respect `prefers-reduced-motion`: the glow stays still, the needle does not animate, and there are no haptic breath pulses. Sound is unchanged.
+- Respect `prefers-reduced-motion`: the glow stays still and the needle does not animate. Only visuals stop; sound and the Android breath pulses are unchanged.
 
 ### 3. No user text, so no crisis detection
 - The app collects no user text: no typing, no microphone, no transcripts. Therefore there is no crisis detection and no 988 notice.
-- If any text input is ever added back, the v0.2.2 crisis rules return with it: the `crisisRe` keyword check (including the bare `suicid` stem and the indirect phrasings), the stated-intent threshold for any model flag, the quiet dismissible 988 notice ("If I misread you, ignore this and carry on", "Got it"), and the fixed phrase test. Those rules and the tested regex are in the closed, unmerged PR #4 branch `claude/v0.2.2-crisis-mic-fallback`. Keep that branch.
+- If any text input is ever added back, the v0.2.2 crisis rules return with it, all together: the `crisisRe` keyword check (including the bare `suicid` stem and the indirect phrasings), the stated-intent threshold for any model flag, the quiet dismissible 988 notice, and the fixed phrase test. The full rules, regex, notice text, prompt line, and phrase list are in `docs/crisis-rules.md`.
 
 ### 4. Nothing leaves the device
 - No network calls at all: no `fetch`, XHR, WebSocket, beacons, web fonts, CDN, analytics, telemetry, trackers, or accounts.
-- Storage is `localStorage` on this device only, under `reset3:` keys: stop, time, sound, volume, and the answer log. A log entry holds the stop, the time, and Better/Same/Worse. Nothing else is saved, and there is no text field to save from.
+- Storage is `localStorage` on this device only, under `reset3:` keys: stop, time, sound, volume, and the answer log. Each log entry is ordered and dated: the stop, the minutes, Better/Same/Worse, and the date and time. Nothing else is saved, and there is no text field to save from.
 - Delete all (with confirmation) removes the log, including any data left by v0.2 under `reset:` keys. Never delete a person's data silently.
 
 ### 5. One self-contained `index.html`
@@ -42,12 +42,12 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - Calm instrument panel: thin tick marks, a needle, a soft glow when active. No steampunk, fake wear, or gimmicks.
 - One screen: dial, readout, time, sound type, volume, Play. Copy stays minimal. The end screen appears only after a natural completion, never after an early Stop.
 - The answer counts are shown as they are. Never hide or soften a "Worse" count.
+- Stop signal: when 3 or more of the last 12 saved sessions are "Worse", a quiet notice shows on the dial screen and the end screen. It has no dismiss button and is never softened or hidden. Only answered sessions are saved, so only they count.
 
 ## Known limits (v0.3.0)
 - Audio, haptics, and wake lock have been tested in headless Chromium only. Real phone speakers, headphones, and iOS/Android behavior need a person on a device.
 - Sound may stop when a phone screen locks; the screen wake lock helps but is not guaranteed.
 - Phone speakers reproduce little below about 200 Hz, so the Atmosphere octave-below layer may be inaudible there.
-- The log keeps counts per stop. It does not show an order, so the test plan's "3 of the last 12" stop signal is applied by the founder, not by the app.
 
 ## Editing checklist
 - Grep user-facing text for the banned terms in Rule 1 before committing.

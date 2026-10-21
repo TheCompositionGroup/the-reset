@@ -88,6 +88,7 @@ button{cursor:pointer}
 .q{font-family:var(--serif);font-size:1.75rem;line-height:1.2;text-align:center;margin:2rem 0 1.25rem}
 .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
 .answers .btn{padding:.9rem .4rem;font-size:1.0625rem}
+.signal{border-left:2px solid var(--danger);padding-left:.75rem;font-size:.9375rem;line-height:1.4;margin:.9rem 0 0;text-align:left}
 .counts{width:100%;border-collapse:collapse;margin:1.75rem 0 .5rem;font-size:.9375rem;font-variant-numeric:tabular-nums}
 .counts caption{text-align:left;font-weight:600;padding-bottom:.4rem}
 .counts th,.counts td{padding:.4rem .3rem;border-bottom:1px solid var(--line);text-align:right}
@@ -108,6 +109,7 @@ footer p{margin:0 auto;max-width:30rem}
   <!-- 1 DIAL -->
   <section id="vMain" aria-label="The Reset">
     <p class="lead">Turn the dial. Choose a time. Press play.</p>
+    <p class="signal" id="signalMain" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
 
     <div class="dial" id="dial" role="slider" tabindex="0" aria-label="Frequency dial" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0">
       <svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
@@ -170,6 +172,7 @@ footer p{margin:0 auto;max-width:30rem}
       <button class="btn" data-a="worse">Worse</button>
     </div>
     <p class="hint" id="endNote" role="status">Optional. Only the stop, time and your answer are saved, on this device.</p>
+    <p class="signal" id="signalEnd" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
     <table class="counts" id="counts">
       <caption>Your answers</caption>
       <thead><tr><th scope="col">Stop</th><th scope="col">Better</th><th scope="col">Same</th><th scope="col">Worse</th></tr></thead>
@@ -403,7 +406,7 @@ function tick(){
   scheduleBreath(); reapVoices();
   $("left").textContent = fmt(S.T - e);
   const c = Math.floor(e / CYCLE);
-  if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (!reduced() && e < S.T - FADE_OUT) buzz(15); }   /* light pulse at each in-breath (Android) */
+  if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (e < S.T - FADE_OUT) buzz(15); }   /* light pulse at each in-breath (Android) */
   if (e >= S.T) finish(true);
 }
 async function takeLock(){ try { if (navigator.wakeLock && !S.lock){ const l = await navigator.wakeLock.request("screen"); S.lock = l; l.addEventListener("release", () => { if (S.lock === l) S.lock = null; }); } } catch(e){ S.lock = null; } }
@@ -492,6 +495,12 @@ function renderCounts(){
     body.appendChild(tr);
   });
   $("delBtn").disabled = !log.length && !hasLegacy();
+  renderSignal();
+}
+/* stop signal: Worse on 3 or more of the last 12 saved sessions. Always shown, never dismissed. */
+function renderSignal(){
+  const on = logGet().slice(-12).filter(e => e.a === "worse").length >= 3;
+  document.querySelectorAll(".signal").forEach(e => { e.hidden = !on; });
 }
 function showEnd(e){
   ended = e; answered = false;
@@ -502,9 +511,9 @@ function showEnd(e){
 }
 $("answers").addEventListener("click", e => {
   const b = e.target.closest("[data-a]"); if (!b || answered || !ended) return;
-  answered = true; const log = logGet(); log.push({ stop:ended.stop, min:ended.min, a:b.dataset.a }); store.set("log", log);
+  answered = true; const log = logGet(); log.push({ stop:ended.stop, min:ended.min, a:b.dataset.a, at:new Date().toISOString() }); store.set("log", log);
   document.querySelectorAll("#answers .btn").forEach(x => { x.setAttribute("aria-pressed", x === b ? "true" : "false"); x.disabled = true; });
-  $("endNote").textContent = b.dataset.a === "worse" ? "Noted. Nothing here is a test; you can stop any time." : "Saved on this device.";
+  $("endNote").textContent = b.dataset.a === "worse" ? "Noted. Try a different stop or a shorter time, or stop for today." : "Saved on this device.";
   renderCounts();
 });
 $("doneBtn").onclick = () => { $("vEnd").classList.add("hidden"); $("vMain").classList.remove("hidden"); window.scrollTo(0, 0); $("dial").focus({ preventScroll:true }); };
@@ -512,7 +521,7 @@ $("delBtn").onclick = () => {
   if (confirm("Delete every saved answer on this device, including anything saved by earlier versions?")){ store.clearAnswers(); renderCounts(); $("endNote").textContent = "Deleted."; }
 };
 
-renderDial(false); paintVol(); paintSession();
+renderDial(false); paintVol(); paintSession(); renderSignal();
 })();
 </script>
 </body>

@@ -20,7 +20,7 @@ You can turn the dial while playing; the sound crossfades to the new stop over 2
 
 ## Privacy
 - No network calls, no accounts, no analytics, no text input, no microphone.
-- Your last stop, time, sound, and volume are remembered in this browser. If you answer the question, the stop, time, and answer are saved here too, and nothing else. *Delete all* removes them.
+- Your last stop, time, sound, and volume are remembered in this browser. If you answer the question, the stop, minutes, answer, and date and time are saved here too, and nothing else. If Worse is your answer on 3 or more of your last 12 sessions, a quiet notice suggests pausing. *Delete all* removes them.
 
 ## What this is not
 A sound experience. Not therapy or medical care. The frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised.
