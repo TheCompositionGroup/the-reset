@@ -70,7 +70,10 @@ button{cursor:pointer}
 
 /* volume + transport */
 .mix{display:flex;align-items:center;gap:.5rem;margin:.5rem 0 0}
-.mix input[type=range]{flex:1;height:2.75rem;margin:0;accent-color:var(--accent)}
+.mix input[type=range]{width:100%;height:2.75rem;margin:0;accent-color:var(--accent)}
+.intens{flex:1;min-width:0}
+.intens label{display:flex;justify-content:space-between;font-size:.8125rem;line-height:1.2;color:var(--muted);margin-bottom:-.15rem}
+.pill[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .icon-btn{width:2.75rem;height:2.75rem;flex:none;border:1px solid var(--line);background:var(--surface);border-radius:50%;display:grid;place-items:center;padding:0}
 .icon-btn svg{width:1.4rem;height:1.4rem}
 .icon-btn[data-muted="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
@@ -87,7 +90,18 @@ button{cursor:pointer}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .btn:disabled{opacity:.5;cursor:default}
 
+/* rolling fact line and final-minute prompt share one reserved slot below Play, so nothing shifts or overlaps */
+.slot{display:grid;place-items:center;min-height:2.9rem;margin:.5rem 0 0}
+.slot>*{grid-area:1/1}
+.fact{margin:0;max-width:26rem;text-align:center;font-family:var(--serif);font-size:1rem;line-height:1.35;color:var(--muted);opacity:0;transition:opacity 3s ease-in-out}
+.fact.on{opacity:1}
+.prompt{border:0;background:none;color:var(--muted);font-size:.9375rem;min-height:2.75rem;min-width:2.75rem;padding:.4rem 1rem;text-decoration:underline;text-underline-offset:.2em;opacity:0;visibility:hidden;transition:opacity 1.5s ease-in-out,visibility 0s 1.5s}
+.prompt.on{opacity:1;visibility:visible;transition:opacity 1.5s ease-in-out}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
 /* end */
+.linkbtn{border:0;background:none;color:var(--muted);font-size:.9375rem;min-height:2.75rem;min-width:2.75rem;padding:.4rem .8rem;text-decoration:underline;text-underline-offset:.2em}
+.link{color:var(--muted);font-size:.9375rem;display:inline-flex;align-items:center;min-height:2.75rem;text-underline-offset:.2em}
 .q{font-family:var(--serif);font-size:1.75rem;line-height:1.2;text-align:center;margin:2rem 0 1.25rem}
 .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
 .answers .btn{padding:.9rem .4rem;font-size:1.0625rem}
@@ -119,9 +133,11 @@ footer p{margin:0 auto;max-width:30rem}
   .play{width:4.75rem;height:4.75rem}
   .hint{margin:.3rem 0 0}
   .signal{font-size:.8125rem;line-height:1.3;margin:.4rem 0 0}
+  .slot{margin:.2rem 0 0;min-height:2.6rem}
+  .fact{font-size:.9375rem;line-height:1.3}
 }
 @media (max-height:680px){ .dial{width:min(80vw,19rem,29svh)} main:has(#signalMain:not([hidden])) .dial{width:min(80vw,19rem,23svh);min-width:9.5rem} }
-@media (prefers-reduced-motion: reduce){.needle{transition:none}.notch.pop{animation:none}}
+@media (prefers-reduced-motion: reduce){.needle{transition:none}.notch.pop{animation:none}.fact,.prompt,.prompt.on{transition:none}}
 </style>
 </head>
 <body>
@@ -165,13 +181,21 @@ footer p{margin:0 auto;max-width:30rem}
       <button class="pill" role="radio" data-v="atmosphere">Atmosphere</button>
     </div>
 
+    <div class="seg" id="extras" hidden>
+      <button class="pill" id="extBtn" aria-label="Add 5 minutes">+5 min</button>
+      <button class="pill" id="factsBtn" aria-pressed="true">Facts on</button>
+    </div>
+
     <div class="mix">
       <button class="icon-btn" id="muteBtn" aria-label="Mute" data-muted="false">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path id="waves" d="M15.5 9.2a4 4 0 0 1 0 5.6M18 7a7.4 7.4 0 0 1 0 10"/><path id="slash" d="M4 4l16 16" hidden/>
         </svg>
       </button>
-      <input type="range" id="vol" min="0" max="100" step="1" value="25" aria-label="Volume">
+      <div class="intens">
+        <label for="int"><span>Intensity</span><span aria-hidden="true" id="intVal"></span></label>
+        <input type="range" id="int" min="0" max="100" step="1" value="40">
+      </div>
     </div>
 
     <div class="transport">
@@ -183,27 +207,45 @@ footer p{margin:0 auto;max-width:30rem}
       <span><button class="stop" id="stopBtn" hidden>Stop</button></span>
     </div>
 
+    <div class="slot" id="slot" hidden>
+      <p class="fact" id="fact"></p>
+      <button class="prompt" id="extPrompt" tabindex="-1">Extend? +5</button>
+    </div>
+    <p class="sr" id="live" role="status" aria-live="polite"></p>
+
     <p class="hint" id="noAudio" hidden>Sound isn’t available in this browser.</p>
     <p class="hint">Sound may stop if your screen locks.</p>
   </section>
 
   <!-- 2 END (natural completion only) -->
-  <section id="vEnd" class="hidden" aria-label="How do you feel now?">
-    <h2 class="q" id="endQ" tabindex="-1">How do you feel now?</h2>
+  <section id="vEnd" class="hidden" aria-label="Session complete">
+    <h2 class="q" id="endQ" tabindex="-1"></h2>
+    <p class="signal" id="signalEnd" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
+    <div class="row">
+      <button class="btn primary" id="againBtn">Begin again</button>
+      <button class="btn primary" id="doneBtn">Done</button>
+    </div>
+    <div class="row"><button class="linkbtn" id="fbOpen">Share feedback</button></div>
+  </section>
+
+  <!-- 3 FEEDBACK (opened from the end screen only) -->
+  <section id="vFb" class="hidden" aria-label="Feedback">
+    <h2 class="q" id="fbQ" tabindex="-1">How do you feel now?</h2>
     <div class="answers" id="answers">
       <button class="btn" data-a="better">Better</button>
       <button class="btn" data-a="same">Same</button>
       <button class="btn" data-a="worse">Worse</button>
     </div>
     <p class="hint" id="endNote" role="status">Optional. Only the stop, time and your answer are saved, on this device.</p>
-    <p class="signal" id="signalEnd" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
+    <p class="signal" id="signalFb" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
+    <div class="row"><a class="link" id="suggest" href="https://github.com/TheCompositionGroup/the-reset/issues" target="_blank" rel="noopener noreferrer">Suggest a change</a></div>
     <table class="counts" id="counts">
       <caption>Your answers</caption>
       <thead><tr><th scope="col">Stop</th><th scope="col">Better</th><th scope="col">Same</th><th scope="col">Worse</th></tr></thead>
       <tbody></tbody>
     </table>
     <div class="row">
-      <button class="btn primary" id="doneBtn">Done</button>
+      <button class="btn primary" id="fbBack">Back</button>
       <button class="btn" id="delBtn">Delete all</button>
     </div>
   </section>
@@ -214,6 +256,38 @@ footer p{margin:0 auto;max-width:30rem}
 </footer>
 
 <script>
+/* =====================================================================
+   COPY: all rolling fact lines and closing lines live here. Edit the
+   text freely; no other code needs to change.
+   {hz}   is replaced with the current stop's frequency (for example 528)
+   {area} is replaced with the current stop's chakra area (for example "the solar plexus chakra")
+   Facts roll one line at a time, in shuffled order, every 20-30 seconds.
+   The closing line on the end screen rotates through "closing" in order.
+   ===================================================================== */
+window.COPY = {
+  facts: {
+    physics: [
+      "Frequency is how many times something vibrates per second. Hertz (Hz) is the unit.",
+      "{hz} Hz = {hz} vibrations per second."
+    ],
+    tradition: [
+      "In modern chakra charts, this tone is paired with {area}.",
+      "Sources disagree on which chakra some tones belong to."
+    ],
+    invitation: [
+      "Notice where you feel it.",
+      "Breathe slower than the tone.",
+      "Stillness."
+    ]
+  },
+  closing: [
+    "Drink water. Be nice to people.",
+    "Pass it forward.",
+    "Enjoy your day."
+  ]
+};
+</script>
+<script>
 (() => {
 "use strict";
 const $ = id => document.getElementById(id);
@@ -222,7 +296,7 @@ const reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
 const reduced = () => reduceMQ.matches;
 const buzz = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){} };
 
-/* ---------- storage (this device only: stop, time, sound, volume, and saved answers) ---------- */
+/* ---------- storage (this device only: stop, time, sound, intensity, facts on/off, closing-line position, and saved answers) ---------- */
 const store = {
   get(k,d){ try{ const v = localStorage.getItem("reset3:"+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
   set(k,v){ try{ localStorage.setItem("reset3:"+k, JSON.stringify(v)); }catch(e){} },
@@ -251,7 +325,8 @@ const st = {
   stop: clamp(+store.get("stop", 0) | 0, 0, 6),
   min: MINS.includes(store.get("min", 10)) ? store.get("min", 10) : 10,
   mode: MODES.includes(store.get("mode", "atmosphere")) ? store.get("mode", "atmosphere") : "atmosphere",
-  vol: clamp(+store.get("vol", 25) || 0, 0, 100),   /* 25% on first visit */
+  int: clamp(+store.get("int", 40), 0, 100) || 0,   /* intensity 0-100 */
+  facts: store.get("facts", true) !== false,
   muted: false
 };
 
@@ -329,7 +404,6 @@ radioGroup("modes", () => st.mode, v => { if (v === st.mode) return; st.mode = v
 /* ---------- sound (Web Audio, generated here; no audio files) ---------- */
 const AC = window.AudioContext || window.webkitAudioContext;
 if (!AC){ $("playBtn").disabled = true; $("noAudio").hidden = false; }
-const LO = .35, HI = 1;              /* breath swell: quietest and fullest level */
 const IN_S = 4, OUT_S = 6, CYCLE = IN_S + OUT_S;
 const FADE_IN = 5, FADE_OUT = 8, XFADE_S = 2;   /* session fades (s); voice crossfade (s) */
 const ease = x => (1 - Math.cos(Math.PI * clamp(x, 0, 1))) / 2;
@@ -337,11 +411,15 @@ const breathAt = t => { const c = ((t % CYCLE) + CYCLE) % CYCLE; return c < IN_S
 const mkCurve = (n, fn) => { const a = new Float32Array(n); for (let i = 0; i < n; i++) a[i] = fn(i / (n - 1)); return a; };
 const XF_IN = mkCurve(100, x => Math.sin(x * Math.PI / 2)), XF_OUT = mkCurve(100, x => Math.cos(x * Math.PI / 2));
 const FADE_DOWN = mkCurve(320, x => 1 - ease(x));
-const BREATH = mkCurve(400, x => LO + (HI - LO) * breathAt(x * CYCLE));
-const MASTER_MAX = .6;               /* master gain ceiling: the slider's 100% */
-const volGain = v => MASTER_MAX * Math.pow(v / 100, 1.6);
+const BREATH = mkCurve(400, x => breathAt(x * CYCLE));   /* 0..1; the pulse path scales it by depth */
+const MASTER = .2;                   /* fixed output level; loudness is the device's volume */
+/* intensity: 0 = smooth, steady tone; 100 = deep pulse and a fuller atmosphere */
+const depthOf = v => .9 * v / 100;            /* pulse depth: share of the level that swells in and out */
+const bedOf = v => .4 + 1.2 * v / 100;        /* atmosphere bed (octave below, upper harmonics, noise) */
+const INT_TAU = .15;                           /* s; every intensity change is a smooth ramp, never a step */
+const EXT_S = 300;                             /* +5 min */
 
-const S = { active:false, paused:false, ctx:null, g:null, voice:null, dying:[], t0:0, T:0, nextBreath:0, lastCycle:-1, timer:0, raf:0, lock:null, busy:false, pendingSwap:false, xf:0, xfEnd:0, ending:false, endAt:0 };
+const S = { fadeAt:0, active:false, paused:false, ctx:null, g:null, voice:null, dying:[], t0:0, T:0, nextBreath:0, lastCycle:-1, timer:0, raf:0, lock:null, busy:false, pendingSwap:false, xf:0, xfEnd:0, ending:false, endAt:0 };
 
 function noiseBuffer(ctx){
   const n = ctx.sampleRate * 8, f = Math.floor(ctx.sampleRate * .5), raw = new Float32Array(n);
@@ -353,29 +431,37 @@ function noiseBuffer(ctx){
 }
 function makeVoice(mode, hz){
   const ctx = S.ctx, out = ctx.createGain(), level = mode === "tone" ? .6 : .45;
-  out.gain.value = 0; out.connect(S.g.breath);
+  out.gain.value = 0; out.connect(S.g.dry); out.connect(S.g.pd);
   const oscs = [], srcs = [];
-  const add = (r, amp, cents) => {
+  let atm = null;                                  /* atmosphere bed: scaled by intensity */
+  if (mode !== "tone"){ atm = ctx.createGain(); atm.gain.value = bedOf(st.int); atm.connect(out); }
+  const add = (r, amp, cents, bus) => {
     const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = hz * r; o.detune.value = cents || 0;
-    const g = ctx.createGain(); g.gain.value = amp; o.connect(g); g.connect(out); o.start(); oscs.push(o);
+    const g = ctx.createGain(); g.gain.value = amp; o.connect(g); g.connect(bus || out); o.start(); oscs.push(o);
   };
   if (mode === "tone") add(1, .5);
   else {
-    add(.5, .45); add(1, .26, -3); add(1, .26, 3); add(2, .07); add(3, .03);
+    add(.5, .45, 0, atm); add(1, .26, -3); add(1, .26, 3); add(2, .07, 0, atm); add(3, .03, 0, atm);
     const ns = ctx.createBufferSource(); ns.buffer = noiseBuffer(ctx); ns.loop = true;
     const filt = ctx.createBiquadFilter(); filt.type = "lowpass"; filt.Q.value = .5; filt.frequency.value = hz * 1.5;
-    const ng = ctx.createGain(); ng.gain.value = .35; ns.connect(filt); filt.connect(ng); ng.connect(out); ns.start(); srcs.push(ns);
+    const ng = ctx.createGain(); ng.gain.value = .35; ns.connect(filt); filt.connect(ng); ng.connect(atm); ns.start(); srcs.push(ns);
     const lfo = ctx.createOscillator(); lfo.frequency.value = .06; const lg = ctx.createGain(); lg.gain.value = hz * .3;
     lfo.connect(lg); lg.connect(filt.frequency); lfo.start(); srcs.push(lfo);
   }
   return {
-    out, level, mode, hz,
+    out, atm, level, mode, hz,
     fade(curve, at){ out.gain.setValueCurveAtTime(curve, at, XFADE_S); },
     dispose(){ oscs.forEach(o => { try { o.stop(); } catch(e){} }); srcs.forEach(x => { try { x.stop(); } catch(e){} }); try { out.disconnect(); } catch(e){} }
   };
 }
-const targetVol = () => (st.muted ? 0 : volGain(st.vol));
+const targetVol = () => (st.muted ? 0 : MASTER);
 function applyVol(){ if (S.g) S.g.vol.gain.setTargetAtTime(targetVol(), S.ctx.currentTime, .05); }
+function applyIntensity(){
+  if (!S.g) return;
+  const t = S.ctx.currentTime, d = depthOf(st.int);
+  S.g.dry.gain.setTargetAtTime(1 - d, t, INT_TAU); S.g.pd.gain.setTargetAtTime(d, t, INT_TAU);
+  [S.voice].concat(S.dying.map(x => x.v)).forEach(v => { if (v && v.atm) v.atm.gain.setTargetAtTime(bedOf(st.int), t, INT_TAU); });
+}
 /* dial turned or sound changed while playing: wait for it to settle, then 2 s crossfade to the new voice; the timer is untouched */
 function requestVoice(){ if (!S.active) return; clearTimeout(S.xf); S.xf = setTimeout(crossfade, 250); }
 function crossfade(){
@@ -391,10 +477,12 @@ function crossfade(){
 function reapVoices(){ if (!S.ctx) return; S.dying = S.dying.filter(d => { if (S.ctx.currentTime < d.at) return true; d.v.dispose(); return false; }); }
 function buildGraph(){
   const ctx = new AC({ latencyHint:"playback" });
-  const g = { breath:ctx.createGain(), env:ctx.createGain(), stop:ctx.createGain(), cut:ctx.createGain(), vol:ctx.createGain(), comp:ctx.createDynamicsCompressor() };
-  g.breath.gain.value = LO; g.env.gain.value = 0; g.stop.gain.value = 1; g.cut.gain.value = 1; g.vol.gain.value = targetVol();
+  /* voice -> dry (steady share) + pd -> breath (pulse share) -> env (5 s fade-in) -> stop (pause) -> end (timed fade-out) -> cut -> vol -> compressor */
+  const g = { dry:ctx.createGain(), pd:ctx.createGain(), breath:ctx.createGain(), env:ctx.createGain(), stop:ctx.createGain(), end:ctx.createGain(), cut:ctx.createGain(), vol:ctx.createGain(), comp:ctx.createDynamicsCompressor() };
+  g.dry.gain.value = 1 - depthOf(st.int); g.pd.gain.value = depthOf(st.int);
+  g.breath.gain.value = 0; g.env.gain.value = 0; g.stop.gain.value = 1; g.end.gain.value = 1; g.cut.gain.value = 1; g.vol.gain.value = targetVol();
   g.comp.threshold.value = -18; g.comp.knee.value = 24; g.comp.ratio.value = 3; g.comp.attack.value = .02; g.comp.release.value = .3;
-  g.breath.connect(g.env); g.env.connect(g.stop); g.stop.connect(g.cut); g.cut.connect(g.vol); g.vol.connect(g.comp); g.comp.connect(ctx.destination);
+  g.dry.connect(g.env); g.pd.connect(g.breath); g.breath.connect(g.env); g.env.connect(g.stop); g.stop.connect(g.end); g.end.connect(g.cut); g.cut.connect(g.vol); g.vol.connect(g.comp); g.comp.connect(ctx.destination);
   S.ctx = ctx; S.g = g;
   ctx.onstatechange = () => { if (S.active && !S.paused && !S.busy && (ctx.state === "suspended" || ctx.state === "interrupted")) setPaused(true); };
 }
@@ -414,6 +502,7 @@ const setGlow = v => { aura.style.opacity = (v * .5).toFixed(3); aura.style.tran
 function clockText(){ if (!S.active) return st.min ? st.min + " min" : "No limit"; const e = elapsed(); return S.T === Infinity ? fmt(Math.floor(e)) : fmt(S.T - e); }
 function paintSession(){
   const playing = S.active && !S.paused;
+  $("times").hidden = S.active; $("extras").hidden = !S.active; $("extBtn").hidden = S.T === Infinity; $("slot").hidden = !S.active;
   $("playIcon").setAttribute("d", playing ? "M6 5h4v14H6zM14 5h4v14h-4z" : "M8 5v14l11-7z");
   $("playBtn").setAttribute("aria-label", playing ? "Pause" : "Play");
   $("playBtn").disabled = !AC || S.ending;
@@ -424,7 +513,7 @@ function paintSession(){
 }
 function frame(){
   S.raf = 0; if (!S.active || S.paused || document.hidden || reduced()) return;
-  setGlow(.2 + .8 * breathAt(elapsed())); S.raf = requestAnimationFrame(frame);
+  setGlow(.2 + .8 * (1 - depthOf(st.int) * (1 - breathAt(elapsed())))); S.raf = requestAnimationFrame(frame);
 }
 function startFrames(){
   if (reduced()){ setGlow(.5); return; }   /* glow stays still */
@@ -437,7 +526,9 @@ function tick(){
   if (S.ending && S.ctx.currentTime >= S.endAt){ finish("inf"); return; }
   $("left").textContent = clockText();
   const c = Math.floor(e / CYCLE);
-  if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (!S.ending && (S.T === Infinity || e < S.T - FADE_OUT)) buzz(15); }   /* light pulse at each in-breath (Android) */
+  if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (!S.ending && st.int > 15 && (S.T === Infinity || e < S.T - FADE_OUT)) buzz(15); }   /* light pulse at each in-breath (Android); none when the tone is steady */
+  const rem = S.T - e;
+  setPrompt(!S.paused && !S.ending && rem <= 60 && rem > 40);   /* final minute: shown for 20 s, then gone if ignored */
   if (e >= S.T) finish("done");
 }
 async function takeLock(){ try { if (navigator.wakeLock && !S.lock){ const l = await navigator.wakeLock.request("screen"); S.lock = l; l.addEventListener("release", () => { if (S.lock === l) S.lock = null; }); } } catch(e){ S.lock = null; } }
@@ -453,17 +544,30 @@ async function start(){
   g.env.gain.setValueAtTime(0, S.t0);
   g.env.gain.setValueCurveAtTime(mkCurve(200, x => ease(x)), S.t0, FADE_IN);
   g.env.gain.setValueAtTime(1, S.t0 + FADE_IN);
-  if (S.T !== Infinity) g.env.gain.setValueCurveAtTime(FADE_DOWN, S.t0 + S.T - FADE_OUT, FADE_OUT);   /* timed end: 8 s fade-out */
   S.voice = makeVoice(st.mode, STOPS[st.stop].hz); S.voice.out.gain.value = S.voice.level;
+  S.fadeAt = S.t0 + S.T - FADE_OUT; if (S.T !== Infinity) scheduleEnd(g.end);
   scheduleBreath();
   S.timer = setInterval(tick, 200);
-  takeLock(); paintSession(); startFrames();
+  takeLock(); paintSession(); startFrames(); factsRun();
   try { await ready; } catch(e){}
   S.busy = false;
 }
+/* timed end: 8 s fade-out on its own node, so +5 min can swap it without touching the tone */
+function scheduleEnd(node){ S.fadeAt = S.t0 + S.T - FADE_OUT; node.gain.setValueCurveAtTime(FADE_DOWN, S.fadeAt, FADE_OUT); }
+function extend(){
+  if (!S.active || S.T === Infinity || S.ending || !S.ctx) return;
+  const ctx = S.ctx, g = S.g, now = ctx.currentTime;
+  if (now >= S.t0 + S.T - .05) return;              /* already ending */
+  const x = (now - S.fadeAt) / FADE_OUT, v = x <= 0 ? 1 : 1 - ease(x);   /* where the fade-out is right now */
+  const n = ctx.createGain(); n.gain.value = v;      /* new end node starts at that level... */
+  g.stop.connect(n); n.connect(g.cut); g.stop.disconnect(g.end); g.end.disconnect();   /* ...and takes over in the same instant: no jump */
+  if (v < 1) n.gain.setTargetAtTime(1, now, .5);     /* if the fade-out had begun, ease back up */
+  g.end = n; S.T += EXT_S; scheduleEnd(n);
+  setPrompt(false); $("left").textContent = clockText(); $("live").textContent = "5 minutes added.";
+}
 function setPaused(external){
   if (!S.active || S.paused) return;
-  S.paused = true; paintSession(); dropLock();
+  S.paused = true; paintSession(); dropLock(); factsStop(); setPrompt(false);
   if (!external){
     S.busy = true;
     S.g.stop.gain.setTargetAtTime(0, S.ctx.currentTime, .06);
@@ -475,7 +579,7 @@ async function resume(){
   S.busy = true;
   const ready = S.ctx.resume();                    /* inside the tap */
   S.paused = false; S.g.stop.gain.setTargetAtTime(1, S.ctx.currentTime, .1);
-  takeLock(); paintSession(); startFrames();
+  takeLock(); paintSession(); startFrames(); factsRun();
   try { await ready; } catch(e){}
   S.busy = false;
   if (S.pendingSwap){ S.pendingSwap = false; crossfade(); }
@@ -484,7 +588,7 @@ async function resume(){
 function finish(kind, quick){
   if (!S.active) return;
   const played = S.T === Infinity ? elapsed() : Math.min(elapsed(), S.T);
-  const ended = { stop:st.stop, min:S.T === Infinity ? Math.round(played / 60) : st.min };
+  const ended = { stop:st.stop, min:S.T === Infinity ? Math.round(played / 60) : Math.round(S.T / 60) };   /* includes any +5 min */
   const showIt = kind === "done" || (kind === "inf" && played >= 300);
   const fast = kind === "cancel" || !!quick;
   const ctx = S.ctx, g = S.g, voices = [S.voice].concat(S.dying.map(d => d.v));
@@ -496,6 +600,7 @@ function finish(kind, quick){
     setTimeout(() => { voices.forEach(v => v && v.dispose()); try { ctx.close(); } catch(e){} }, fast ? 450 : 300);
   }
   S.ctx = null; S.g = null; S.voice = null; S.dying = [];
+  factsStop(); setPrompt(false); S.T = 0;
   setGlow(0); paintSession();
   if (showIt) showEnd(ended);                       /* otherwise straight back to the dial, no prompt */
 }
@@ -511,6 +616,7 @@ function stopPressed(){
 }
 $("playBtn").onclick = () => { if (S.ending) return; if (!S.active) start(); else if (S.paused) resume(); else setPaused(false); };
 $("stopBtn").onclick = stopPressed;
+$("extBtn").onclick = extend; $("extPrompt").onclick = extend;
 document.addEventListener("keydown", e => { if (e.key === "Escape" && S.active){ e.preventDefault(); finish("cancel"); } });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return;
@@ -518,16 +624,57 @@ document.addEventListener("visibilitychange", () => {
 });
 if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", () => { if (S.active && !S.paused) startFrames(); });
 
-/* ---------- volume + mute ---------- */
-function paintVol(){ $("vol").value = st.vol; $("vol").setAttribute("aria-valuetext", st.vol + " percent"); }
-$("vol").oninput = e => { st.vol = +e.target.value; store.set("vol", st.vol); paintVol(); applyVol(); };
+/* ---------- intensity + mute ---------- */
+function paintInt(){
+  const v = st.int, w = v < 25 ? "low" : v < 60 ? "medium" : "high";
+  $("int").value = v; $("int").setAttribute("aria-valuetext", w + ", " + v + " percent");
+  $("intVal").textContent = w === "low" ? "Low" : w === "medium" ? "Medium" : "High";
+}
+$("int").oninput = e => { st.int = +e.target.value; store.set("int", st.int); paintInt(); applyIntensity(); };
 $("muteBtn").onclick = () => {
   st.muted = !st.muted; const b = $("muteBtn");
   b.setAttribute("aria-label", st.muted ? "Unmute" : "Mute"); b.dataset.muted = st.muted; $("slash").toggleAttribute("hidden", !st.muted); $("waves").style.opacity = st.muted ? .35 : 1;
   applyVol();
 };
 
-/* ---------- end screen (natural completion only) ---------- */
+/* ---------- rolling fact line + final-minute prompt (text lives in window.COPY) ---------- */
+const F = { deck:[], last:"", show:0, hide:0, on:false };
+const rnd = (a, b) => a + Math.random() * (b - a);
+function factLines(){ const f = (window.COPY && COPY.facts) || {}; return [].concat(f.physics || [], f.tradition || [], f.invitation || []); }
+function nextFact(){
+  if (!F.deck.length){
+    F.deck = factLines().slice(); for (let i = F.deck.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [F.deck[i], F.deck[j]] = [F.deck[j], F.deck[i]]; }
+    if (F.deck.length > 1 && F.deck[F.deck.length - 1] === F.last) F.deck.unshift(F.deck.pop());   /* never repeat back to back */
+  }
+  const line = F.deck.pop() || ""; F.last = line;
+  const s = STOPS[st.stop];
+  return line.replace(/\{hz\}/g, s.hz).replace(/\{area\}/g, "the " + s.chakra.toLowerCase() + " chakra");
+}
+function factsStop(){ clearTimeout(F.show); clearTimeout(F.hide); $("fact").classList.remove("on"); }
+function factsRun(delay){
+  factsStop();
+  if (!S.active || S.paused || !st.facts || !factLines().length) return;
+  F.show = setTimeout(() => {
+    if (!S.active || S.paused || !st.facts) return;
+    if (promptOn){ factsRun(3000); return; }   /* the prompt has the slot */
+    $("fact").textContent = nextFact(); $("fact").classList.add("on");
+    F.hide = setTimeout(() => $("fact").classList.remove("on"), 12000);   /* 3 s in, 6 s held, 3 s out */
+    F.show = setTimeout(factsRun, rnd(20000, 30000));                      /* next line 20-30 s after this one started */
+  }, delay === undefined ? 8000 : delay);
+}
+let promptOn = false;
+function setPrompt(on){
+  on = !!on && S.T !== Infinity; if (on === promptOn) return;
+  promptOn = on; const b = $("extPrompt");
+  b.classList.toggle("on", on); b.tabIndex = on ? 0 : -1;
+  if (on) $("fact").classList.remove("on");
+}
+function paintFacts(){
+  const b = $("factsBtn"); b.setAttribute("aria-pressed", st.facts); b.textContent = st.facts ? "Facts on" : "Facts off";
+}
+$("factsBtn").onclick = () => { st.facts = !st.facts; store.set("facts", st.facts); paintFacts(); if (st.facts) factsRun(4000); else factsStop(); };
+
+/* ---------- end screen (natural completion only), feedback view behind "Share feedback" ---------- */
 let ended = null, answered = false;
 const logGet = () => { const l = store.get("log", []); return Array.isArray(l) ? l : []; };
 function hasLegacy(){ try { return ["log","dur","voice","saveWords"].some(k => localStorage.getItem("reset:" + k) !== null); } catch(e){ return false; } }
@@ -547,12 +694,23 @@ function renderSignal(){
   const on = logGet().slice(-12).filter(e => e.a === "worse").length >= 3;
   document.querySelectorAll(".signal").forEach(e => { e.hidden = !on; });
 }
+const views = ["vMain","vEnd","vFb"];
+function show(id, focusEl){
+  views.forEach(v => $(v).classList.toggle("hidden", v !== id)); window.scrollTo(0, 0);
+  if (focusEl) focusEl.focus({ preventScroll:true });
+}
+function closingLine(){
+  const list = (window.COPY && COPY.closing) || []; if (!list.length) return "";
+  const i = (((+store.get("close", -1) | 0) + 1) % list.length + list.length) % list.length; store.set("close", i);   /* rotates in order, remembered */
+  return list[i];
+}
 function showEnd(e){
   ended = e; answered = false;
   document.querySelectorAll("#answers .btn").forEach(b => { b.setAttribute("aria-pressed","false"); b.disabled = false; });
   $("endNote").textContent = "Optional. Only the stop, time and your answer are saved, on this device.";
+  $("endQ").textContent = closingLine();
   renderCounts();
-  $("vMain").classList.add("hidden"); $("vEnd").classList.remove("hidden"); window.scrollTo(0, 0); $("endQ").focus({ preventScroll:true });
+  show("vEnd", $("endQ"));
 }
 $("answers").addEventListener("click", e => {
   const b = e.target.closest("[data-a]"); if (!b || answered || !ended) return;
@@ -561,12 +719,16 @@ $("answers").addEventListener("click", e => {
   $("endNote").textContent = b.dataset.a === "worse" ? "Noted. Try a different stop or a shorter time, or stop for today." : "Saved on this device.";
   renderCounts();
 });
-$("doneBtn").onclick = () => { $("vEnd").classList.add("hidden"); $("vMain").classList.remove("hidden"); window.scrollTo(0, 0); $("dial").focus({ preventScroll:true }); };
+$("fbOpen").onclick = () => { renderCounts(); show("vFb", $("fbQ")); };
+$("fbBack").onclick = () => show("vEnd", $("endQ"));
+$("againBtn").onclick = () => show("vMain", $("playBtn"));   /* the dial, with the last stop, time, sound and intensity */
+$("doneBtn").onclick = () => show("vMain", $("dial"));
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("vFb").classList.contains("hidden")){ e.preventDefault(); show("vEnd", $("endQ")); } });
 $("delBtn").onclick = () => {
   if (confirm("Delete every saved answer on this device, including anything saved by earlier versions?")){ store.clearAnswers(); renderCounts(); $("endNote").textContent = "Deleted."; }
 };
 
-renderDial(false); paintVol(); paintSession(); renderSignal();
+renderDial(false); paintInt(); paintFacts(); paintSession(); renderSignal();
 })();
 </script>
 </body>
