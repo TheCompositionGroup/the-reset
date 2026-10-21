@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.4.0 — v-next (unreleased)
+Builds on v0.3.0 (the dial).
+- Changed: the volume slider is now **Intensity**. Device volume is the only volume control (output level is fixed). Low is a smooth, steady sound. High is a deeper pulse (the 10 s swell goes from steady up to about 90% deep) with a fuller atmosphere (octave below, upper harmonics and noise bed are raised in Atmosphere; Tone stays a pure sine and changes only its pulse). Changes ramp over about 0.15 s, so there are no clicks. Remembered between visits (default 40%). Mute stays. The glow and the Android in-breath tap follow the pulse depth.
+- New: **+5 min** during a timed session. Each tap adds 5 minutes with no pause or restart, and the tone keeps running. The 8 s end fade moves back with the new end time; if it had already started, the sound eases back up. In the final minute a quiet "Extend? +5" appears for 20 s and goes away if ignored. Not shown for ∞.
+- New: **rolling fact line** under Play, one line at a time, 3 s fade in and out, every 20–30 s, with a Facts on/off toggle (remembered). Three kinds only: physics, tradition (modern chakra charts; sources disagree), and invitation. All text is in one `COPY` block at the top of the script in `index.html`, along with the closing lines.
+- Changed: while playing, the time pills are replaced by +5 min and Facts.
+- Changed: **end screen** is one closing line (rotating "Drink water. Be nice to people." / "Pass it forward." / "Enjoy your day."), **Begin again** (back to the dial, last settings kept) and **Done**, plus a small "Share feedback" link. That opens the optional Better / Same / Worse buttons, a "Suggest a change" link to the repo's GitHub Issues page, the answers table and Delete all. A Back button returns to the end screen; Escape also works.
+- Changed: a timed session's logged minutes include any +5 min added.
+- New: issue template ("What did you try? What would you change?"), Contributors section in the README, `HAPTICS.md`.
+- Storage: adds intensity, facts on/off, and the closing-line position (none of it personal). The old volume value is no longer used.
+- The "Suggest a change" link is the only external link and only opens when tapped; the app still makes no network calls.
+
 ## v0.3.0 — 2026-10-21
 Rebuilt as a sound-only experience on one screen.
 - New: a rotary dial with seven snap stops on a 270° clockwise arc (gap at the bottom): Ground 396 Hz, Flow 417, Power 528, Heart 639, Voice 741, Vision 852, Stillness 963. Drag anywhere on the face, tap a ring label, or use the arrow keys; thin tick marks, a needle, and a notch highlight on each snap. `role="slider"` with spoken values like "528 hertz, solar plexus, power". Android: a 10 ms tap on each snap.

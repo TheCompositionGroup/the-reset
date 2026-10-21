@@ -17,8 +17,8 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ### 2. Gentle sound, no forced breathing
 - The volume swell (up 4 s, down 6 s) and the glow are a rhythm, not a breathing technique or treatment. Never add breath counts, holds, hyperventilation, rapid or forced cycles, or any instruction to push past discomfort.
-- Volume starts at 25% on first visit (the person's level is remembered after). Master gain never exceeds 0.6 at 100% on the slider. No sudden peaks, bells, or alarms.
-- Fades only: 5 s in on Play, 8 s out at a timed end, 0.3 s on Stop (timed) and Escape, about 0.45 s on Pause, 8 s on Stop for ∞. Stop and Escape always work immediately; a second Stop press during the ∞ fade ends it at once. Pause holds in place.
+- There is no app volume: loudness is the device's. Output level is fixed (`MASTER` = 0.2) behind a compressor. **Intensity** (0–100, default 40) sets pulse depth (0 = steady, up to 90% deep) and the atmosphere bed; it changes by smooth ramps only, never steps. No sudden peaks, bells, or alarms.
+- Fades only: 5 s in on Play, 8 s out at a timed end (it moves back with each +5 min; if already fading, the sound eases back up), 0.3 s on Stop (timed) and Escape, about 0.45 s on Pause, 8 s on Stop for ∞. Stop and Escape always work immediately; a second Stop press during the ∞ fade ends it at once. Pause holds in place.
 - Don't assume every device reproduces every frequency or harmonic equally.
 - Respect `prefers-reduced-motion`: the glow stays still and the needle does not animate. Only visuals stop; sound and the Android breath pulses are unchanged.
 
@@ -27,8 +27,8 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - If any text input is ever added back, the v0.2.2 crisis rules return with it, all together: the `crisisRe` keyword check (including the bare `suicid` stem and the indirect phrasings), the stated-intent threshold for any model flag, the quiet dismissible 988 notice, and the fixed phrase test. The full rules, regex, notice text, prompt line, and phrase list are in `docs/crisis-rules.md`.
 
 ### 4. Nothing leaves the device
-- No network calls at all: no `fetch`, XHR, WebSocket, beacons, web fonts, CDN, analytics, telemetry, trackers, or accounts.
-- Storage is `localStorage` on this device only, under `reset3:` keys: stop, time, sound, volume, and the answer log. Each log entry is ordered and dated: the stop, the minutes, Better/Same/Worse, and the date and time. Nothing else is saved, and there is no text field to save from.
+- No network calls at all: no `fetch`, XHR, WebSocket, beacons, web fonts, CDN, analytics, telemetry, trackers, or accounts. The one exception is a plain link the person taps ("Suggest a change" to the repo's GitHub Issues page, opened in a new tab with `noopener noreferrer`); the page itself sends nothing.
+- Storage is `localStorage` on this device only, under `reset3:` keys: stop, time, sound, intensity, facts on/off, the closing-line position, and the answer log. Each log entry is ordered and dated: the stop, the minutes, Better/Same/Worse, and the date and time. Nothing else is saved, and there is no text field to save from.
 - Delete all (with confirmation) removes the log, including any data left by v0.2 under `reset:` keys. Never delete a person's data silently.
 
 ### 5. One self-contained `index.html`
@@ -43,7 +43,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ## Product principles to preserve
 - Calm instrument panel: thin tick marks, a needle, a soft glow when active. No steampunk, fake wear, or gimmicks.
-- One screen: dial, readout, time, sound type, volume, Play. Copy stays minimal. The end screen appears only after a timed completion, or after stopping ∞ at 5 minutes or more, never after an early Stop on a timed session or Escape. ∞ plays until Pause or Stop and counts up; the log keeps the actual minutes played.
+- One screen: dial, readout, time, sound type, intensity, Play. While playing, +5 min and Facts replace the time pills, and the fact line / "Extend? +5" prompt share one reserved slot below Play so nothing overlaps a control. Copy stays minimal. Rolling fact lines are only these kinds, each worded as what it is: physics, tradition (say modern chakra charts and that sources disagree; Hz-to-chakra pairings are not traditional), invitation. All of that text and the closing lines live in the `COPY` block in `index.html`. The end screen appears only after a timed completion, or after stopping ∞ at 5 minutes or more, never after an early Stop on a timed session or Escape. ∞ plays until Pause or Stop and counts up; the log keeps the actual minutes played.
 - Animate only opacity and transform. No animated blur, shadow, filter, or stroke, so cheap phones stay smooth. The glow takes the active stop's color.
 - The answer counts are shown as they are. Never hide or soften a "Worse" count.
 - Stop signal: when 3 or more of the last 12 saved sessions are "Worse", a quiet notice shows on the dial screen and the end screen. It has no dismiss button and is never softened or hidden. Only answered sessions are saved, so only they count.
@@ -60,7 +60,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ## Editing checklist
 - Grep user-facing text for the banned terms in Rule 1 before committing (the cited book title is the one allowed hit for "healing").
-- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html`.
-- Confirm nothing but stop, time, sound, volume, and the answer log is stored.
+- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html` (the "Suggest a change" link is the one allowed `href`).
+- Confirm nothing but stop, time, sound, intensity, facts on/off, closing-line position, and the answer log is stored.
 - Update `CHANGELOG.md` for any behavior change.
 - Test sound, fades, and haptics on a real phone before merging anything that touches audio.
