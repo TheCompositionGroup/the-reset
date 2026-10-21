@@ -41,6 +41,11 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - Minimum text size 13 px everywhere, including the footer. Every control has a tap target of at least 44 px, including each ring label.
 - The dial is `role="slider"` with `aria-valuetext` such as "528 hertz, solar plexus, power", and works with arrow keys, Home, End, drag, and tapping a ring label. Check layouts at 320, 360, and 390 px. On short screens the dial and spacing shrink so Play is in view without scrolling at 320×640 and 360×740. The footer sits in normal flow: never sticky or fixed, and never covering a control.
 
+### 7. Deployment
+- GitHub Pages always deploys from `main` / (root). Never change the Pages source branch.
+- Previews come from the PR branch via htmlpreview, never from repointing Pages.
+- After the merge, delete the merged branches: `claude/v0.3.0-sound-dial`, `v-next`, `claude/magical-pasteur-w9gmgf`, `claude/v0.2.2-crisis-mic-fallback` (if merged or abandoned). Check each one's merge status first, and never delete an unmerged branch without asking.
+
 ## Product principles to preserve
 - Calm instrument panel: thin tick marks, a needle, a soft glow when active. No steampunk, fake wear, or gimmicks.
 - One screen: dial, readout, time, sound type, intensity, Play. While playing, +5 min and Facts replace the time pills, and the fact line / "Extend? +5" prompt share one reserved slot below Play so nothing overlaps a control. Copy stays minimal. Rolling fact lines are only these kinds, each worded as what it is: physics, tradition (say modern chakra charts and that sources disagree; Hz-to-chakra pairings are not traditional), invitation. All of that text and the closing lines live in the `COPY` block in `index.html`. The end screen appears only after a timed completion, or after stopping ∞ at 5 minutes or more, never after an early Stop on a timed session or Escape. ∞ plays until Pause or Stop and counts up; the log keeps the actual minutes played.
