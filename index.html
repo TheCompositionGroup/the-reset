@@ -30,8 +30,6 @@ h1{font-family:var(--serif);font-weight:400;font-size:1.75rem;letter-spacing:.28
 h2{font-family:var(--serif);font-weight:400;font-size:1.5rem;line-height:1.2;margin:0 0 .75rem}
 .lead{text-align:center;color:var(--muted);margin:.4rem 0 0}
 .lead2{margin:.15rem 0 0;font-size:.9375rem}
-.seg-label{text-align:center;font-size:.8125rem;line-height:1.2;color:var(--muted);margin:.6rem 0 0}
-.seg-label+.seg{margin-top:.2rem}
 .hints{margin:.5rem 0 0}
 .hints .hint{margin:0}
 button,input{font:inherit;color:inherit}
@@ -83,7 +81,20 @@ button{cursor:pointer}
 .icon-btn svg{width:1.4rem;height:1.4rem}
 .icon-btn[data-muted="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .transport{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;margin:.5rem 0 0}
-.left{justify-self:end;color:var(--muted);font-variant-numeric:tabular-nums;font-size:1.0625rem}
+/* time wheel: three rows (one faded value above and below), same height as the row it sits in, never taller than Play */
+.wheel{--rh:1.5rem;justify-self:end;position:relative;width:5rem;height:calc(var(--rh) * 3);border-radius:.6rem;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:ns-resize;font-variant-numeric:tabular-nums}
+.wheel:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+.wview{position:absolute;inset:0;overflow:hidden;border-top:1px solid transparent}
+.wview::before{content:"";position:absolute;left:.4rem;right:.4rem;top:var(--rh);height:var(--rh);border-top:1px solid var(--line);border-bottom:1px solid var(--line);pointer-events:none}
+.wtrack{position:absolute;left:0;right:0;top:0;transform:translateY(calc(var(--rh) * (1 - var(--p,0))));transition:transform .18s ease-out}
+.wi{height:var(--rh);line-height:var(--rh);text-align:center;font-size:1.125rem;color:var(--ink);opacity:.4;font-weight:400;transition:opacity .18s ease-out}
+.wi.sel{font-weight:600}
+.wheel.drag .wtrack,.wheel.drag .wi{transition:none}
+.wunit{position:absolute;top:var(--rh);height:var(--rh);line-height:var(--rh);left:calc(50% + 1rem);font-size:.8125rem;color:var(--muted);pointer-events:none}
+.wclock{position:absolute;inset:0;display:grid;place-items:center;font-size:1.0625rem;color:var(--muted);visibility:hidden}
+.wheel.run{cursor:default}
+.wheel.run .wview,.wheel.run .wunit{visibility:hidden}
+.wheel.run .wclock{visibility:visible}
 .play{width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;padding:0}
 .play svg{width:2.1rem;height:2.1rem}
 .playwrap{position:relative;width:5.5rem;height:5.5rem}
@@ -129,7 +140,6 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
   h1{font-size:1.4rem}
   .lead{margin:.2rem 0 0;font-size:.9375rem;line-height:1.3}
   .lead2{margin:.1rem 0 0}
-  .seg-label{margin:.3rem 0 0}
   .dial{width:min(80vw,19rem,35svh);min-width:11rem;margin:.3rem auto 0}
   .readout{margin:.2rem 0 0;min-height:3.6rem}
   .hz{font-size:1.9rem}
@@ -147,7 +157,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
   .fact{font-size:.9375rem;line-height:1.3}
 }
 @media (max-height:680px){ .dial{width:min(80vw,19rem,25svh);min-width:9.5rem} .readout{min-height:3.2rem} h1{font-size:1.25rem} .lead,.lead2{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dial{width:min(80vw,19rem,23svh);min-width:9.5rem} }
-@media (prefers-reduced-motion: reduce){.needle{transition:none}.notch.pop{animation:none}.fact,.prompt,.prompt.on{transition:none}}
+@media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack,.wi{transition:none}.notch.pop{animation:none}.fact,.prompt,.prompt.on{transition:none}}
 </style>
 </head>
 <body>
@@ -179,24 +189,11 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
       <div class="qual" id="rQual"></div>
     </div>
 
-    <div class="seg-label" id="timesLabel">Minutes</div>
-    <div class="seg" id="times" role="radiogroup" aria-labelledby="timesLabel">
-      <button class="pill" role="radio" data-v="5" aria-label="5 minutes">5</button>
-      <button class="pill" role="radio" data-v="10" aria-label="10 minutes">10</button>
-      <button class="pill" role="radio" data-v="15" aria-label="15 minutes">15</button>
-      <button class="pill" role="radio" data-v="20" aria-label="20 minutes">20</button>
-      <button class="pill" role="radio" data-v="0" aria-label="No time limit">∞</button>
-    </div>
-
     <div class="seg" id="modes" role="radiogroup" aria-label="Sound">
       <button class="pill" role="radio" data-v="tone">Tone</button>
       <button class="pill" role="radio" data-v="atmosphere">Atmosphere</button>
     </div>
 
-    <div class="seg" id="extras" hidden>
-      <button class="pill" id="extBtn" aria-label="Add 5 minutes">+5 min</button>
-      <button class="pill" id="factsBtn" aria-pressed="true">Facts on</button>
-    </div>
 
     <div class="mix">
       <button class="icon-btn" id="muteBtn" aria-label="Mute" data-muted="false">
@@ -211,7 +208,11 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
     </div>
 
     <div class="transport">
-      <span class="left" id="left" aria-hidden="true"></span>
+      <div class="wheel" id="wheel" tabindex="0">
+        <div class="wview" aria-hidden="true"><div class="wtrack" id="wTrack"></div></div>
+        <span class="wunit" id="wUnit" aria-hidden="true">min</span>
+        <div class="wclock" id="wClock" aria-hidden="true"></div>
+      </div>
       <div class="playwrap"><span class="halo" id="halo"></span>
       <button class="play" id="playBtn" aria-label="Play">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
@@ -219,6 +220,10 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
       <span><button class="stop" id="stopBtn" hidden>Stop</button></span>
     </div>
 
+    <div class="seg" id="extras" hidden>
+      <button class="pill" id="extBtn" aria-label="Add 5 minutes">+5 min</button>
+      <button class="pill" id="factsBtn" aria-pressed="true">Facts on</button>
+    </div>
     <div class="slot" id="slot" hidden>
       <p class="fact" id="fact"></p>
       <button class="prompt" id="extPrompt" tabindex="-1">Extend? +5</button>
@@ -332,11 +337,11 @@ const STOPS = [
 /* 270 degree arc, clockwise, gap centred at the bottom: Ground at lower left, Stillness at lower right */
 const ARC0 = -135, STEP = 45, CX = 170, CY = 170, LAB_R = 146;
 const pol = (deg, r) => { const a = deg * Math.PI / 180; return [CX + r * Math.sin(a), CY - r * Math.cos(a)]; };
-const MINS = [5,10,15,20,0], MODES   /* 0 = no time limit */ = ["tone","atmosphere"];
+const MINS = [5,10,15,20,30,45,60,0], MODES   /* 0 = no time limit */ = ["tone","atmosphere"];
 
 const st = {
   stop: clamp(+store.get("stop", 0) | 0, 0, 6),
-  min: MINS.includes(store.get("min", 10)) ? store.get("min", 10) : 10,
+  min: MINS.includes(store.get("min", 15)) ? store.get("min", 15) : 15,
   mode: MODES.includes(store.get("mode", "atmosphere")) ? store.get("mode", "atmosphere") : "atmosphere",
   int: clamp(+store.get("int", 40), 0, 100) || 0,   /* intensity 0-100 */
   facts: store.get("facts", true) !== false,
@@ -411,7 +416,54 @@ function radioGroup(id, get, set){
   });
   sync(); return sync;
 }
-radioGroup("times", () => st.min, v => { if (S.active) return; st.min = +v; store.set("min", st.min); paintSession(); });
+/* time wheel: ascending downward; the selected value sits in the middle row. Locked while a session is active (it shows the clock instead). */
+const wheelEl = $("wheel"), wTrack = $("wTrack"), WN = MINS.length - 1;
+wTrack.innerHTML = MINS.map((m, i) => `<div class="wi" data-i="${i}">${m || "∞"}</div>`).join("");
+const wItems = [...wTrack.children];
+let wPos = MINS.indexOf(st.min), wDrag = null, wAcc = 0, wLast = 0;
+function paintWheel(){
+  const idx = Math.round(wPos);
+  wTrack.style.setProperty("--p", wPos.toFixed(3));
+  wItems.forEach((e, i) => { e.style.opacity = (1 - .6 * Math.min(1, Math.abs(i - wPos))).toFixed(2); e.classList.toggle("sel", i === idx); });
+  $("wUnit").hidden = MINS[idx] === 0;
+  if (!S.active){
+    wheelEl.setAttribute("aria-valuenow", idx);
+    wheelEl.setAttribute("aria-valuetext", MINS[idx] ? MINS[idx] + " minutes" : "No time limit");
+  }
+}
+function wheelTo(idx){ idx = clamp(idx, 0, WN); wPos = idx; if (MINS[idx] !== st.min){ st.min = MINS[idx]; store.set("min", st.min); } paintWheel(); }
+const wheelStep = d => { const i = Math.round(wPos); if (clamp(i + d, 0, WN) === i) return false; wheelTo(i + d); return true; };
+wheelEl.addEventListener("pointerdown", e => { if (S.active || e.button > 0) return; wDrag = { y: e.clientY, p: wPos, moved: false }; wheelEl.setPointerCapture(e.pointerId); });
+wheelEl.addEventListener("pointermove", e => {
+  if (!wDrag) return;
+  const dy = e.clientY - wDrag.y;
+  if (!wDrag.moved && Math.abs(dy) > 4){ wDrag.moved = true; wheelEl.classList.add("drag"); }
+  if (wDrag.moved){ wPos = clamp(wDrag.p - dy / (wheelEl.clientHeight / 3), 0, WN); paintWheel(); }
+});
+const wheelEnd = e => {
+  if (!wDrag) return;
+  const d = wDrag; wDrag = null; wheelEl.classList.remove("drag");
+  if (d.moved || e.type === "pointercancel"){ wheelTo(Math.round(wPos)); return; }
+  const r = wheelEl.getBoundingClientRect(), y = e.clientY - r.top;   /* a click on the faded value above or below */
+  if (y < r.height * .4) wheelStep(-1); else if (y > r.height * .6) wheelStep(1);
+};
+wheelEl.addEventListener("pointerup", wheelEnd); wheelEl.addEventListener("pointercancel", wheelEnd);
+wheelEl.addEventListener("wheel", e => {
+  if (S.active) return;
+  const dir = Math.sign(e.deltaY), i = Math.round(wPos);
+  if (!dir || (dir > 0 && i >= WN) || (dir < 0 && i <= 0)) return;   /* at the end: let the page scroll */
+  e.preventDefault();
+  wAcc += e.deltaY * (e.deltaMode === 1 ? 33 : 1);
+  if (Math.abs(wAcc) >= 40){ const now = performance.now(); if (now - wLast > 120){ wLast = now; wheelStep(Math.sign(wAcc)); } wAcc = 0; }
+}, { passive: false });
+wheelEl.addEventListener("keydown", e => {
+  if (S.active) return;
+  const k = e.key; let moved = null;
+  if (k === "ArrowDown" || k === "ArrowRight" || k === "PageDown") moved = wheelStep(1);
+  else if (k === "ArrowUp" || k === "ArrowLeft" || k === "PageUp") moved = wheelStep(-1);
+  else if (k === "Home"){ wheelTo(0); moved = true; } else if (k === "End"){ wheelTo(WN); moved = true; }
+  if (moved !== null) e.preventDefault();
+});
 radioGroup("modes", () => st.mode, v => { if (v === st.mode) return; st.mode = v; store.set("mode", v); requestVoice(); });
 
 /* ---------- sound (Web Audio, generated here; no audio files) ---------- */
@@ -512,16 +564,29 @@ const elapsed = () => S.ctx ? Math.max(0, S.ctx.currentTime - S.t0) : 0;
 const rootEl = document.documentElement, aura = $("aura"), halo = $("halo");
 /* glow: opacity and transform only */
 const setGlow = v => { aura.style.opacity = (v * .5).toFixed(3); aura.style.transform = `scale(${(.94 + v * .06).toFixed(3)})`; halo.style.opacity = (v * .8).toFixed(3); halo.style.transform = `scale(${(.92 + v * .12).toFixed(3)})`; };
-function clockText(){ if (!S.active) return st.min ? st.min + " min" : "No limit"; const e = elapsed(); return S.T === Infinity ? fmt(Math.floor(e)) : fmt(S.T - e); }
+function clockText(){ const e = elapsed(); return S.T === Infinity ? fmt(Math.floor(e)) : fmt(S.T - e); }
+/* the wheel and the clock share one fixed-size box, so switching between them moves nothing */
+function paintClock(){
+  const w = wheelEl;
+  w.classList.toggle("run", S.active);
+  if (S.active){
+    $("wClock").textContent = clockText();
+    w.setAttribute("role", "timer"); w.setAttribute("aria-label", S.T === Infinity ? "Time played" : "Time left"); w.tabIndex = -1;
+    ["aria-valuenow","aria-valuetext","aria-valuemin","aria-valuemax"].forEach(a => w.removeAttribute(a));
+  } else if (w.getAttribute("role") !== "spinbutton"){
+    w.setAttribute("role", "spinbutton"); w.setAttribute("aria-label", "Time"); w.tabIndex = 0;
+    w.setAttribute("aria-valuemin", 0); w.setAttribute("aria-valuemax", WN);
+    wPos = MINS.indexOf(st.min); paintWheel();
+  }
+}
 function paintSession(){
   const playing = S.active && !S.paused;
-  $("times").hidden = S.active; $("extras").hidden = !S.active; $("extBtn").hidden = S.T === Infinity; $("slot").hidden = !S.active;
+  $("extras").hidden = !S.active; $("extBtn").hidden = S.T === Infinity; $("slot").hidden = !S.active;
   $("playIcon").setAttribute("d", playing ? "M6 5h4v14H6zM14 5h4v14h-4z" : "M8 5v14l11-7z");
   $("playBtn").setAttribute("aria-label", playing ? "Pause" : "Play");
   $("playBtn").disabled = !AC || S.ending;
   $("stopBtn").hidden = !S.active;
-  $("times").querySelectorAll("button").forEach(b => b.disabled = S.active);
-  $("left").textContent = clockText();
+  paintClock();
   if (!playing) setGlow(S.active ? .35 : 0);
 }
 function frame(){
@@ -537,7 +602,7 @@ function tick(){
   const e = elapsed();
   scheduleBreath(); reapVoices();
   if (S.ending && S.ctx.currentTime >= S.endAt){ finish("inf"); return; }
-  $("left").textContent = clockText();
+  paintClock();
   const c = Math.floor(e / CYCLE);
   if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (!S.ending && st.int > 15 && (S.T === Infinity || e < S.T - FADE_OUT)) buzz(15); }   /* light pulse at each in-breath (Android); none when the tone is steady */
   const rem = S.T - e;
@@ -576,7 +641,7 @@ function extend(){
   g.stop.connect(n); n.connect(g.cut); g.stop.disconnect(g.end); g.end.disconnect();   /* ...and takes over in the same instant: no jump */
   if (v < 1) n.gain.setTargetAtTime(1, now, .5);     /* if the fade-out had begun, ease back up */
   g.end = n; S.T += EXT_S; scheduleEnd(n);
-  setPrompt(false); $("left").textContent = clockText(); $("live").textContent = "5 minutes added.";
+  setPrompt(false); paintClock(); $("live").textContent = "5 minutes added.";
 }
 function setPaused(external){
   if (!S.active || S.paused) return;
@@ -741,7 +806,7 @@ $("delBtn").onclick = () => {
   if (confirm("Delete every saved answer on this device, including anything saved by earlier versions?")){ store.clearAnswers(); renderCounts(); $("endNote").textContent = "Deleted."; }
 };
 
-renderDial(false); paintInt(); paintFacts(); paintSession(); renderSignal();
+renderDial(false); paintInt(); paintFacts(); paintClock(); paintSession(); renderSignal();
 })();
 </script>
 </body>
