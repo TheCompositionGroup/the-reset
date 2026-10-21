@@ -12,7 +12,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - The frequencies and chakra names are modern wellness associations, not proven effects. The ring words (Ground, Flow, Power, Heart, Voice, Vision, Stillness) are names for the stops, not claims about what they do. Never write that a stop causes, improves, or helps anything.
 - Never describe a frequency as the natural resonance of a body part or organ. Never call a frequency "healing", "balancing", or "activating".
 - Each stop is three separate things, and copy must keep them apart: **acoustics** (the real frequency in Hz, a fact about the sound), **symbolism** (the modern chakra pairing, a cultural association), and **intention** (the ring word, an interpretive theme, not an effect).
-- The footer must stay visible on every screen, word for word: "A sound experience. Not therapy or medical care. Frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised."
+- The footer must be present on every screen, word for word: "A sound experience. Not therapy or medical care. Frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised."
 - Better / Same / Worse is a person's own tap, not evidence. No public effectiveness claims until independent review (Gate D).
 
 ### 2. Gentle sound, no forced breathing
@@ -39,7 +39,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ### 6. Readable and reachable
 - Minimum text size 13 px everywhere, including the footer. Every control has a tap target of at least 44 px, including each ring label.
-- The dial is `role="slider"` with `aria-valuetext` such as "528 hertz, solar plexus, power", and works with arrow keys, Home, End, drag, and tapping a ring label. Check layouts at 320, 360, and 390 px.
+- The dial is `role="slider"` with `aria-valuetext` such as "528 hertz, solar plexus, power", and works with arrow keys, Home, End, drag, and tapping a ring label. Check layouts at 320, 360, and 390 px. On short screens the dial and spacing shrink so Play is in view without scrolling at 320×640 and 360×740. The footer sits in normal flow: never sticky or fixed, and never covering a control.
 
 ## Product principles to preserve
 - Calm instrument panel: thin tick marks, a needle, a soft glow when active. No steampunk, fake wear, or gimmicks.

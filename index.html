@@ -99,9 +99,28 @@ button{cursor:pointer}
 .counts thead th{font-weight:500;color:var(--muted);font-size:.875rem}
 .row{display:flex;gap:.75rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem}
 
-footer{position:sticky;bottom:0;background:var(--bg);border-top:1px solid var(--line);padding:.6rem 1.25rem calc(.6rem + env(safe-area-inset-bottom,0px));font-size:.8125rem;line-height:1.4;color:var(--muted);text-align:center}
+footer{border-top:1px solid var(--line);padding:.7rem 1.25rem calc(.7rem + env(safe-area-inset-bottom,0px));font-size:.8125rem;line-height:1.4;color:var(--muted);text-align:center}
 footer p{margin:0 auto;max-width:30rem}
 
+/* short screens: shrink the dial and spacing so Play is in view without scrolling */
+@media (max-height:780px){
+  main{padding:.5rem 1.25rem .9rem}
+  h1{font-size:1.4rem}
+  .lead{margin:.2rem 0 0;font-size:.9375rem;line-height:1.35}
+  .dial{width:min(80vw,19rem,35svh);min-width:11rem;margin:.3rem auto 0}
+  .readout{margin:.2rem 0 0;min-height:3.6rem}
+  .hz{font-size:1.9rem}
+  .chakra{font-size:.8125rem}
+  .qual{font-size:1.125rem}
+  .seg{margin:.4rem 0 0}
+  .mix{margin:.2rem 0 0}
+  .transport{margin:.3rem 0 0}
+  .playwrap{width:4.75rem;height:4.75rem}
+  .play{width:4.75rem;height:4.75rem}
+  .hint{margin:.3rem 0 0}
+  .signal{font-size:.8125rem;line-height:1.3;margin:.4rem 0 0}
+}
+@media (max-height:680px){ .dial{width:min(80vw,19rem,29svh)} main:has(#signalMain:not([hidden])) .dial{width:min(80vw,19rem,23svh);min-width:9.5rem} }
 @media (prefers-reduced-motion: reduce){.needle{transition:none}.notch.pop{animation:none}}
 </style>
 </head>
