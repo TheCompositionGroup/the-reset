@@ -11,15 +11,15 @@ A free, voice-first self-reflection and guided-relaxation web app. First session
 4. **Listen** — a continuous spoken session: breathing, attention at the solar plexus, watching thoughts, holding the story loosely, your phrase, extended silence, gentle return.
 5. **Integrate** — say what you noticed and leave with one small action.
 
-Pause/resume, adjustable length (5–60 min), loop, emergency stop, live transcript. Optional soft background sound and an optional 200/206 Hz tone pair (6 Hz difference, headphones).
+Pause/resume, Mute, adjustable length (10–60 min), loop, emergency stop, live transcript. You choose the voice (up to six from your device, each with a sample), narration volume, optional soft background sound, and an optional 200/206 Hz tone pair (6 Hz difference, headphones).
 
 ## Requirements
 - A modern browser. Voice input needs Chrome or Safari; typing works everywhere.
-- Spoken guidance uses the device's built-in voices.
+- Spoken guidance uses the device's built-in voices, so the choices differ between phones and computers. Better voices can often be added in your device's language or accessibility settings.
 - **AI reflection runs only inside claude.ai** (it uses the Claude artifact runtime). Hosted elsewhere, including GitHub Pages, the app falls back to a general reflection and script. Everything else works.
 
 ## Privacy
-- Words are sent to Claude only when you tap *Reflect it back* or ask for a carry-forward action (claude.ai only).
+- Words are sent to Claude only when you tap *Reflect it back*, *Try again*, or *Find one thing to carry forward* (claude.ai only). *Skip to a session* sends nothing and ignores anything typed.
 - The session log (ratings, objective, action) is stored in your browser only. Your words are saved only if you turn that on. *Delete everything* wipes it.
 - No accounts, no analytics, no server.
 
