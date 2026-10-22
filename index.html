@@ -34,7 +34,6 @@ main{flex:none;width:100%;max-width:30rem;margin:0 auto;padding:1rem 1.25rem 1.2
 h1{font-family:var(--serif);font-weight:400;font-size:1.75rem;letter-spacing:.28em;line-height:1.1;margin:0;padding-left:.28em;text-align:center}
 h2{font-family:var(--serif);font-weight:400;font-size:1.5rem;line-height:1.2;margin:0 0 .75rem}
 .lead{text-align:center;color:var(--muted);margin:.4rem 0 0}
-.lead2{margin:.15rem 0 0;font-size:.9375rem}
 .hints{margin:.5rem 0 0}
 .hints .hint{margin:0}
 button,input{font:inherit;color:inherit}
@@ -44,7 +43,7 @@ button{cursor:pointer}
 .hint{font-size:.8125rem;line-height:1.35;color:var(--muted);margin:.5rem 0 0;text-align:center}
 
 /* dial */
-.dial{position:relative;width:min(80vw,19rem,38svh);min-width:14rem;aspect-ratio:1;margin:.5rem auto 0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border-radius:50%;cursor:grab}
+.dial{container-type:inline-size;position:relative;width:min(80vw,19rem,38svh);min-width:14rem;aspect-ratio:1;margin:.5rem auto 0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border-radius:50%;cursor:grab}
 .dial:active{cursor:grabbing}
 .dial svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible}
 .aura{position:absolute;inset:-6%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 55%,transparent) 52%,transparent 70%);will-change:opacity,transform}
@@ -57,18 +56,16 @@ button{cursor:pointer}
 .notch.pop{animation:notchPop .28s ease-out}
 @keyframes notchPop{from{transform:scale(2.4);opacity:.25}to{transform:scale(1);opacity:1}}
 .needle{transform-origin:170px 170px;transition:transform .22s ease-out}
-.needle line{stroke:var(--accent);stroke-width:2.5;stroke-linecap:round}
-.needle circle{fill:var(--accent)}
-.hub{fill:var(--bg);stroke:var(--line);stroke-width:1}
+.needle line{stroke:var(--accent);stroke-width:5;stroke-linecap:round}
+.dialhz{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font-family:var(--serif);font-size:1.5rem;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+@supports (font-size:1cqw){.dialhz{font-size:11cqw}}
 .lab{position:absolute;min-width:44px;min-height:44px;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
 .lab.on{color:var(--ink);font-weight:600}
 .dial:focus-visible{outline-offset:8px}
 
 /* readout */
-.readout{text-align:center;margin:.4rem 0 0;min-height:4.4rem}
-.hz{font-family:var(--serif);font-size:2.25rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.readout{text-align:center;margin:.4rem 0 0;min-height:1.6rem}
 .chakra{font-size:.8125rem;font-weight:400;letter-spacing:.14em;color:color-mix(in srgb,var(--muted) 82%,var(--bg));margin-top:.1rem}
-.qual{font-family:var(--serif);font-size:1.25rem;line-height:1.25}
 
 /* pills, toggles */
 .seg{display:flex;justify-content:center;gap:.35rem;flex-wrap:wrap;margin:.7rem 0 0}
@@ -106,7 +103,9 @@ button{cursor:pointer}
 .playwrap{position:relative;width:5.5rem;height:5.5rem}
 .halo{position:absolute;inset:-22%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 60%,transparent) 50%,transparent 70%);will-change:opacity,transform}
 .play{position:relative}
-.stop{justify-self:start;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem 1.1rem;min-height:2.75rem;font-weight:500}
+.modes{display:flex;flex-direction:column;gap:.35rem;justify-self:start}
+/* narrow screens: the sound toggles go under Play instead of beside it */
+@media (max-width:359px){.modes{grid-column:1/-1;grid-row:2;flex-direction:row;justify-self:center;margin-top:.2rem}}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem 1.1rem;min-height:2.75rem;font-weight:500}
 .btn[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -145,12 +144,9 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
   main{padding:.5rem 1.25rem .9rem}
   h1{font-size:1.4rem}
   .lead{margin:.2rem 0 0;font-size:.9375rem;line-height:1.3}
-  .lead2{margin:.1rem 0 0}
   .dial{width:min(80vw,19rem,35svh);min-width:11rem;margin:.3rem auto 0}
-  .readout{margin:.2rem 0 0;min-height:3.6rem}
-  .hz{font-size:1.9rem}
+  .readout{margin:.2rem 0 0;min-height:1.4rem}
   .chakra{font-size:.8125rem}
-  .qual{font-size:1.125rem}
   .seg{margin:.4rem 0 0}
   .mix{margin:.2rem 0 0}
   .transport{margin:.65rem 0 0}
@@ -162,7 +158,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
   .slot{margin:.2rem 0 0;min-height:2.6rem}
   .fact{font-size:.9375rem;line-height:1.3}
 }
-@media (max-height:680px){ .dial{width:min(80vw,19rem,25svh);min-width:9.5rem} .readout{min-height:3.2rem} h1{font-size:1.25rem} .lead,.lead2{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dial{width:min(80vw,19rem,23svh);min-width:9.5rem} }
+@media (max-height:680px){ .dial{width:min(80vw,19rem,25svh);min-width:9.5rem} h1{font-size:1.25rem} .lead{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dial{width:min(80vw,19rem,23svh);min-width:9.5rem} }
 @media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack,.wi{transition:none}.notch.pop{animation:none}.fact,.prompt,.prompt.on{transition:none}}
 </style>
 </head>
@@ -172,8 +168,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
 
   <!-- 1 DIAL -->
   <section id="vMain" aria-label="The Reset">
-    <p class="lead">No instructions to follow. Nothing to achieve. Just listen.</p>
-    <p class="lead lead2">Turn the dial. Choose a time. Press play.</p>
+    <p class="lead">Turn the dial. Choose how long. Press play.</p>
     <p class="signal" id="signalMain" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
 
     <div class="dial" id="dial" role="slider" tabindex="0" aria-label="Frequency dial" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0">
@@ -183,23 +178,15 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
         <g id="ticks"></g>
         <g id="notchG"><circle class="notch" id="notch" cx="0" cy="0" r="3.2"/></g>
         <circle class="face" cx="170" cy="170" r="88"/>
-        <g class="needle" id="needle"><line x1="170" y1="170" x2="170" y2="96"/><circle cx="170" cy="92" r="5"/></g>
-        <circle class="hub" cx="170" cy="170" r="10"/>
+        <g class="needle" id="needle"><line x1="170" y1="100" x2="170" y2="86"/></g>
       </svg>
+      <div class="dialhz" id="rHz" aria-hidden="true"></div>
       <div id="labels"></div>
     </div>
 
     <div class="readout" id="readout">
-      <div class="hz" id="rHz"></div>
       <div class="chakra" id="rChakra"></div>
-      <div class="qual" id="rQual"></div>
     </div>
-
-    <div class="seg" id="modes" role="radiogroup" aria-label="Sound">
-      <button class="pill" role="radio" data-v="tone">Tone</button>
-      <button class="pill" role="radio" data-v="atmosphere">Atmosphere</button>
-    </div>
-
 
     <div class="mix">
       <button class="icon-btn" id="muteBtn" aria-label="Mute" data-muted="false">
@@ -223,10 +210,14 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
       <button class="play" id="playBtn" aria-label="Play">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
       </button></div>
-      <span><button class="stop" id="stopBtn" hidden>Stop</button></span>
+      <div class="modes" id="modes" role="radiogroup" aria-label="Sound">
+        <button class="pill" role="radio" data-v="tone">Tone</button>
+        <button class="pill" role="radio" data-v="atmosphere">Atmosphere</button>
+      </div>
     </div>
 
     <div class="seg" id="extras" hidden>
+      <button class="pill" id="stopBtn">Stop</button>
       <button class="pill" id="extBtn" aria-label="Add 5 minutes">+5 min</button>
       <button class="pill" id="factsBtn" aria-pressed="true">Facts on</button>
     </div>
@@ -368,10 +359,10 @@ const st = {
 function renderDial(snap){
   const s = STOPS[st.stop];
   $("needle").style.transform = `rotate(${ARC0 + st.stop * STEP}deg)`;
-  $("rHz").textContent = s.hz + " Hz"; $("rChakra").textContent = s.chakra + " · ASSOCIATION"; $("rQual").textContent = s.name;
+  $("rHz").textContent = s.hz + " Hz"; $("rChakra").textContent = s.chakra + " · ASSOCIATION";
   const dial = $("dial");
   dial.setAttribute("aria-valuenow", st.stop);
-  dial.setAttribute("aria-valuetext", `${s.hz} hertz, ${s.chakra.toLowerCase()}, ${s.name.toLowerCase()}`);
+  dial.setAttribute("aria-valuetext", `${s.name}, ${s.hz} hertz, ${s.chakra.toLowerCase()} association`);
   document.querySelectorAll("#labels .lab").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
   document.querySelectorAll("#ticks .tick.major").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
   const [nx, ny] = pol(ARC0 + st.stop * STEP, 118); $("notchG").setAttribute("transform", `translate(${nx.toFixed(2)} ${ny.toFixed(2)})`);
