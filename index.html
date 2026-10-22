@@ -30,23 +30,24 @@
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top,0px)}
-main{flex:none;width:100%;max-width:30rem;margin:0 auto;padding:1rem 1.25rem 1.25rem}
+main{--sp:1rem;flex:none;width:100%;max-width:30rem;margin:0 auto;padding:.5rem 1.25rem 1rem}
+.topnote{margin:0 0 .3rem;text-align:center;font-size:.8125rem;line-height:1.2;color:var(--muted)}
+main:has(#vMain.hidden) .topnote{display:none}
 h1{font-family:var(--serif);font-weight:400;font-size:1.75rem;letter-spacing:.28em;line-height:1.1;margin:0;padding-left:.28em;text-align:center}
 h2{font-family:var(--serif);font-weight:400;font-size:1.5rem;line-height:1.2;margin:0 0 .75rem}
-.lead{text-align:center;color:var(--muted);margin:.4rem 0 0}
-.hints{margin:.5rem 0 0}
-.hints .hint{margin:0}
+.lead{text-align:center;color:var(--muted);margin:.35rem 0 0;text-wrap:balance}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
 .hidden,[hidden]{display:none!important}
-.hint{font-size:.8125rem;line-height:1.35;color:var(--muted);margin:.5rem 0 0;text-align:center}
+.hint{font-size:.8125rem;line-height:1.35;color:var(--muted);margin:var(--sp) 0 0;text-align:center}
 
 /* dial */
-.dial{container-type:inline-size;position:relative;width:min(80vw,19rem,38svh);min-width:14rem;aspect-ratio:1;margin:.5rem auto 0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border-radius:50%;cursor:grab}
+/* ring radius --R = half the box minus 50px, so the seven labels sit outside the ring and inside the box at every size; the empty bottom of the arc is pulled in by the negative bottom margin */
+.dial{--W:min(100%,19rem,40svh);--R:calc(50cqw - 50px);container-type:inline-size;position:relative;width:var(--W);min-width:12rem;aspect-ratio:1;margin:var(--sp) auto calc(var(--W) * -.12);touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border-radius:50%;cursor:grab}
 .dial:active{cursor:grabbing}
-.dial svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible}
-.aura{position:absolute;inset:-6%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 55%,transparent) 52%,transparent 70%);will-change:opacity,transform}
+.dial svg{position:absolute;left:50%;top:50%;display:block;width:calc(var(--R) * 3.0357);height:calc(var(--R) * 3.0357);margin:calc(var(--R) * -1.51786) 0 0 calc(var(--R) * -1.51786);overflow:visible}
+.aura{position:absolute;left:calc(50% - var(--R) - 10px);top:calc(50% - var(--R) - 10px);width:calc(var(--R) * 2 + 20px);height:calc(var(--R) * 2 + 20px);border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 55%,transparent) 52%,transparent 70%);will-change:opacity,transform}
 .ring{fill:none;stroke:var(--line);stroke-width:1}
 .face{fill:var(--surface);stroke:var(--line);stroke-width:1}
 .tick{stroke:var(--muted);stroke-width:1;opacity:.55}
@@ -58,31 +59,34 @@ button{cursor:pointer}
 .needle{transform-origin:170px 170px;transition:transform .22s ease-out}
 .needle line{stroke:var(--accent);stroke-width:5;stroke-linecap:round}
 .dialhz{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font-family:var(--serif);font-size:1.5rem;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
-@supports (font-size:1cqw){.dialhz{font-size:11cqw}}
-.lab{position:absolute;min-width:44px;min-height:44px;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
+@supports (font-size:1cqw){.dialhz{font-size:calc(var(--R) * .3)}}
+.lab{position:absolute;left:calc(50% + var(--s) * (var(--R) + var(--e,24px)));top:calc(50% - var(--c) * (var(--R) + var(--e,24px)));min-width:44px;min-height:44px;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
 .lab.on{color:var(--ink);font-weight:600}
 .dial:focus-visible{outline-offset:8px}
 
 /* readout */
-.readout{text-align:center;margin:.4rem 0 0;min-height:1.6rem}
-.chakra{font-size:.8125rem;font-weight:400;letter-spacing:.14em;color:color-mix(in srgb,var(--muted) 82%,var(--bg));margin-top:.1rem}
+.readout{text-align:center;margin:0;min-height:1.3rem}
+.chakra{font-size:.8125rem;font-weight:400;letter-spacing:.14em;line-height:1.3;color:var(--muted)}
 
 /* pills, toggles */
-.seg{display:flex;justify-content:center;gap:.35rem;flex-wrap:wrap;margin:.7rem 0 0}
-.pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem .6rem;min-height:2.75rem;min-width:2.75rem;font-size:.9375rem;font-weight:500;font-variant-numeric:tabular-nums}
+.seg{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap}
+.pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem 1rem;min-height:2.75rem;min-width:2.75rem;font-size:.9375rem;font-weight:500;font-variant-numeric:tabular-nums}
 .pill[aria-checked="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .pill:disabled{opacity:.5;cursor:default}
 
 /* volume + transport */
-.mix{display:flex;align-items:center;gap:.5rem;margin:.5rem 0 0}
-.mix input[type=range]{width:100%;height:2.75rem;margin:0;accent-color:var(--accent)}
-.intens{flex:1;min-width:0}
-.intens label{display:flex;justify-content:space-between;font-size:.8125rem;line-height:1.2;color:var(--muted);margin-bottom:-.15rem}
+/* intensity: speaker, track and the two labels share one grid, so the speaker centres on the track and the labels start and end with it */
+.mix,.transport,.extras{max-width:22rem;margin-left:auto;margin-right:auto}
+.mix{display:grid;grid-template-columns:2.75rem 1fr;grid-template-rows:auto 2.75rem;column-gap:.5rem;align-items:center;margin-top:var(--sp)}
+.mix input[type=range]{grid-column:2;grid-row:2;width:100%;height:2.75rem;margin:0;accent-color:var(--accent)}
+.icon-btn{grid-column:1;grid-row:2}
+.intens{display:contents}
+.intens label{grid-column:2;grid-row:1;display:flex;justify-content:space-between;font-size:.8125rem;line-height:1.2;color:var(--muted)}
 .pill[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .icon-btn{width:2.75rem;height:2.75rem;flex:none;border:1px solid var(--line);background:var(--surface);border-radius:50%;display:grid;place-items:center;padding:0}
 .icon-btn svg{width:1.4rem;height:1.4rem}
 .icon-btn[data-muted="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
-.transport{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;margin:.5rem 0 0}
+.transport{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;margin-top:var(--sp)}
 /* time wheel: three visible rows (one faded value above and below), as tall as the row it sits in. The box itself has 12px of invisible padding top and bottom (cancelled by negative margins) so each half is a 44px touch target. */
 .wheel{--rh:1.5rem;--pad:12px;justify-self:end;position:relative;width:5rem;height:calc(var(--rh) * 3 + var(--pad) * 2);margin:calc(var(--pad) * -1) 0;border-radius:.6rem;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:ns-resize;font-variant-numeric:tabular-nums}
 .wheel:focus-visible{outline:none}
@@ -90,9 +94,9 @@ button{cursor:pointer}
 .wview{position:absolute;inset:var(--pad) 0;overflow:hidden;border-top:1px solid transparent}
 .wview::before{content:"";position:absolute;left:.4rem;right:.4rem;top:var(--rh);height:var(--rh);border-top:1px solid var(--line);border-bottom:1px solid var(--line);pointer-events:none}
 .wtrack{position:absolute;left:0;right:0;top:0;transform:translateY(calc(var(--rh) * (1 - var(--p,0))));transition:transform .18s ease-out}
-.wi{height:var(--rh);line-height:var(--rh);text-align:center;font-size:1.125rem;color:var(--ink);opacity:.4;font-weight:400;transition:opacity .18s ease-out}
-.wi.sel{font-weight:600}
-.wheel.drag .wtrack,.wheel.drag .wi{transition:none}
+.wi{height:var(--rh);line-height:var(--rh);text-align:center;font-size:1.125rem;color:var(--muted);font-weight:400}
+.wi.sel{font-weight:600;color:var(--ink)}
+.wheel.drag .wtrack{transition:none}
 .wunit{position:absolute;top:calc(var(--pad) + var(--rh));height:var(--rh);line-height:var(--rh);left:calc(50% + 1rem);font-size:.8125rem;color:var(--muted);pointer-events:none}
 .wclock{position:absolute;inset:var(--pad) 0;display:grid;place-items:center;font-size:1.0625rem;color:var(--muted);visibility:hidden}
 .wheel.run{cursor:default;pointer-events:none}
@@ -101,20 +105,21 @@ button{cursor:pointer}
 .play{width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;padding:0}
 .play svg{width:2.1rem;height:2.1rem}
 .playwrap{position:relative;width:5.5rem;height:5.5rem}
-.halo{position:absolute;inset:-22%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 60%,transparent) 50%,transparent 70%);will-change:opacity,transform}
 .play{position:relative}
-.modes{display:flex;flex-direction:column;gap:.35rem;justify-self:start}
+.modes{display:grid;gap:.5rem;justify-self:start}
 /* narrow screens: the sound toggles go under Play instead of beside it */
-@media (max-width:359px){.modes{grid-column:1/-1;grid-row:2;flex-direction:row;justify-self:center;margin-top:.2rem}}
+@media (max-width:359px){.modes{grid-column:1/-1;grid-row:2;grid-auto-flow:column;justify-self:center}}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem 1.1rem;min-height:2.75rem;font-weight:500}
 .btn[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .btn:disabled{opacity:.5;cursor:default}
 
 /* rolling fact line and final-minute prompt share one reserved slot below Play, so nothing shifts or overlaps */
-.slot{display:grid;place-items:center;min-height:2.9rem;margin:.5rem 0 0}
+.extras{display:grid;gap:.5rem;margin-top:var(--sp)}
+.extras .pill{min-width:6.5rem}
+.slot{display:grid;place-items:center;min-height:2.9rem;margin:var(--sp) auto 0;max-width:24rem}
 .slot>*{grid-area:1/1}
-.fact{margin:0;max-width:26rem;text-align:center;font-family:var(--serif);font-size:1rem;line-height:1.35;color:var(--muted);opacity:0;transition:opacity 3s ease-in-out}
+.fact{margin:0;max-width:26rem;text-align:center;font-family:var(--serif);font-style:italic;font-size:1rem;line-height:1.4;color:var(--muted);opacity:0;transition:opacity 3s ease-in-out}
 .fact.on{opacity:1}
 .prompt{border:0;background:none;color:var(--muted);font-size:.9375rem;min-height:2.75rem;min-width:2.75rem;padding:.4rem 1rem;text-decoration:underline;text-underline-offset:.2em;opacity:0;visibility:hidden;transition:opacity 1.5s ease-in-out,visibility 0s 1.5s}
 .prompt.on{opacity:1;visibility:visible;transition:opacity 1.5s ease-in-out}
@@ -134,36 +139,30 @@ button{cursor:pointer}
 .counts thead th{font-weight:500;color:var(--muted);font-size:.875rem}
 .row{display:flex;gap:.75rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem}
 
-footer{border-top:1px solid var(--line);padding:.7rem 1.25rem calc(.7rem + env(safe-area-inset-bottom,0px));font-size:.8125rem;line-height:1.4;color:var(--muted);text-align:center}
+footer{border-top:1px solid var(--line);padding:.6rem 1.25rem calc(.5rem + env(safe-area-inset-bottom,0px));font-size:.8125rem;line-height:1.35;color:var(--muted);text-align:center}
 footer p{margin:0 auto;max-width:30rem}
-footer .credit{margin-top:.25rem}
+footer .credit{margin-top:.1rem}
 footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-height:44px;line-height:44px;margin:-.9rem 0}
 
 /* short screens: shrink the dial and spacing so Play is in view without scrolling */
 @media (max-height:860px){
-  main{padding:.5rem 1.25rem .9rem}
+  main{--sp:.7rem;padding:.4rem 1.25rem .8rem}
   h1{font-size:1.4rem}
   .lead{margin:.2rem 0 0;font-size:.9375rem;line-height:1.3}
-  .dial{width:min(80vw,19rem,35svh);min-width:11rem;margin:.3rem auto 0}
-  .readout{margin:.2rem 0 0;min-height:1.4rem}
-  .chakra{font-size:.8125rem}
-  .seg{margin:.4rem 0 0}
-  .mix{margin:.2rem 0 0}
-  .transport{margin:.65rem 0 0}
+  .dial{--W:min(100%,19rem,38svh)}
   .playwrap{width:4.75rem;height:4.75rem}
   .play{width:4.75rem;height:4.75rem}
-  .hint{margin:.3rem 0 0}
-  .hints{margin:.3rem 0 0}
   .signal{font-size:.8125rem;line-height:1.3;margin:.4rem 0 0}
-  .slot{margin:.2rem 0 0;min-height:2.6rem}
-  .fact{font-size:.9375rem;line-height:1.3}
+  .slot{min-height:2.6rem}
+  .fact{font-size:.9375rem;line-height:1.35}
 }
-@media (max-height:680px){ .dial{width:min(80vw,19rem,25svh);min-width:9.5rem} h1{font-size:1.25rem} .lead{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dial{width:min(80vw,19rem,23svh);min-width:9.5rem} }
-@media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack,.wi{transition:none}.notch.pop{animation:none}.fact,.prompt,.prompt.on{transition:none}}
+@media (max-height:680px){ main{--sp:.6rem} .dial{--W:min(100%,19rem,35svh)} h1{font-size:1.25rem} .lead{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dial{--W:min(100%,19rem,30svh)} }
+@media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack{transition:none}.notch.pop{animation:none}.fact,.prompt,.prompt.on{transition:none}}
 </style>
 </head>
 <body>
 <main>
+  <p class="topnote">Best with headphones.</p>
   <h1>THE RESET</h1>
 
   <!-- 1 DIAL -->
@@ -206,7 +205,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
         <span class="wunit" id="wUnit" aria-hidden="true">min</span>
         <div class="wclock" id="wClock" aria-hidden="true"></div>
       </div>
-      <div class="playwrap"><span class="halo" id="halo"></span>
+      <div class="playwrap">
       <button class="play" id="playBtn" aria-label="Play">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
       </button></div>
@@ -216,10 +215,14 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
       </div>
     </div>
 
-    <div class="seg" id="extras" hidden>
-      <button class="pill" id="stopBtn">Stop</button>
-      <button class="pill" id="extBtn" aria-label="Add 5 minutes">+5 min</button>
-      <button class="pill" id="factsBtn" aria-pressed="true">Facts on</button>
+    <div class="extras" id="extras" hidden>
+      <div class="seg">
+        <button class="pill" id="stopBtn">Stop</button>
+        <button class="pill" id="extBtn" aria-label="Add 5 minutes">+5 min</button>
+      </div>
+      <div class="seg">
+        <button class="pill" id="factsBtn" aria-pressed="true">Facts on</button>
+      </div>
     </div>
     <div class="slot" id="slot" hidden>
       <p class="fact" id="fact"></p>
@@ -228,7 +231,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
     <p class="sr" id="live" role="status" aria-live="polite"></p>
 
     <p class="hint" id="noAudio" hidden>Sound isn’t available in this browser.</p>
-    <div class="hints"><p class="hint">Best with headphones.</p><p class="hint">Sound may pause if your screen locks.</p></div>
+    <p class="hint">Sound may pause if your screen locks.</p>
   </section>
 
   <!-- 2 END (natural completion only) -->
@@ -267,7 +270,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
 
 <footer>
   <p>A sound experience. Not therapy or medical care. Frequency and chakra pairings are modern wellness associations, not proven effects. Nothing is promised.</p>
-  <p class="credit">A <a href="https://fancyape.com" target="_blank" rel="noopener noreferrer">Fancy Ape</a>® project · The Composition Group</p>
+  <p class="credit">A <a href="https://fancyape.com" target="_blank" rel="noopener noreferrer">Fancy Ape®</a> project · The Composition Group</p>
 </footer>
 
 <script>
@@ -353,8 +356,13 @@ const st = {
     const [x1,y1] = pol(d, 98), [x2,y2] = pol(d, major ? 112 : 106);
     t += `<line class="tick${major ? " major" : ""}" ${major ? `data-i="${n/9}" ` : ""}x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`;
   }
-  STOPS.forEach((s, i) => { const [x,y] = pol(ARC0 + i * STEP, LAB_R); l += `<div class="lab" data-i="${i}" style="left:${(x/3.4).toFixed(2)}%;top:${(y/3.4).toFixed(2)}%">${s.name}</div>`; });
+  STOPS.forEach((s, i) => { const a = (ARC0 + i * STEP) * Math.PI / 180; l += `<div class="lab" data-i="${i}" style="--s:${Math.sin(a).toFixed(4)};--c:${Math.cos(a).toFixed(4)}"><span>${s.name}</span></div>`; });
   $("ticks").innerHTML = t; $("labels").innerHTML = l;
+  /* each label sits a fixed 14px outside the ring, pushed out by half its own width/height along its angle, so no label touches the ring or the selection dot */
+  document.querySelectorAll("#labels .lab").forEach(el => {
+    el.classList.add("on"); const w = el.firstChild.getBoundingClientRect().width; el.classList.remove("on");
+    el.style.setProperty("--e", (14 + Math.abs(+el.style.getPropertyValue("--s")) * w / 2 + Math.abs(+el.style.getPropertyValue("--c")) * 7).toFixed(1) + "px");
+  });
 })();
 function renderDial(snap){
   const s = STOPS[st.stop];
@@ -421,7 +429,7 @@ let wPos = MINS.indexOf(st.min), wDrag = null, wAcc = 0, wLast = 0;
 function paintWheel(){
   const idx = Math.round(wPos);
   wTrack.style.setProperty("--p", wPos.toFixed(3));
-  wItems.forEach((e, i) => { e.style.opacity = (1 - .6 * Math.min(1, Math.abs(i - wPos))).toFixed(2); e.classList.toggle("sel", i === idx); });
+  wItems.forEach((e, i) => { e.classList.toggle("sel", i === idx); });
   $("wUnit").hidden = MINS[idx] === 0;
   if (!S.active){
     wheelEl.setAttribute("aria-valuenow", idx);
@@ -558,9 +566,9 @@ function scheduleBreath(){
 /* ---------- session ---------- */
 const fmt = s => { s = Math.max(0, Math.ceil(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s % 60).padStart(2, "0"); };
 const elapsed = () => S.ctx ? Math.max(0, S.ctx.currentTime - S.t0) : 0;
-const rootEl = document.documentElement, aura = $("aura"), halo = $("halo");
+const rootEl = document.documentElement, aura = $("aura");
 /* glow: opacity and transform only */
-const setGlow = v => { aura.style.opacity = (v * .5).toFixed(3); aura.style.transform = `scale(${(.94 + v * .06).toFixed(3)})`; halo.style.opacity = (v * .8).toFixed(3); halo.style.transform = `scale(${(.92 + v * .12).toFixed(3)})`; };
+const setGlow = v => { aura.style.opacity = (v * .5).toFixed(3); aura.style.transform = `scale(${(.94 + v * .06).toFixed(3)})`; };
 function clockText(){ const e = elapsed(); return S.T === Infinity ? fmt(Math.floor(e)) : fmt(S.T - e); }
 /* the wheel and the clock share one fixed-size box, so switching between them moves nothing */
 function paintClock(){
@@ -803,7 +811,9 @@ $("delBtn").onclick = () => {
   if (confirm("Delete every saved answer on this device, including anything saved by earlier versions?")){ store.clearAnswers(); renderCounts(); $("endNote").textContent = "Deleted."; }
 };
 
-renderDial(false); paintInt(); paintFacts(); paintClock(); paintSession(); renderSignal();
+wTrack.style.transition = "none";   /* no slide-in from 5 on first paint */
+renderDial(false); paintInt(); paintFacts(); paintClock(); paintSession();
+requestAnimationFrame(() => requestAnimationFrame(() => { wTrack.style.transition = ""; })); renderSignal();
 })();
 </script>
 </body>
