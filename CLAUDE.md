@@ -20,7 +20,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - There is no app volume: loudness is the device's. Output level is fixed (`MASTER` = 0.2) behind a compressor. **Intensity** (0–100, default 40) sets pulse depth (0 = steady, up to 90% deep) and the atmosphere bed; it changes by smooth ramps only, never steps. No sudden peaks, bells, or alarms.
 - Fades only: 5 s in on Play, 8 s out at a timed end (it moves back with each +5 min; if already fading, the sound eases back up), 0.3 s on Stop (timed) and Escape, about 0.45 s on Pause, 8 s on Stop for ∞. Stop and Escape always work immediately; a second Stop press during the ∞ fade ends it at once. Pause holds in place.
 - Don't assume every device reproduces every frequency or harmonic equally.
-- Respect `prefers-reduced-motion`: the glow stays still and the needle does not animate. Only visuals stop; sound and the Android breath pulses are unchanged.
+- Respect `prefers-reduced-motion`: the glow stays still and the rim pointer does not animate. Only visuals stop; sound and the Android breath pulses are unchanged.
 
 ### 3. No user text, so no crisis detection
 - The app collects no user text: no typing, no microphone, no transcripts. Therefore there is no crisis detection and no 988 notice.
@@ -39,7 +39,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ### 6. Readable and reachable
 - Minimum text size 13 px everywhere, including the footer. Every control has a tap target of at least 44 px, including each ring label.
-- The dial is `role="slider"` with `aria-valuetext` such as "528 hertz, solar plexus, power", and works with arrow keys, Home, End, drag, and tapping a ring label. Check layouts at 320, 360, and 390 px. On short screens the dial and spacing shrink so Play is in view without scrolling at 320×640 and 360×740. The footer sits in normal flow: never sticky or fixed, and never covering a control.
+- The dial is `role="slider"` with `aria-valuetext` such as "Flow, 417 hertz" (the ring word, then the Hz), and works with arrow keys, Home, End, drag, and tapping a ring label. Check layouts at 320, 360, and 390 px. On short screens the dial and spacing shrink so Play is in view without scrolling at 320×640 and 360×740. The footer sits in normal flow: never sticky or fixed, and never covering a control.
 
 ### 7. Deployment
 - GitHub Pages always deploys from `main` / (root). Never change the Pages source branch.
@@ -47,8 +47,8 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - After the merge, delete the merged branches: `claude/v0.3.0-sound-dial`, `v-next`, `claude/magical-pasteur-w9gmgf`, `claude/v0.2.2-crisis-mic-fallback` (if merged or abandoned). Check each one's merge status first, and never delete an unmerged branch without asking.
 
 ## Product principles to preserve
-- Calm instrument panel: thin tick marks, a needle, a soft glow when active. No steampunk, fake wear, or gimmicks.
-- One screen: dial, readout, time, sound type, intensity, Play. The time is a rolling wheel (5, 10, 15, 20, 30, 45, 60, ∞; default 15) left of Play. While playing, the wheel locks and shows the live clock in the same box, +5 min and Facts appear below Play, and the fact line / "Extend? +5" prompt share one reserved slot below Play so nothing overlaps a control. Copy stays minimal. Rolling fact lines are only these kinds, each worded as what it is: physics, tradition (say modern chakra charts and that sources disagree; Hz-to-chakra pairings are not traditional), invitation. All of that text and the closing lines live in the `COPY` block in `index.html`. The end screen appears only after a timed completion, or after stopping ∞ at 5 minutes or more, never after an early Stop on a timed session or Escape. ∞ plays until Pause or Stop and counts up; the log keeps the actual minutes played.
+- Calm instrument panel: thin tick marks, a short knob-style pointer on the rim of the dial (the centre stays clear), a soft glow when active. No steampunk, fake wear, or gimmicks.
+- One screen: dial (the Hz value large in its centre, updating as it turns), one readout line under it ("SACRAL · ASSOCIATION"), intensity, and one bottom row: time wheel, Play, and the Tone / Atmosphere toggles stacked beside Play (under Play on screens narrower than 360 px), all centred on Play. The time is a rolling wheel (5, 10, 15, 20, 30, 45, 60, ∞; default 15). While playing, the wheel locks and shows the live clock in the same box, Stop, +5 min and Facts appear below Play, and the fact line / "Extend? +5" prompt share one reserved slot below Play so nothing overlaps a control. Copy stays minimal. Rolling fact lines are only these kinds, each worded as what it is: physics, tradition (say modern chakra charts and that sources disagree; Hz-to-chakra pairings are not traditional), invitation. All of that text and the closing lines live in the `COPY` block in `index.html`. The end screen appears only after a timed completion, or after stopping ∞ at 5 minutes or more, never after an early Stop on a timed session or Escape. ∞ plays until Pause or Stop and counts up; the log keeps the actual minutes played.
 - Animate only opacity and transform. No animated blur, shadow, filter, or stroke, so cheap phones stay smooth. The glow takes the active stop's color.
 - The answer counts are shown as they are. Never hide or soften a "Worse" count.
 - Stop signal: when 3 or more of the last 12 saved sessions are "Worse", a quiet notice shows on the dial screen and the end screen. It has no dismiss button and is never softened or hidden. Only answered sessions are saved, so only they count.
