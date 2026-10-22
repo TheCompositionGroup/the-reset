@@ -65,7 +65,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ## Editing checklist
 - Grep user-facing text for the banned terms in Rule 1 before committing (the cited book title is the one allowed hit for "healing").
-- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html` (the "Suggest a change" and footer "Fancy Ape" links are the only two allowed `href`s).
+- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html` (the "Suggest a change" and footer "Fancy Ape" links are the only two allowed `href`s; the three inline `data:image/png` icon links in `<head>` are not external).
 - Confirm nothing but stop, time, sound, intensity, facts on/off, closing-line position, and the answer log is stored.
 - Update `CHANGELOG.md` for any behavior change.
 - Test sound, fades, and haptics on a real phone before merging anything that touches audio.
