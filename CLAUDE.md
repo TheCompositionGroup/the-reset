@@ -39,7 +39,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ### 6. Readable and reachable
 - Minimum text size 13 px everywhere, including the footer. Every control has a tap target of at least 44 px, including each ring label.
-- The dial is `role="slider"` with `aria-valuetext` such as "Flow, 417 hertz" (the ring word, then the Hz), and works with arrow keys, Home, End, drag, and tapping a ring label. Check layouts at 320, 360, and 390 px. On short screens the dial and spacing shrink so Play is in view without scrolling at 320×640 and 360×740. The footer sits in normal flow: never sticky or fixed, and never covering a control.
+- The dial is `role="slider"` with `aria-valuetext` such as "Flow, 417 hertz, sacral association" (the ring word, the Hz, then the chakra pairing named as an association, matching the visible readout), and works with arrow keys, Home, End, drag, and tapping a ring label. Check layouts at 320, 360, and 390 px. On short screens the dial and spacing shrink so Play is in view without scrolling at 320×640 and 360×740. The footer sits in normal flow: never sticky or fixed, and never covering a control.
 
 ### 7. Deployment
 - GitHub Pages always deploys from `main` / (root). Never change the Pages source branch.

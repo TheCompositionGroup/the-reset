@@ -362,7 +362,7 @@ function renderDial(snap){
   $("rHz").textContent = s.hz + " Hz"; $("rChakra").textContent = s.chakra + " · ASSOCIATION";
   const dial = $("dial");
   dial.setAttribute("aria-valuenow", st.stop);
-  dial.setAttribute("aria-valuetext", `${s.name}, ${s.hz} hertz`);
+  dial.setAttribute("aria-valuetext", `${s.name}, ${s.hz} hertz, ${s.chakra.toLowerCase()} association`);
   document.querySelectorAll("#labels .lab").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
   document.querySelectorAll("#ticks .tick.major").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
   const [nx, ny] = pol(ARC0 + st.stop * STEP, 118); $("notchG").setAttribute("transform", `translate(${nx.toFixed(2)} ${ny.toFixed(2)})`);
