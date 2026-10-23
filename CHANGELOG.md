@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.5.2 (unreleased)
+- Changed: the Sound button keeps one fixed width (7.75rem) in both modes. A small waveform replaces the "Sound" caption: one wave for Tone, three layered waves for Atmosphere. The screen-reader label is unchanged.
+
 ## v0.5.1 (unreleased)
 - Fixed: tapping or dragging the intensity arc no longer moves keyboard focus to it, so the rectangular focus outline no longer appears over the dial. With the keyboard, focus on intensity now shows as a thicker brass arc instead of a rectangle.
 - Changed: Play/Stop is in the centre of the dial. Each ring label shows its Hz under the name; the large centre Hz is gone. Tapping the dial no longer shows a focus ring (keyboard focus still does).
