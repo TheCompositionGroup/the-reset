@@ -55,6 +55,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ## Where the frequencies come from
 - 396, 417, 528, 639, 741, and 852 Hz are the modern Solfeggio set popularised by Joseph Puleo and Leonard Horowitz in *Healing Codes for the Biological Apocalypse* (1999). 963 Hz is a later addition, as are 174 and 285 Hz in some lists. 285 Hz (Mend) has no chakra pairing. The tissue-repair claim attached to it may appear only as a labelled wellness claim with the statement that no study shows a tone repairs tissue; never as an effect of the stop. Nothing in this app claims these tones do what that book says.
+- The 285 Hz tissue-repair note (`COPY.stop.notes[285]`) appears only in the expanded "More about the sound" panel, never in the rolling line.
 - Hz-to-chakra pairings are modern. Traditional sources use bija (seed) sounds, not hertz.
 - NCCIH, "Music and Health: What the Science Says", reviews research on music in general (for example relaxation and mood; the evidence is described as preliminary and mixed). It does not show frequency-specific effects. Better / Same / Worse in this app is a rough self-report and is never presented as proof that a frequency works.
 

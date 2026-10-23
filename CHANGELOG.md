@@ -10,6 +10,7 @@
 - New: **285 Hz — Mend**, the lowest stop. Eight stops now span the same 270° arc (38.6° apart). It has no chakra pairing; the readout says "NO CHAKRA PAIRING". The tissue-repair claim some later lists attach to 285 Hz appears only as a labelled wellness claim with "No study shows that a tone repairs tissue."
 - Changed: the saved stop is now its Hz (was an index), and new answers also save the Hz, so 285 Hz doesn't shift older data; older answers are still counted under the right stop.
 - Changed: **facts.** One fact for the current frequency shows under Play at all times (wavelength in air). While playing it changes every 20–30 s. Tapping it opens "More about the sound": this frequency (cycle time, wavelength, nearest piano key, computed in the page), measured sound science, and where the frequencies come from, kept separate. Rolling lines draw only on this frequency and measured physics, plus the invitations.
+- Changed: the 285 Hz tissue-repair note (`COPY.stop.notes`) shows only in the expanded "More about the sound" panel. `rollingLines()` uses only `COPY.stop.lines`, the paired/unpaired line, physics and invitations.
 - Changed: header reads "Turn the dial. Set your time. Press play." Usage notes (headphones, screen lock, what each control does) moved into an expandable **How it works**.
 - Storage: drops facts on/off (removed on load). Keeps stop, time, sound, intensity, closing-line position and the answer log.
 
