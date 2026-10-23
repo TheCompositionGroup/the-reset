@@ -56,16 +56,19 @@ button{cursor:pointer}
 @keyframes notchPop{from{transform:scale(2.4);opacity:.25}to{transform:scale(1);opacity:1}}
 .needle{transform-origin:170px 170px;transition:transform .22s ease-out}
 .needle line{stroke:var(--accent);stroke-width:5;stroke-linecap:round}
-.dialhz{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;font-family:var(--serif);font-size:1.5rem;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
-@supports (font-size:1cqw){.dialhz{font-size:11cqw}}
-.lab{position:absolute;min-width:44px;min-height:44px;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
+.lab{position:absolute;min-width:44px;min-height:44px;display:grid;place-content:center;justify-items:center;gap:.15rem;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
+.lab .lh{font-variant-numeric:tabular-nums;color:color-mix(in srgb,var(--muted) 82%,var(--bg))}
+.lab.on .lh{color:var(--ink);font-weight:400}
 .lab.on{color:var(--ink);font-weight:600}
 .dial:focus-visible{outline-offset:8px}
 /* intensity: a short arc in the empty wedge at the bottom of the dial */
 .itrack{fill:none;stroke:var(--line);stroke-width:4;stroke-linecap:round}
 .ifill{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round}
 .ithumb{fill:var(--accent);stroke:var(--bg);stroke-width:2}
-.iknob{position:absolute;left:29%;top:72%;width:42%;height:17%;border-radius:999px;pointer-events:none}
+.iknob{position:absolute;left:29%;top:72%;width:42%;height:17%;pointer-events:none}
+.iknob:focus-visible{outline:none}
+/* keyboard focus on intensity: the arc itself is the focus ring */
+.dialwrap:has(.iknob:focus-visible) .itrack{stroke:var(--brass);stroke-width:6}
 .icap{position:absolute;left:50%;top:91%;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);pointer-events:none;white-space:nowrap}
 
 /* readout */
@@ -74,7 +77,7 @@ button{cursor:pointer}
 
 /* transport: [time] [Play/Stop] [Sound] */
 .pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem .6rem;min-height:2.75rem;min-width:2.75rem;font-size:.9375rem;font-weight:500;font-variant-numeric:tabular-nums}
-.transport{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;margin:.5rem 0 0}
+.transport{display:flex;justify-content:center;align-items:center;gap:1.5rem;margin:.75rem 0 0}
 /* time wheel: three visible rows (one faded value above and below). The box has 12px of invisible padding top and bottom (cancelled by negative margins) so each half is a 44px touch target. */
 .wheel{--rh:1.5rem;--pad:12px;justify-self:end;position:relative;width:5rem;height:calc(var(--rh) * 3 + var(--pad) * 2);margin:calc(var(--pad) * -1) 0;border-radius:.6rem;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:ns-resize;font-variant-numeric:tabular-nums}
 .wheel:focus-visible{outline:none}
@@ -91,13 +94,13 @@ button{cursor:pointer}
 .wheel.run .wview,.wheel.run .wunit{visibility:hidden}
 .wheel.run .wclock{visibility:visible}
 .play{position:relative;width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;padding:0}
-.play svg{width:2.1rem;height:2.1rem}
-.playwrap{position:relative;width:5.5rem;height:5.5rem}
+/* Play/Stop sits in the centre of the dial face, above the dial, so a press there is never a frequency press */
+.playwrap{position:absolute;left:50%;top:50%;width:36%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:2}
+.playwrap .play{width:100%;height:100%}
+.play svg{width:38%;height:38%}
 .halo{position:absolute;inset:-22%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 60%,transparent) 50%,transparent 70%);will-change:opacity,transform}
 .sound{justify-self:start;display:grid;gap:.1rem;padding:.4rem 1rem;border-radius:1.4rem;text-align:center;line-height:1.15}
 .sound .cap{font-size:.8125rem;font-weight:400;color:var(--muted)}
-/* narrow screens: the sound control goes under Play instead of beside it */
-@media (max-width:359px){.sound{grid-column:1/-1;grid-row:2;justify-self:center;margin-top:.2rem}}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem 1.1rem;min-height:2.75rem;font-weight:500}
 .btn[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -145,15 +148,13 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
   .dialwrap{width:min(80vw,19rem,38svh);min-width:11rem;margin:.3rem auto 0}
   .readout{margin:.2rem 0 0;min-height:1.4rem}
   .transport{margin:.4rem 0 0}
-  .playwrap{width:4.75rem;height:4.75rem}
-  .play{width:4.75rem;height:4.75rem}
   .hint{margin:.3rem 0 0}
   .signal{font-size:.8125rem;line-height:1.3;margin:.4rem 0 0}
   .factbtn{margin-top:.3rem}
   .fact{font-size:.9375rem;line-height:1.3}
   .how{margin-top:.2rem}
 }
-@media (max-height:680px){ .dialwrap{width:min(80vw,19rem,32svh);min-width:9.5rem} h1{font-size:1.25rem} .lead{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dialwrap{width:min(80vw,19rem,26svh);min-width:9.5rem} }
+@media (max-height:680px){ .dialwrap{width:min(80vw,19rem,40svh);min-width:9.5rem} h1{font-size:1.25rem} .lead{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dialwrap{width:min(80vw,19rem,32svh);min-width:9.5rem} }
 @media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack,.wi{transition:none}.notch.pop{animation:none}.fact{transition:none}}
 </style>
 </head>
@@ -179,12 +180,15 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
           <path class="ifill" id="iFill"/>
           <circle class="ithumb" id="iThumb" r="6"/>
         </svg>
-        <div class="dialhz" id="rHz" aria-hidden="true"></div>
         <div id="labels"></div>
       </div>
       <!-- keyboard and screen-reader handle for the intensity arc; touch and mouse go through the dial, which routes the bottom wedge here -->
       <div class="iknob" id="iKnob" role="slider" tabindex="0" aria-label="Intensity" aria-valuemin="0" aria-valuemax="100"></div>
       <span class="icap" aria-hidden="true">Intensity</span>
+      <div class="playwrap"><span class="halo" id="halo"></span>
+      <button class="play" id="playBtn" aria-label="Play">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
+      </button></div>
     </div>
 
     <div class="readout" id="readout">
@@ -197,10 +201,6 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
         <span class="wunit" id="wUnit" aria-hidden="true">min</span>
         <div class="wclock" id="wClock" aria-hidden="true"></div>
       </div>
-      <div class="playwrap"><span class="halo" id="halo"></span>
-      <button class="play" id="playBtn" aria-label="Play">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
-      </button></div>
       <button class="pill sound" id="modeBtn"><span class="cap">Sound</span><span id="modeVal"></span></button>
     </div>
 
@@ -407,7 +407,7 @@ const leadFact = s => fill((C().stop || {}).lead || "{hz} Hz", s);
     const [x1,y1] = pol(d, 98), [x2,y2] = pol(d, major ? 112 : 106);
     t += `<line class="tick${major ? " major" : ""}" ${major ? `data-i="${n/8}" ` : ""}x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`;
   }
-  STOPS.forEach((s, i) => { const [x,y] = pol(ARC0 + i * STEP, LAB_R); l += `<div class="lab" data-i="${i}" style="left:${(x/3.4).toFixed(2)}%;top:${(y/3.4).toFixed(2)}%">${s.name}</div>`; });
+  STOPS.forEach((s, i) => { const [x,y] = pol(ARC0 + i * STEP, LAB_R); l += `<div class="lab" data-i="${i}" style="left:${(x/3.4).toFixed(2)}%;top:${(y/3.4).toFixed(2)}%"><span class="ln">${s.name}</span><span class="lh">${s.hz} Hz</span></div>`; });
   $("ticks").innerHTML = t; $("labels").innerHTML = l;
   const [ax, ay] = pol(I_LO, I_R), [bx, by] = pol(I_HI, I_R);
   $("iTrack").setAttribute("d", `M${ax.toFixed(2)} ${ay.toFixed(2)}A${I_R} ${I_R} 0 0 0 ${bx.toFixed(2)} ${by.toFixed(2)}`);
@@ -416,7 +416,7 @@ const rootEl = document.documentElement;
 function renderDial(snap){
   const s = STOPS[st.stop];
   $("needle").style.transform = `rotate(${ARC0 + st.stop * STEP}deg)`;
-  $("rHz").textContent = s.hz + " Hz"; $("rChakra").textContent = s.chakra ? s.chakra + " · ASSOCIATION" : "NO CHAKRA PAIRING";
+  $("rChakra").textContent = s.chakra ? s.chakra + " · ASSOCIATION" : "NO CHAKRA PAIRING";
   const dial = $("dial");
   dial.setAttribute("aria-valuenow", st.stop);
   dial.setAttribute("aria-valuetext", `${s.name}, ${s.hz} hertz, ${s.chakra ? s.chakra.toLowerCase() + " association" : "no chakra pairing"}`);
@@ -453,11 +453,11 @@ dialEl.addEventListener("pointerdown", e => {
   const lab = e.target.closest && e.target.closest(".lab"), p = polarOf(e);
   if (!lab && zoneOf(p) === "int"){
     drag = "int"; try { dialEl.setPointerCapture(e.pointerId); } catch(_){}
-    setInt(intOfAngle(p.a)); knobEl.focus({ preventScroll:true }); e.preventDefault(); return;
+    setInt(intOfAngle(p.a)); e.preventDefault(); return;   /* no focus move on touch or mouse, so no focus ring appears */
   }
   const i = lab ? +lab.dataset.i : fromAngle(p.a); if (i === null) return;
   drag = "freq"; try { dialEl.setPointerCapture(e.pointerId); } catch(_){}
-  setStop(i); dialEl.focus({ preventScroll:true }); e.preventDefault();
+  setStop(i); e.preventDefault();
 });
 dialEl.addEventListener("pointermove", e => {
   if (!drag) return;
