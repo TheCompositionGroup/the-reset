@@ -51,9 +51,6 @@ button{cursor:pointer}
 .tick{stroke:var(--muted);stroke-width:1;opacity:.55}
 .tick.major{stroke-width:1.5;opacity:.8}
 .tick.on{stroke:var(--accent);opacity:1;stroke-width:2.5}
-.notch{fill:var(--accent);transform-box:fill-box;transform-origin:center}
-.notch.pop{animation:notchPop .28s ease-out}
-@keyframes notchPop{from{transform:scale(2.4);opacity:.25}to{transform:scale(1);opacity:1}}
 .needle{transform-origin:170px 170px;transition:transform .22s ease-out}
 .needle line{stroke:var(--accent);stroke-width:5;stroke-linecap:round}
 .lab{position:absolute;min-width:44px;min-height:44px;display:grid;place-content:center;justify-items:center;gap:.15rem;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
@@ -64,7 +61,7 @@ button{cursor:pointer}
 /* intensity: a short arc in the empty wedge at the bottom of the dial */
 .itrack{fill:none;stroke:var(--line);stroke-width:4;stroke-linecap:round}
 .ifill{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round}
-.ithumb{fill:var(--accent);stroke:var(--bg);stroke-width:2}
+.ithumb{stroke:var(--accent);stroke-width:5;stroke-linecap:round}
 .iknob{position:absolute;left:29%;top:72%;width:42%;height:17%;pointer-events:none}
 .iknob:focus-visible{outline:none}
 /* keyboard focus on intensity: the arc itself is the focus ring */
@@ -158,7 +155,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
   .how{margin-top:.2rem}
 }
 @media (max-height:680px){ .dialwrap{width:min(80vw,19rem,40svh);min-width:9.5rem} h1{font-size:1.25rem} .lead{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dialwrap{width:min(80vw,19rem,32svh);min-width:9.5rem} }
-@media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack,.wi{transition:none}.notch.pop{animation:none}.fact{transition:none}}
+@media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack,.wi{transition:none}.fact{transition:none}}
 </style>
 </head>
 <body>
@@ -176,12 +173,11 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
         <svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
           <circle class="ring" cx="170" cy="170" r="112"/>
           <g id="ticks"></g>
-          <g id="notchG"><circle class="notch" id="notch" cx="0" cy="0" r="3.2"/></g>
           <circle class="face" cx="170" cy="170" r="88"/>
           <g class="needle" id="needle"><line x1="170" y1="100" x2="170" y2="86"/></g>
           <path class="itrack" id="iTrack"/>
           <path class="ifill" id="iFill"/>
-          <circle class="ithumb" id="iThumb" r="6"/>
+          <line class="ithumb" id="iThumb"/>
         </svg>
         <div id="labels"></div>
       </div>
@@ -377,7 +373,7 @@ const st = {
   stop: (() => { const i = idxOfHz(hzOfSaved(+store.get("stop", 396))); return i < 0 ? 1 : i; })(),
   min: MINS.includes(savedMin) ? savedMin : savedMin === 0 ? 30 : (MINS.filter(m => m <= savedMin).pop() || 5),   /* older times (15, 45, 60, ∞) map to the nearest one kept */
   mode: MODES.includes(store.get("mode", "atmosphere")) ? store.get("mode", "atmosphere") : "atmosphere",
-  int: clamp(Math.round(+store.get("int", 40)), 0, 100) || 0   /* intensity 0-100 */
+  int: clamp(Math.round(+store.get("int", 50)), 0, 100) || 0   /* intensity 0-100 */
 };
 store.set("stop", STOPS[st.stop].hz); store.set("min", st.min);
 
@@ -416,7 +412,7 @@ const leadFact = s => fill((C().stop || {}).lead || "{hz} Hz", s);
   $("iTrack").setAttribute("d", `M${ax.toFixed(2)} ${ay.toFixed(2)}A${I_R} ${I_R} 0 0 0 ${bx.toFixed(2)} ${by.toFixed(2)}`);
 })();
 const rootEl = document.documentElement;
-function renderDial(snap){
+function renderDial(){
   const s = STOPS[st.stop];
   $("needle").style.transform = `rotate(${ARC0 + st.stop * STEP}deg)`;
   $("rChakra").textContent = s.chakra ? s.chakra + " · ASSOCIATION" : "NO CHAKRA PAIRING";
@@ -425,14 +421,12 @@ function renderDial(snap){
   dial.setAttribute("aria-valuetext", `${s.name}, ${s.hz} hertz, ${s.chakra ? s.chakra.toLowerCase() + " association" : "no chakra pairing"}`);
   document.querySelectorAll("#labels .lab").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
   document.querySelectorAll("#ticks .tick.major").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
-  const [nx, ny] = pol(ARC0 + st.stop * STEP, 118); $("notchG").setAttribute("transform", `translate(${nx.toFixed(2)} ${ny.toFixed(2)})`);
-  const nt = $("notch"); nt.classList.remove("pop"); if (snap){ void nt.getBoundingClientRect(); nt.classList.add("pop"); }
   rootEl.style.setProperty("--glow-c", s.c);
   renderLearnStop(); if (!F.on) showFact(leadFact(s), false);
 }
 function setStop(i){
   i = clamp(i, 0, LAST); if (i === st.stop) return;
-  st.stop = i; store.set("stop", STOPS[i].hz); buzz(10); renderDial(true); requestVoice();
+  st.stop = i; store.set("stop", STOPS[i].hz); buzz(10); renderDial(); requestVoice();
 }
 const dialEl = $("dial"), knobEl = $("iKnob");
 /* pointer position in the dial's own 340-unit space: angle (clockwise from top, 0-360) and radius */
@@ -750,7 +744,8 @@ function paintInt(){
   const v = st.int, a = I_LO - (I_LO - I_HI) * v / 100;
   const [ax, ay] = pol(I_LO, I_R), [bx, by] = pol(a, I_R);
   $("iFill").setAttribute("d", `M${ax.toFixed(2)} ${ay.toFixed(2)}A${I_R} ${I_R} 0 0 0 ${bx.toFixed(2)} ${by.toFixed(2)}`);
-  $("iThumb").setAttribute("cx", bx.toFixed(2)); $("iThumb").setAttribute("cy", by.toFixed(2));
+  const [t1x, t1y] = pol(a, I_R - 8), [t2x, t2y] = pol(a, I_R + 8);   /* a short radial line, like the dial pointer */
+  const th = $("iThumb"); th.setAttribute("x1", t1x.toFixed(2)); th.setAttribute("y1", t1y.toFixed(2)); th.setAttribute("x2", t2x.toFixed(2)); th.setAttribute("y2", t2y.toFixed(2));
   knobEl.setAttribute("aria-valuenow", v); knobEl.setAttribute("aria-valuetext", intWord(v) + ", " + v + " percent");
 }
 function setInt(v){ v = clamp(Math.round(v), 0, 100); if (v === st.int) return; st.int = v; store.set("int", v); paintInt(); applyIntensity(); }
@@ -853,7 +848,7 @@ $("delBtn").onclick = () => {
   if (confirm("Delete every saved answer on this device, including anything saved by earlier versions?")){ store.clearAnswers(); renderCounts(); $("endNote").textContent = "Deleted."; }
 };
 
-renderDial(false); paintInt(); paintMode(); paintClock(); paintSession(); renderSignal();
+renderDial(); paintInt(); paintMode(); paintClock(); paintSession(); renderSignal();
 })();
 </script>
 </body>

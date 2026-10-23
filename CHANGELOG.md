@@ -1,6 +1,7 @@
 # Changelog
 
 ## v0.5.2 (unreleased)
+- Changed: the small dot beside the dial pointer is gone; the highlighted tick and pointer mark the stop. The intensity knob is a short line like the dial pointer. Intensity starts at 50% (the middle of the arc) for new visitors; a saved value is kept.
 - Changed: the Sound button keeps one fixed width (7.75rem) in both modes. A small waveform replaces the "Sound" caption: one wave for Tone, three layered waves for Atmosphere. The screen-reader label is unchanged.
 
 ## v0.5.1 (unreleased)

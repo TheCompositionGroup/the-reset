@@ -17,7 +17,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ### 2. Gentle sound, no forced breathing
 - The volume swell (up 4 s, down 6 s) and the glow are a rhythm, not a breathing technique or treatment. Never add breath counts, holds, hyperventilation, rapid or forced cycles, or any instruction to push past discomfort.
-- There is no app volume and no mute: loudness is the device's. Output level is fixed (`MASTER` = 0.2) behind a compressor. **Intensity** (0–100, default 40) sets pulse depth (0 = steady, up to 90% deep) and the atmosphere bed; it changes by smooth ramps only, never steps. No sudden peaks, bells, or alarms.
+- There is no app volume and no mute: loudness is the device's. Output level is fixed (`MASTER` = 0.2) behind a compressor. **Intensity** (0–100, default 50) sets pulse depth (0 = steady, up to 90% deep) and the atmosphere bed; it changes by smooth ramps only, never steps. No sudden peaks, bells, or alarms.
 - Fades only: 5 s in on Play, 8 s out at a timed end, 0.3 s on Stop and Escape. Stop and Escape always work immediately and reset the session. There is no Pause; if the browser suspends the sound (screen lock, a call), the session holds in place and Play continues it.
 - Don't assume every device reproduces every frequency or harmonic equally.
 - Respect `prefers-reduced-motion`: the glow stays still and the rim pointer does not animate. Only visuals stop; sound and the Android breath pulses are unchanged.
