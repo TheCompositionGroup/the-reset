@@ -2,6 +2,7 @@
 
 ## v0.5.1 (unreleased)
 - Fixed: tapping or dragging the intensity arc no longer moves keyboard focus to it, so the rectangular focus outline no longer appears over the dial. With the keyboard, focus on intensity now shows as a thicker brass arc instead of a rectangle.
+- Changed: Play/Stop is in the centre of the dial. Each ring label shows its Hz under the name; the large centre Hz is gone. Tapping the dial no longer shows a focus ring (keyboard focus still does).
 
 ## v0.5.0 — fewer controls (unreleased)
 - Changed: **one Play/Stop button.** Play starts; the same button (now a square) stops. Stopping ends the session with a 0.3 s fade and resets the clock; there is no Pause. The separate Stop button is gone. If the phone suspends the sound (screen lock, a call), the button shows Play and continues where it left off.
