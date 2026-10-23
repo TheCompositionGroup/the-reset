@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.5.0 — fewer controls (unreleased)
+- Changed: **one Play/Stop button.** Play starts; the same button (now a square) stops. Stopping ends the session with a 0.3 s fade and resets the clock; there is no Pause. The separate Stop button is gone. If the phone suspends the sound (screen lock, a call), the button shows Play and continues where it left off.
+- Removed: **+5 min** and the "Extend? +5" prompt.
+- Changed: **time** is 5, 10, 20 or 30 minutes, chosen on the wheel before playback (default 10). 15, 45, 60 and ∞ are gone; a saved older value maps to the nearest kept one (∞, 45 and 60 become 30; 15 becomes 10).
+- Changed: **intensity** is a short arc in the empty wedge at the bottom of the dial (low at lower left, high at lower right) instead of a slider row. A press within 38° of straight down sets intensity; anywhere else on the dial sets frequency. The choice is made at the press and kept for the whole drag, so one gesture never changes both (covered by automated pointer tests). Keyboard: its own `role="slider"` (Intensity, 0–100) after the dial in tab order; arrows ±5, Page Up/Down ±10, Home/End.
+- Removed: the **Mute** button (device volume does this) and the **Facts on/off** toggle.
+- Changed: **Tone / Atmosphere** is one button labelled "Sound" showing the current mode; press to switch.
+- New: **285 Hz — Mend**, the lowest stop. Eight stops now span the same 270° arc (38.6° apart). It has no chakra pairing; the readout says "NO CHAKRA PAIRING". The tissue-repair claim some later lists attach to 285 Hz appears only as a labelled wellness claim with "No study shows that a tone repairs tissue."
+- Changed: the saved stop is now its Hz (was an index), and new answers also save the Hz, so 285 Hz doesn't shift older data; older answers are still counted under the right stop.
+- Changed: **facts.** One fact for the current frequency shows under Play at all times (wavelength in air). While playing it changes every 20–30 s. Tapping it opens "More about the sound": this frequency (cycle time, wavelength, nearest piano key, computed in the page), measured sound science, and where the frequencies come from, kept separate. Rolling lines draw only on this frequency and measured physics, plus the invitations.
+- Changed: the 285 Hz tissue-repair note (`COPY.stop.notes`) shows only in the expanded "More about the sound" panel. `rollingLines()` uses only `COPY.stop.lines`, the paired/unpaired line, physics and invitations.
+- Changed: header reads "Turn the dial. Set your time. Press play." Usage notes (headphones, screen lock, what each control does) moved into an expandable **How it works**.
+- Storage: drops facts on/off (removed on load). Keeps stop, time, sound, intensity, closing-line position and the answer log.
+
 ## v0.4.0 — v-next (unreleased)
 Builds on v0.3.0 (the dial).
 - Changed (v-next.3, layout): the header is one line, "Turn the dial. Choose how long. Press play." The center-to-edge needle is now a short knob-style pointer on the dial's rim, so the center is clear, and the Hz value ("417 Hz") is shown large in the center of the dial and updates as the dial turns. Under the dial there is one line, "SACRAL · ASSOCIATION" (the large mode name is gone; it is the bold label on the dial). The bottom row is now [time wheel] [Play] [Tone / Atmosphere stacked], all centered on Play with 44 px toggles; on screens narrower than 360 px the toggles sit under Play instead. **Stop** moved to the row under Play (Stop, +5 min, Facts) while playing, so the toggles can stay in place. The dial's `aria-valuetext` is now "Flow, 417 hertz, sacral association" (matches the visible readout).

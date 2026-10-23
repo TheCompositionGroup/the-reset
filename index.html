@@ -34,16 +34,15 @@ main{flex:none;width:100%;max-width:30rem;margin:0 auto;padding:1rem 1.25rem 1.2
 h1{font-family:var(--serif);font-weight:400;font-size:1.75rem;letter-spacing:.28em;line-height:1.1;margin:0;padding-left:.28em;text-align:center}
 h2{font-family:var(--serif);font-weight:400;font-size:1.5rem;line-height:1.2;margin:0 0 .75rem}
 .lead{text-align:center;color:var(--muted);margin:.4rem 0 0}
-.hints{margin:.5rem 0 0}
-.hints .hint{margin:0}
 button,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--brass);outline-offset:3px}
 .hidden,[hidden]{display:none!important}
 .hint{font-size:.8125rem;line-height:1.35;color:var(--muted);margin:.5rem 0 0;text-align:center}
 
-/* dial */
-.dial{container-type:inline-size;position:relative;width:min(80vw,19rem,38svh);min-width:14rem;aspect-ratio:1;margin:.5rem auto 0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border-radius:50%;cursor:grab}
+/* dial: the wrap holds the frequency dial and, as a sibling, the keyboard handle for the intensity arc */
+.dialwrap{position:relative;width:min(80vw,19rem,38svh);min-width:14rem;aspect-ratio:1;margin:.5rem auto 0}
+.dial{container-type:inline-size;position:absolute;inset:0;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border-radius:50%;cursor:grab}
 .dial:active{cursor:grabbing}
 .dial svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible}
 .aura{position:absolute;inset:-6%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 55%,transparent) 52%,transparent 70%);will-change:opacity,transform}
@@ -62,28 +61,21 @@ button{cursor:pointer}
 .lab{position:absolute;min-width:44px;min-height:44px;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);cursor:pointer;white-space:nowrap}
 .lab.on{color:var(--ink);font-weight:600}
 .dial:focus-visible{outline-offset:8px}
+/* intensity: a short arc in the empty wedge at the bottom of the dial */
+.itrack{fill:none;stroke:var(--line);stroke-width:4;stroke-linecap:round}
+.ifill{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round}
+.ithumb{fill:var(--accent);stroke:var(--bg);stroke-width:2}
+.iknob{position:absolute;left:29%;top:72%;width:42%;height:17%;border-radius:999px;pointer-events:none}
+.icap{position:absolute;left:50%;top:91%;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);pointer-events:none;white-space:nowrap}
 
 /* readout */
 .readout{text-align:center;margin:.4rem 0 0;min-height:1.6rem}
 .chakra{font-size:.8125rem;font-weight:400;letter-spacing:.14em;color:color-mix(in srgb,var(--muted) 82%,var(--bg));margin-top:.1rem}
 
-/* pills, toggles */
-.seg{display:flex;justify-content:center;gap:.35rem;flex-wrap:wrap;margin:.7rem 0 0}
+/* transport: [time] [Play/Stop] [Sound] */
 .pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem .6rem;min-height:2.75rem;min-width:2.75rem;font-size:.9375rem;font-weight:500;font-variant-numeric:tabular-nums}
-.pill[aria-checked="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
-.pill:disabled{opacity:.5;cursor:default}
-
-/* volume + transport */
-.mix{display:flex;align-items:center;gap:.5rem;margin:.5rem 0 0}
-.mix input[type=range]{width:100%;height:2.75rem;margin:0;accent-color:var(--accent)}
-.intens{flex:1;min-width:0}
-.intens label{display:flex;justify-content:space-between;font-size:.8125rem;line-height:1.2;color:var(--muted);margin-bottom:-.15rem}
-.pill[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
-.icon-btn{width:2.75rem;height:2.75rem;flex:none;border:1px solid var(--line);background:var(--surface);border-radius:50%;display:grid;place-items:center;padding:0}
-.icon-btn svg{width:1.4rem;height:1.4rem}
-.icon-btn[data-muted="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .transport{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:.75rem;margin:.5rem 0 0}
-/* time wheel: three visible rows (one faded value above and below), as tall as the row it sits in. The box itself has 12px of invisible padding top and bottom (cancelled by negative margins) so each half is a 44px touch target. */
+/* time wheel: three visible rows (one faded value above and below). The box has 12px of invisible padding top and bottom (cancelled by negative margins) so each half is a 44px touch target. */
 .wheel{--rh:1.5rem;--pad:12px;justify-self:end;position:relative;width:5rem;height:calc(var(--rh) * 3 + var(--pad) * 2);margin:calc(var(--pad) * -1) 0;border-radius:.6rem;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;cursor:ns-resize;font-variant-numeric:tabular-nums}
 .wheel:focus-visible{outline:none}
 .wheel:focus-visible .wview{outline:2px solid var(--brass);outline-offset:3px;border-radius:.6rem}
@@ -98,26 +90,32 @@ button{cursor:pointer}
 .wheel.run{cursor:default;pointer-events:none}
 .wheel.run .wview,.wheel.run .wunit{visibility:hidden}
 .wheel.run .wclock{visibility:visible}
-.play{width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;padding:0}
+.play{position:relative;width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;padding:0}
 .play svg{width:2.1rem;height:2.1rem}
 .playwrap{position:relative;width:5.5rem;height:5.5rem}
 .halo{position:absolute;inset:-22%;border-radius:50%;pointer-events:none;opacity:0;background:radial-gradient(circle,color-mix(in srgb,var(--glow-c,var(--accent)) 60%,transparent) 50%,transparent 70%);will-change:opacity,transform}
-.play{position:relative}
-.modes{display:flex;flex-direction:column;gap:.35rem;justify-self:start}
-/* narrow screens: the sound toggles go under Play instead of beside it */
-@media (max-width:359px){.modes{grid-column:1/-1;grid-row:2;flex-direction:row;justify-self:center;margin-top:.2rem}}
+.sound{justify-self:start;display:grid;gap:.1rem;padding:.4rem 1rem;border-radius:1.4rem;text-align:center;line-height:1.15}
+.sound .cap{font-size:.8125rem;font-weight:400;color:var(--muted)}
+/* narrow screens: the sound control goes under Play instead of beside it */
+@media (max-width:359px){.sound{grid-column:1/-1;grid-row:2;justify-self:center;margin-top:.2rem}}
 .btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem 1.1rem;min-height:2.75rem;font-weight:500}
 .btn[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,transparent)}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .btn:disabled{opacity:.5;cursor:default}
 
-/* rolling fact line and final-minute prompt share one reserved slot below Play, so nothing shifts or overlaps */
-.slot{display:grid;place-items:center;min-height:2.9rem;margin:.5rem 0 0}
-.slot>*{grid-area:1/1}
-.fact{margin:0;max-width:26rem;text-align:center;font-family:var(--serif);font-size:1rem;line-height:1.35;color:var(--muted);opacity:0;transition:opacity 3s ease-in-out}
-.fact.on{opacity:1}
-.prompt{border:0;background:none;color:var(--muted);font-size:.9375rem;min-height:2.75rem;min-width:2.75rem;padding:.4rem 1rem;text-decoration:underline;text-underline-offset:.2em;opacity:0;visibility:hidden;transition:opacity 1.5s ease-in-out,visibility 0s 1.5s}
-.prompt.on{opacity:1;visibility:visible;transition:opacity 1.5s ease-in-out}
+/* one fact for the current frequency; tap to open the rest */
+.factbtn{display:grid;justify-items:center;gap:.15rem;width:100%;max-width:26rem;min-height:2.75rem;margin:.6rem auto 0;padding:.3rem .5rem;border:0;background:none;text-align:center;-webkit-tap-highlight-color:transparent}
+.fact{font-family:var(--serif);font-size:1rem;line-height:1.35;color:var(--muted);opacity:1;transition:opacity 3s ease-in-out}
+.fact.out{opacity:0}
+.more{font-size:.8125rem;color:var(--muted);text-decoration:underline;text-underline-offset:.2em}
+.learn,.how ul{max-width:26rem;margin:.4rem auto 0;font-size:.9375rem;line-height:1.45;color:var(--ink)}
+.learn h3{font-size:.875rem;font-weight:600;margin:.9rem 0 .25rem;color:var(--muted)}
+.learn h3:first-child{margin-top:.3rem}
+.learn ul,.how ul{margin:0;padding-left:1.1rem}
+.learn li,.how li{margin:.25rem 0}
+.how{max-width:26rem;margin:.6rem auto 0;text-align:center}
+.how summary{display:inline-flex;align-items:center;min-height:2.75rem;padding:0 .6rem;font-size:.9375rem;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
+.how ul{text-align:left;margin-top:.2rem}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* end */
@@ -144,22 +142,19 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
   main{padding:.5rem 1.25rem .9rem}
   h1{font-size:1.4rem}
   .lead{margin:.2rem 0 0;font-size:.9375rem;line-height:1.3}
-  .dial{width:min(80vw,19rem,35svh);min-width:11rem;margin:.3rem auto 0}
+  .dialwrap{width:min(80vw,19rem,38svh);min-width:11rem;margin:.3rem auto 0}
   .readout{margin:.2rem 0 0;min-height:1.4rem}
-  .chakra{font-size:.8125rem}
-  .seg{margin:.4rem 0 0}
-  .mix{margin:.2rem 0 0}
-  .transport{margin:.65rem 0 0}
+  .transport{margin:.4rem 0 0}
   .playwrap{width:4.75rem;height:4.75rem}
   .play{width:4.75rem;height:4.75rem}
   .hint{margin:.3rem 0 0}
-  .hints{margin:.3rem 0 0}
   .signal{font-size:.8125rem;line-height:1.3;margin:.4rem 0 0}
-  .slot{margin:.2rem 0 0;min-height:2.6rem}
+  .factbtn{margin-top:.3rem}
   .fact{font-size:.9375rem;line-height:1.3}
+  .how{margin-top:.2rem}
 }
-@media (max-height:680px){ .dial{width:min(80vw,19rem,25svh);min-width:9.5rem} h1{font-size:1.25rem} .lead{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dial{width:min(80vw,19rem,23svh);min-width:9.5rem} }
-@media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack,.wi{transition:none}.notch.pop{animation:none}.fact,.prompt,.prompt.on{transition:none}}
+@media (max-height:680px){ .dialwrap{width:min(80vw,19rem,32svh);min-width:9.5rem} h1{font-size:1.25rem} .lead{font-size:.875rem;line-height:1.25} main:has(#signalMain:not([hidden])) .dialwrap{width:min(80vw,19rem,26svh);min-width:9.5rem} }
+@media (prefers-reduced-motion: reduce){.needle{transition:none}.wtrack,.wi{transition:none}.notch.pop{animation:none}.fact{transition:none}}
 </style>
 </head>
 <body>
@@ -168,36 +163,32 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
 
   <!-- 1 DIAL -->
   <section id="vMain" aria-label="The Reset">
-    <p class="lead">Turn the dial. Choose how long. Press play.</p>
+    <p class="lead">Turn the dial. Set your time. Press play.</p>
     <p class="signal" id="signalMain" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
 
-    <div class="dial" id="dial" role="slider" tabindex="0" aria-label="Frequency dial" aria-valuemin="0" aria-valuemax="6" aria-valuenow="0">
-      <div class="aura" id="aura"></div>
-      <svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
-        <circle class="ring" cx="170" cy="170" r="112"/>
-        <g id="ticks"></g>
-        <g id="notchG"><circle class="notch" id="notch" cx="0" cy="0" r="3.2"/></g>
-        <circle class="face" cx="170" cy="170" r="88"/>
-        <g class="needle" id="needle"><line x1="170" y1="100" x2="170" y2="86"/></g>
-      </svg>
-      <div class="dialhz" id="rHz" aria-hidden="true"></div>
-      <div id="labels"></div>
+    <div class="dialwrap">
+      <div class="dial" id="dial" role="slider" tabindex="0" aria-label="Frequency dial" aria-valuemin="0" aria-valuemax="7" aria-valuenow="0">
+        <div class="aura" id="aura"></div>
+        <svg viewBox="0 0 340 340" aria-hidden="true" focusable="false">
+          <circle class="ring" cx="170" cy="170" r="112"/>
+          <g id="ticks"></g>
+          <g id="notchG"><circle class="notch" id="notch" cx="0" cy="0" r="3.2"/></g>
+          <circle class="face" cx="170" cy="170" r="88"/>
+          <g class="needle" id="needle"><line x1="170" y1="100" x2="170" y2="86"/></g>
+          <path class="itrack" id="iTrack"/>
+          <path class="ifill" id="iFill"/>
+          <circle class="ithumb" id="iThumb" r="6"/>
+        </svg>
+        <div class="dialhz" id="rHz" aria-hidden="true"></div>
+        <div id="labels"></div>
+      </div>
+      <!-- keyboard and screen-reader handle for the intensity arc; touch and mouse go through the dial, which routes the bottom wedge here -->
+      <div class="iknob" id="iKnob" role="slider" tabindex="0" aria-label="Intensity" aria-valuemin="0" aria-valuemax="100"></div>
+      <span class="icap" aria-hidden="true">Intensity</span>
     </div>
 
     <div class="readout" id="readout">
       <div class="chakra" id="rChakra"></div>
-    </div>
-
-    <div class="mix">
-      <button class="icon-btn" id="muteBtn" aria-label="Mute" data-muted="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M4 9.5v5h3.5L12 18.5v-13L7.5 9.5z"/><path id="waves" d="M15.5 9.2a4 4 0 0 1 0 5.6M18 7a7.4 7.4 0 0 1 0 10"/><path id="slash" d="M4 4l16 16" hidden/>
-        </svg>
-      </button>
-      <div class="intens">
-        <label for="int"><span>Intensity</span><span aria-hidden="true" id="intVal"></span></label>
-        <input type="range" id="int" min="0" max="100" step="1" value="40">
-      </div>
     </div>
 
     <div class="transport">
@@ -210,28 +201,22 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
       <button class="play" id="playBtn" aria-label="Play">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="playIcon" d="M8 5v14l11-7z"/></svg>
       </button></div>
-      <div class="modes" id="modes" role="radiogroup" aria-label="Sound">
-        <button class="pill" role="radio" data-v="tone">Tone</button>
-        <button class="pill" role="radio" data-v="atmosphere">Atmosphere</button>
-      </div>
+      <button class="pill sound" id="modeBtn"><span class="cap">Sound</span><span id="modeVal"></span></button>
     </div>
 
-    <div class="seg" id="extras" hidden>
-      <button class="pill" id="stopBtn">Stop</button>
-      <button class="pill" id="extBtn" aria-label="Add 5 minutes">+5 min</button>
-      <button class="pill" id="factsBtn" aria-pressed="true">Facts on</button>
-    </div>
-    <div class="slot" id="slot" hidden>
-      <p class="fact" id="fact"></p>
-      <button class="prompt" id="extPrompt" tabindex="-1">Extend? +5</button>
+    <button class="factbtn" id="factBtn" aria-expanded="false" aria-controls="learn"><span class="fact" id="fact"></span><span class="more" id="more">More about the sound</span></button>
+    <div class="learn" id="learn" hidden>
+      <h3 id="lStopH"></h3><ul id="lStop"></ul>
+      <h3>Measured sound science</h3><ul id="lSound"></ul>
+      <h3>Where the frequencies come from</h3><ul id="lAssoc"></ul>
     </div>
     <p class="sr" id="live" role="status" aria-live="polite"></p>
 
     <p class="hint" id="noAudio" hidden>Sound isn’t available in this browser.</p>
-    <div class="hints"><p class="hint">Best with headphones.</p><p class="hint">Sound may pause if your screen locks.</p></div>
+    <details class="how" id="how"><summary>How it works</summary><ul id="howList"></ul></details>
   </section>
 
-  <!-- 2 END (natural completion only) -->
+  <!-- 2 END (timed completion only) -->
   <section id="vEnd" class="hidden" aria-label="Session complete">
     <h2 class="q" id="endQ" tabindex="-1"></h2>
     <p class="signal" id="signalEnd" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
@@ -272,22 +257,52 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
 
 <script>
 /* =====================================================================
-   COPY: all rolling fact lines and closing lines live here. Edit the
-   text freely; no other code needs to change.
-   {hz}   is replaced with the current stop's frequency (for example 528)
-   {area} is replaced with the current stop's chakra area (for example "the solar plexus chakra")
-   Facts roll one line at a time, in shuffled order, every 20-30 seconds.
-   The closing line on the end screen rotates through "closing" in order.
+   COPY: every fact line, the How it works text and the closing lines live
+   here. Edit the text freely; no other code needs to change.
+   Per-frequency lines use these placeholders, filled in by the app:
+     {hz}   the stop's frequency, e.g. 528
+     {ms}   one cycle, in milliseconds, e.g. 1.89
+     {cm}   one wavelength in air at 20 °C (343 m/s), in centimetres
+     {note} the nearest piano key in A440 tuning, e.g. "C5, 16 cents sharp"
+     {area} the modern chakra pairing, e.g. "the solar plexus chakra"
+   Keep the three kinds apart: measured sound (physics), modern
+   associations (say they are modern and not proven), invitations.
    ===================================================================== */
 window.COPY = {
+  stop: {
+    lead: "One wave of {hz} Hz is about {cm} cm long in air.",
+    lines: [
+      "{hz} Hz is {hz} vibrations per second: one every {ms} milliseconds.",
+      "One wave of {hz} Hz is about {cm} cm long in air.",
+      "The nearest piano key to {hz} Hz is {note}."
+    ],
+    paired: "Modern chakra charts pair {hz} Hz with {area}. The pairing is modern, not traditional.",
+    unpaired: "Most modern chakra charts give {hz} Hz no chakra pairing.",
+    notes: {
+      285: "Some Solfeggio lists published after 1999 add 285 Hz and pair it with tissue repair. That is a wellness claim. No study shows that a tone repairs tissue."
+    }
+  },
   facts: {
     physics: [
-      "Frequency is how many times something vibrates per second. Hertz (Hz) is the unit.",
-      "{hz} Hz = {hz} vibrations per second."
+      "One hertz is one cycle per second. The unit is named for Heinrich Hertz, who first produced and detected radio waves in the late 1880s.",
+      "Young adults hear roughly 20 to 20,000 Hz. The top of that range drops with age.",
+      "Concert A is 440 Hz, agreed in 1939 and made an ISO standard in 1975.",
+      "Sound travels about 343 metres per second in air at 20 °C, and about 1,480 in water.",
+      "Doubling a frequency raises it one octave. This dial spans a little under two octaves, 285 to 963 Hz.",
+      "A cent is one hundredth of a piano semitone. There are 1,200 in an octave.",
+      "Phone speakers often reproduce little below about 200 Hz. Headphones reach lower.",
+      "A cat’s purr sits around 25 to 150 Hz. Some elephant rumbles fall below 20 Hz, under human hearing.",
+      "Earth’s Schumann resonance, about 7.8 Hz, is electromagnetic, not sound. Lightning keeps it going.",
+      "Medicine does use sound: ultrasound imaging at about 2 to 18 million Hz, and focused shock waves that break kidney stones. Both are far stronger or higher than these tones.",
+      "Long listening above about 85 decibels can damage hearing. Quiet is enough here."
     ],
     tradition: [
-      "In modern chakra charts, this tone is paired with {area}.",
-      "Sources disagree on which chakra some tones belong to."
+      "396, 417, 528, 639, 741 and 852 Hz are the modern Solfeggio set, popularised by Joseph Puleo and Leonard Horowitz in Healing Codes for the Biological Apocalypse (1999). 963 Hz was added later.",
+      "Some later lists add 174 and 285 Hz. Their stated purposes are wellness claims, not measured effects.",
+      "The name comes from the medieval syllables ut, re, mi, fa, sol, la, which Guido of Arezzo took from an 11th-century hymn. Pitch then had no fixed value in hertz, so these numbers are not from that tradition.",
+      "Traditional chakra texts give each chakra a seed syllable, such as LAM for the root and YAM for the heart, not a frequency. Hz pairings are modern.",
+      "Modern chakra charts disagree on which tone goes with which chakra.",
+      "Reviews of music research, such as the US National Center for Complementary and Integrative Health’s, describe the evidence for music in general as preliminary and mixed. None show effects from a specific frequency."
     ],
     invitation: [
       "Notice where you feel it.",
@@ -295,6 +310,16 @@ window.COPY = {
       "Stillness."
     ]
   },
+  how: [
+    "Turn the dial to pick a frequency, from 285 to 963 Hz. You can turn it while it plays; the sound changes over 2 seconds.",
+    "Drag the short arc at the bottom of the dial to set intensity. Low is a steady tone; high is a deeper, slow swell. Loudness is your device volume.",
+    "Roll the time to 5, 10, 20 or 30 minutes before you start. While it plays, the same box counts down.",
+    "Sound switches between Tone, one pure sine wave, and Atmosphere, a soft layered drone around it.",
+    "Press play. Press it again to stop; stopping ends the session and resets the clock. Escape also stops.",
+    "Best with headphones, at a low volume.",
+    "Sound may pause if your screen locks. If it does, press play to continue.",
+    "Your settings, and any answers you give at the end, stay on this device."
+  ],
   closing: [
     "Drink water. Be nice to people.",
     "Pass it forward.",
@@ -311,7 +336,7 @@ const reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
 const reduced = () => reduceMQ.matches;
 const buzz = ms => { try { if (navigator.vibrate) navigator.vibrate(ms); } catch(e){} };
 
-/* ---------- storage (this device only: stop, time, sound, intensity, facts on/off, closing-line position, and saved answers) ---------- */
+/* ---------- storage (this device only: stop, time, sound, intensity, closing-line position, and saved answers) ---------- */
 const store = {
   get(k,d){ try{ const v = localStorage.getItem("reset3:"+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
   set(k,v){ try{ localStorage.setItem("reset3:"+k, JSON.stringify(v)); }catch(e){} },
@@ -320,9 +345,11 @@ const store = {
     ["ambOn","ambVol","dur","log","loop","narVol","saveWords","toneOn","toneVol","voice"].forEach(k => localStorage.removeItem("reset:"+k));   /* data from v0.2 */
   }catch(e){} }
 };
+try { localStorage.removeItem("reset3:facts"); } catch(e){}   /* the Facts toggle is gone */
 
 /* ---------- data ---------- */
 const STOPS = [
+  { hz:285, chakra:null,           name:"Mend",      c:"#8A6A5C" },
   { hz:396, chakra:"ROOT",         name:"Ground",    c:"#B5523F" },
   { hz:417, chakra:"SACRAL",       name:"Flow",      c:"#C7803A" },
   { hz:528, chakra:"SOLAR PLEXUS", name:"Power",     c:"#BFA23A" },
@@ -331,101 +358,142 @@ const STOPS = [
   { hz:852, chakra:"THIRD EYE",    name:"Vision",    c:"#6C6BB5" },
   { hz:963, chakra:"CROWN",        name:"Stillness", c:"#9068B0" }
 ];
-/* 270 degree arc, clockwise, gap centred at the bottom: Ground at lower left, Stillness at lower right */
-const ARC0 = -135, STEP = 45, CX = 170, CY = 170, LAB_R = 146;
+const LAST = STOPS.length - 1;
+/* up to v0.4 the stop was saved as an index into seven stops (396-963); it is now saved as its Hz */
+const OLD_HZ = [396,417,528,639,741,852,963];
+const hzOfSaved = v => (Number.isInteger(v) && v >= 0 && v <= 6) ? OLD_HZ[v] : v;
+const idxOfHz = hz => STOPS.findIndex(s => s.hz === hz);
+/* 270 degree arc, clockwise, gap centred at the bottom: Mend at lower left, Stillness at lower right */
+const ARC0 = -135, STEP = 270 / LAST, CX = 170, CY = 170, LAB_R = 146;
 const pol = (deg, r) => { const a = deg * Math.PI / 180; return [CX + r * Math.sin(a), CY - r * Math.cos(a)]; };
-const MINS = [5,10,15,20,30,45,60,0], MODES   /* 0 = no time limit */ = ["tone","atmosphere"];
-
+/* intensity arc: in the bottom gap, low at lower left (215°), high at lower right (145°) */
+const I_R = 112, I_LO = 215, I_HI = 145, I_ZONE = 38;   /* the wedge within 38° of straight down belongs to intensity */
+const MINS = [5,10,20,30], MODES = ["tone","atmosphere"];
+const savedMin = store.get("min", 10);
 const st = {
-  stop: clamp(+store.get("stop", 0) | 0, 0, 6),
-  min: MINS.includes(store.get("min", 15)) ? store.get("min", 15) : 15,
+  stop: (() => { const i = idxOfHz(hzOfSaved(+store.get("stop", 396))); return i < 0 ? 1 : i; })(),
+  min: MINS.includes(savedMin) ? savedMin : savedMin === 0 ? 30 : (MINS.filter(m => m <= savedMin).pop() || 5),   /* older times (15, 45, 60, ∞) map to the nearest one kept */
   mode: MODES.includes(store.get("mode", "atmosphere")) ? store.get("mode", "atmosphere") : "atmosphere",
-  int: clamp(+store.get("int", 40), 0, 100) || 0,   /* intensity 0-100 */
-  facts: store.get("facts", true) !== false,
-  muted: false
+  int: clamp(Math.round(+store.get("int", 40)), 0, 100) || 0   /* intensity 0-100 */
 };
+store.set("stop", STOPS[st.stop].hz); store.set("min", st.min);
+
+/* ---------- per-frequency facts ---------- */
+const NOTE = ["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"];
+function noteOf(hz){
+  const n = Math.round(12 * Math.log2(hz / 440)), midi = 69 + n;
+  const cents = Math.round(1200 * Math.log2(hz / (440 * Math.pow(2, n / 12))));
+  const name = NOTE[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1);
+  return cents === 0 ? name : `${name}, ${Math.abs(cents)} cents ${cents < 0 ? "flat" : "sharp"}`;
+}
+function fill(line, s){
+  return line.replace(/\{hz\}/g, s.hz).replace(/\{ms\}/g, (1000 / s.hz).toFixed(2)).replace(/\{cm\}/g, Math.round(34300 / s.hz))
+    .replace(/\{note\}/g, noteOf(s.hz)).replace(/\{area\}/g, s.chakra ? "the " + s.chakra.toLowerCase() + " chakra" : "no chakra");
+}
+const C = () => window.COPY || {};
+function stopLines(s, withNotes){
+  const c = C().stop || {}, out = (c.lines || []).map(l => fill(l, s));
+  const pair = s.chakra ? c.paired : c.unpaired; if (pair) out.push(fill(pair, s));
+  if (withNotes && c.notes && c.notes[s.hz]) out.push(fill(c.notes[s.hz], s));
+  return out;
+}
+const leadFact = s => fill((C().stop || {}).lead || "{hz} Hz", s);
 
 /* ---------- dial ---------- */
 (function buildDial(){
   let t = "", l = "";
-  for (let n = 0; n <= 54; n++){
-    const d = ARC0 + n * 5, major = n % 9 === 0;
+  for (let n = 0; n <= LAST * 8; n++){
+    const d = ARC0 + n * STEP / 8, major = n % 8 === 0;
     const [x1,y1] = pol(d, 98), [x2,y2] = pol(d, major ? 112 : 106);
-    t += `<line class="tick${major ? " major" : ""}" ${major ? `data-i="${n/9}" ` : ""}x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`;
+    t += `<line class="tick${major ? " major" : ""}" ${major ? `data-i="${n/8}" ` : ""}x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}"/>`;
   }
   STOPS.forEach((s, i) => { const [x,y] = pol(ARC0 + i * STEP, LAB_R); l += `<div class="lab" data-i="${i}" style="left:${(x/3.4).toFixed(2)}%;top:${(y/3.4).toFixed(2)}%">${s.name}</div>`; });
   $("ticks").innerHTML = t; $("labels").innerHTML = l;
+  const [ax, ay] = pol(I_LO, I_R), [bx, by] = pol(I_HI, I_R);
+  $("iTrack").setAttribute("d", `M${ax.toFixed(2)} ${ay.toFixed(2)}A${I_R} ${I_R} 0 0 0 ${bx.toFixed(2)} ${by.toFixed(2)}`);
 })();
+const rootEl = document.documentElement;
 function renderDial(snap){
   const s = STOPS[st.stop];
   $("needle").style.transform = `rotate(${ARC0 + st.stop * STEP}deg)`;
-  $("rHz").textContent = s.hz + " Hz"; $("rChakra").textContent = s.chakra + " · ASSOCIATION";
+  $("rHz").textContent = s.hz + " Hz"; $("rChakra").textContent = s.chakra ? s.chakra + " · ASSOCIATION" : "NO CHAKRA PAIRING";
   const dial = $("dial");
   dial.setAttribute("aria-valuenow", st.stop);
-  dial.setAttribute("aria-valuetext", `${s.name}, ${s.hz} hertz, ${s.chakra.toLowerCase()} association`);
+  dial.setAttribute("aria-valuetext", `${s.name}, ${s.hz} hertz, ${s.chakra ? s.chakra.toLowerCase() + " association" : "no chakra pairing"}`);
   document.querySelectorAll("#labels .lab").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
   document.querySelectorAll("#ticks .tick.major").forEach(e => e.classList.toggle("on", +e.dataset.i === st.stop));
   const [nx, ny] = pol(ARC0 + st.stop * STEP, 118); $("notchG").setAttribute("transform", `translate(${nx.toFixed(2)} ${ny.toFixed(2)})`);
   const nt = $("notch"); nt.classList.remove("pop"); if (snap){ void nt.getBoundingClientRect(); nt.classList.add("pop"); }
   rootEl.style.setProperty("--glow-c", s.c);
+  renderLearnStop(); if (!F.on) showFact(leadFact(s), false);
 }
 function setStop(i){
-  i = clamp(i, 0, 6); if (i === st.stop) return;
-  st.stop = i; store.set("stop", i); buzz(10); renderDial(true); requestVoice();
+  i = clamp(i, 0, LAST); if (i === st.stop) return;
+  st.stop = i; store.set("stop", STOPS[i].hz); buzz(10); renderDial(true); requestVoice();
 }
-const dialEl = $("dial");
-const angleOf = e => { const r = dialEl.getBoundingClientRect(); return Math.atan2(e.clientX - (r.left + r.width/2), -(e.clientY - (r.top + r.height/2))) * 180 / Math.PI; };
-/* nearest stop; the empty wedge at the bottom is ignored so a drag can't jump from one end to the other */
+const dialEl = $("dial"), knobEl = $("iKnob");
+/* pointer position in the dial's own 340-unit space: angle (clockwise from top, 0-360) and radius */
+const polarOf = e => {
+  const r = dialEl.getBoundingClientRect(), k = 340 / r.width;
+  const dx = (e.clientX - (r.left + r.width / 2)) * k, dy = (e.clientY - (r.top + r.height / 2)) * k;
+  return { a: (Math.atan2(dx, -dy) * 180 / Math.PI + 360) % 360, r: Math.hypot(dx, dy) };
+};
+/* nearest stop; points in the bottom gap give none, so a frequency drag can't jump from one end to the other */
 const fromAngle = a => {
   let best = -1, bd = 999;
-  for (let i = 0; i < 7; i++){ const d = Math.abs(((a - (ARC0 + i * STEP) + 540) % 360) - 180); if (d < bd){ bd = d; best = i; } }
+  for (let i = 0; i <= LAST; i++){ const d = Math.abs(((a - (ARC0 + i * STEP) + 540) % 360) - 180); if (d < bd){ bd = d; best = i; } }
   return bd > STEP * .6 ? null : best;
 };
-let dragging = false;
+/* which control a press belongs to. Decided once, at pointerdown, and kept for the whole drag, so one gesture never changes both. */
+const zoneOf = p => (Math.abs(p.a - 180) < I_ZONE && p.r > 50) ? "int" : "freq";
+const intOfAngle = a => Math.round((I_LO - clamp(a, I_HI, I_LO)) / (I_LO - I_HI) * 100);
+let drag = null;   /* "freq" | "int" | null */
 dialEl.addEventListener("pointerdown", e => {
   if (e.button > 0) return;
-  const lab = e.target.closest && e.target.closest(".lab");
-  const i = lab ? +lab.dataset.i : fromAngle(angleOf(e)); if (i === null) return;
-  dragging = true; try { dialEl.setPointerCapture(e.pointerId); } catch(_){}
+  const lab = e.target.closest && e.target.closest(".lab"), p = polarOf(e);
+  if (!lab && zoneOf(p) === "int"){
+    drag = "int"; try { dialEl.setPointerCapture(e.pointerId); } catch(_){}
+    setInt(intOfAngle(p.a)); knobEl.focus({ preventScroll:true }); e.preventDefault(); return;
+  }
+  const i = lab ? +lab.dataset.i : fromAngle(p.a); if (i === null) return;
+  drag = "freq"; try { dialEl.setPointerCapture(e.pointerId); } catch(_){}
   setStop(i); dialEl.focus({ preventScroll:true }); e.preventDefault();
 });
-dialEl.addEventListener("pointermove", e => { if (!dragging) return; const i = fromAngle(angleOf(e)); if (i !== null) setStop(i); });
-["pointerup","pointercancel","lostpointercapture"].forEach(n => dialEl.addEventListener(n, () => { dragging = false; }));
+dialEl.addEventListener("pointermove", e => {
+  if (!drag) return;
+  const p = polarOf(e);
+  if (drag === "int") setInt(intOfAngle(p.a));
+  else { const i = fromAngle(p.a); if (i !== null) setStop(i); }
+});
+["pointerup","pointercancel","lostpointercapture"].forEach(n => dialEl.addEventListener(n, () => { drag = null; }));
 dialEl.addEventListener("keydown", e => {
   const k = e.key; let i = null;
   if (k === "ArrowRight" || k === "ArrowUp" || k === "PageUp") i = st.stop + 1;
   else if (k === "ArrowLeft" || k === "ArrowDown" || k === "PageDown") i = st.stop - 1;
-  else if (k === "Home") i = 0; else if (k === "End") i = 6;
+  else if (k === "Home") i = 0; else if (k === "End") i = LAST;
   if (i !== null){ e.preventDefault(); setStop(i); }
 });
+knobEl.addEventListener("keydown", e => {
+  const k = e.key; let v = null;
+  if (k === "ArrowRight" || k === "ArrowUp") v = st.int + 5;
+  else if (k === "ArrowLeft" || k === "ArrowDown") v = st.int - 5;
+  else if (k === "PageUp") v = st.int + 10; else if (k === "PageDown") v = st.int - 10;
+  else if (k === "Home") v = 0; else if (k === "End") v = 100;
+  if (v !== null){ e.preventDefault(); setInt(v); }
+});
 
-/* ---------- time + sound pickers ---------- */
-function radioGroup(id, get, set){
-  const g = $(id), items = [...g.querySelectorAll("[role=radio]")];
-  const sync = () => items.forEach(b => { const on = String(get()) === b.dataset.v; b.setAttribute("aria-checked", on); b.tabIndex = on ? 0 : -1; });
-  items.forEach((b, i) => {
-    b.onclick = () => { set(b.dataset.v); sync(); };
-    b.onkeydown = e => {
-      const d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
-      if (!d) return; e.preventDefault();
-      for (let n = 1; n <= items.length; n++){ const t = items[(i + d * n + items.length * n) % items.length]; if (!t.disabled){ t.focus(); t.click(); break; } }
-    };
-  });
-  sync(); return sync;
-}
-/* time wheel: ascending downward; the selected value sits in the middle row. Locked while a session is active (it shows the clock instead). */
+/* ---------- time wheel: ascending downward; the selected value sits in the middle row. Locked while a session is active (it shows the clock instead). ---------- */
 const wheelEl = $("wheel"), wTrack = $("wTrack"), WN = MINS.length - 1;
-wTrack.innerHTML = MINS.map((m, i) => `<div class="wi" data-i="${i}">${m || "∞"}</div>`).join("");
+wTrack.innerHTML = MINS.map((m, i) => `<div class="wi" data-i="${i}">${m}</div>`).join("");
 const wItems = [...wTrack.children];
 let wPos = MINS.indexOf(st.min), wDrag = null, wAcc = 0, wLast = 0;
 function paintWheel(){
   const idx = Math.round(wPos);
   wTrack.style.setProperty("--p", wPos.toFixed(3));
   wItems.forEach((e, i) => { e.style.opacity = (1 - .6 * Math.min(1, Math.abs(i - wPos))).toFixed(2); e.classList.toggle("sel", i === idx); });
-  $("wUnit").hidden = MINS[idx] === 0;
   if (!S.active){
     wheelEl.setAttribute("aria-valuenow", idx);
-    wheelEl.setAttribute("aria-valuetext", MINS[idx] ? MINS[idx] + " minutes" : "No time limit");
+    wheelEl.setAttribute("aria-valuetext", MINS[idx] + " minutes");
   }
 }
 function wheelTo(idx){ idx = clamp(idx, 0, WN); wPos = idx; if (MINS[idx] !== st.min){ st.min = MINS[idx]; store.set("min", st.min); } paintWheel(); }
@@ -461,7 +529,18 @@ wheelEl.addEventListener("keydown", e => {
   else if (k === "Home"){ wheelTo(0); moved = true; } else if (k === "End"){ wheelTo(WN); moved = true; }
   if (moved !== null) e.preventDefault();
 });
-radioGroup("modes", () => st.mode, v => { if (v === st.mode) return; st.mode = v; store.set("mode", v); requestVoice(); });
+
+/* ---------- sound mode: one button, Tone or Atmosphere ---------- */
+const MODE_NAME = { tone:"Tone", atmosphere:"Atmosphere" };
+function paintMode(){
+  const other = st.mode === "tone" ? "atmosphere" : "tone";
+  $("modeVal").textContent = MODE_NAME[st.mode];
+  $("modeBtn").setAttribute("aria-label", `Sound: ${MODE_NAME[st.mode]}. Press for ${MODE_NAME[other]}.`);
+}
+$("modeBtn").onclick = () => {
+  st.mode = st.mode === "tone" ? "atmosphere" : "tone"; store.set("mode", st.mode); paintMode(); requestVoice();
+  $("live").textContent = "Sound: " + MODE_NAME[st.mode];
+};
 
 /* ---------- sound (Web Audio, generated here; no audio files) ---------- */
 const AC = window.AudioContext || window.webkitAudioContext;
@@ -479,9 +558,8 @@ const MASTER = .2;                   /* fixed output level; loudness is the devi
 const depthOf = v => .9 * v / 100;            /* pulse depth: share of the level that swells in and out */
 const bedOf = v => .4 + 1.2 * v / 100;        /* atmosphere bed (octave below, upper harmonics, noise) */
 const INT_TAU = .15;                           /* s; every intensity change is a smooth ramp, never a step */
-const EXT_S = 300;                             /* +5 min */
 
-const S = { fadeAt:0, active:false, paused:false, ctx:null, g:null, voice:null, dying:[], t0:0, T:0, nextBreath:0, lastCycle:-1, timer:0, raf:0, lock:null, busy:false, pendingSwap:false, xf:0, xfEnd:0, ending:false, endAt:0 };
+const S = { active:false, paused:false, ctx:null, g:null, voice:null, dying:[], t0:0, T:0, nextBreath:0, lastCycle:-1, timer:0, raf:0, lock:null, busy:false, pendingSwap:false, xf:0, xfEnd:0 };
 
 function noiseBuffer(ctx){
   const n = ctx.sampleRate * 8, f = Math.floor(ctx.sampleRate * .5), raw = new Float32Array(n);
@@ -516,8 +594,6 @@ function makeVoice(mode, hz){
     dispose(){ oscs.forEach(o => { try { o.stop(); } catch(e){} }); srcs.forEach(x => { try { x.stop(); } catch(e){} }); try { out.disconnect(); } catch(e){} }
   };
 }
-const targetVol = () => (st.muted ? 0 : MASTER);
-function applyVol(){ if (S.g) S.g.vol.gain.setTargetAtTime(targetVol(), S.ctx.currentTime, .05); }
 function applyIntensity(){
   if (!S.g) return;
   const t = S.ctx.currentTime, d = depthOf(st.int);
@@ -539,14 +615,14 @@ function crossfade(){
 function reapVoices(){ if (!S.ctx) return; S.dying = S.dying.filter(d => { if (S.ctx.currentTime < d.at) return true; d.v.dispose(); return false; }); }
 function buildGraph(){
   const ctx = new AC({ latencyHint:"playback" });
-  /* voice -> dry (steady share) + pd -> breath (pulse share) -> env (5 s fade-in) -> stop (pause) -> end (timed fade-out) -> cut -> vol -> compressor */
+  /* voice -> dry (steady share) + pd -> breath (pulse share) -> env (5 s fade-in) -> stop (interruption hold) -> end (timed fade-out) -> cut (Stop) -> vol -> compressor */
   const g = { dry:ctx.createGain(), pd:ctx.createGain(), breath:ctx.createGain(), env:ctx.createGain(), stop:ctx.createGain(), end:ctx.createGain(), cut:ctx.createGain(), vol:ctx.createGain(), comp:ctx.createDynamicsCompressor() };
   g.dry.gain.value = 1 - depthOf(st.int); g.pd.gain.value = depthOf(st.int);
-  g.breath.gain.value = 0; g.env.gain.value = 0; g.stop.gain.value = 1; g.end.gain.value = 1; g.cut.gain.value = 1; g.vol.gain.value = targetVol();
+  g.breath.gain.value = 0; g.env.gain.value = 0; g.stop.gain.value = 1; g.end.gain.value = 1; g.cut.gain.value = 1; g.vol.gain.value = MASTER;
   g.comp.threshold.value = -18; g.comp.knee.value = 24; g.comp.ratio.value = 3; g.comp.attack.value = .02; g.comp.release.value = .3;
   g.dry.connect(g.env); g.pd.connect(g.breath); g.breath.connect(g.env); g.env.connect(g.stop); g.stop.connect(g.end); g.end.connect(g.cut); g.cut.connect(g.vol); g.vol.connect(g.comp); g.comp.connect(ctx.destination);
   S.ctx = ctx; S.g = g;
-  ctx.onstatechange = () => { if (S.active && !S.paused && !S.busy && (ctx.state === "suspended" || ctx.state === "interrupted")) setPaused(true); };
+  ctx.onstatechange = () => { if (S.active && !S.paused && !S.busy && (ctx.state === "suspended" || ctx.state === "interrupted")) interrupted(); };
 }
 function scheduleBreath(){
   const end = S.t0 + S.T;
@@ -556,19 +632,18 @@ function scheduleBreath(){
 }
 
 /* ---------- session ---------- */
-const fmt = s => { s = Math.max(0, Math.ceil(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return (h ? h + ":" + String(m).padStart(2, "0") : m) + ":" + String(s % 60).padStart(2, "0"); };
+const fmt = s => { s = Math.max(0, Math.ceil(s)); const m = Math.floor(s / 60); return m + ":" + String(s % 60).padStart(2, "0"); };
 const elapsed = () => S.ctx ? Math.max(0, S.ctx.currentTime - S.t0) : 0;
-const rootEl = document.documentElement, aura = $("aura"), halo = $("halo");
+const aura = $("aura"), halo = $("halo");
 /* glow: opacity and transform only */
 const setGlow = v => { aura.style.opacity = (v * .5).toFixed(3); aura.style.transform = `scale(${(.94 + v * .06).toFixed(3)})`; halo.style.opacity = (v * .8).toFixed(3); halo.style.transform = `scale(${(.92 + v * .12).toFixed(3)})`; };
-function clockText(){ const e = elapsed(); return S.T === Infinity ? fmt(Math.floor(e)) : fmt(S.T - e); }
 /* the wheel and the clock share one fixed-size box, so switching between them moves nothing */
 function paintClock(){
   const w = wheelEl;
   w.classList.toggle("run", S.active);
   if (S.active){
-    $("wClock").textContent = clockText();
-    w.setAttribute("role", "timer"); w.setAttribute("aria-label", S.T === Infinity ? "Time played" : "Time left"); w.tabIndex = -1;
+    $("wClock").textContent = fmt(S.T - elapsed());
+    w.setAttribute("role", "timer"); w.setAttribute("aria-label", "Time left"); w.tabIndex = -1;
     ["aria-valuenow","aria-valuetext","aria-valuemin","aria-valuemax"].forEach(a => w.removeAttribute(a));
   } else if (w.getAttribute("role") !== "spinbutton"){
     w.setAttribute("role", "spinbutton"); w.setAttribute("aria-label", "Time"); w.tabIndex = 0;
@@ -576,13 +651,12 @@ function paintClock(){
     wPos = MINS.indexOf(st.min); paintWheel();
   }
 }
+/* one button: Play when idle (or after an interruption), Stop while sound is playing */
 function paintSession(){
   const playing = S.active && !S.paused;
-  $("extras").hidden = !S.active; $("extBtn").hidden = S.T === Infinity; $("slot").hidden = !S.active;
-  $("playIcon").setAttribute("d", playing ? "M6 5h4v14H6zM14 5h4v14h-4z" : "M8 5v14l11-7z");
-  $("playBtn").setAttribute("aria-label", playing ? "Pause" : "Play");
-  $("playBtn").disabled = !AC || S.ending;
-  $("stopBtn").hidden = !S.active;
+  $("playIcon").setAttribute("d", playing ? "M6.5 6.5h11v11h-11z" : "M8 5v14l11-7z");
+  $("playBtn").setAttribute("aria-label", playing ? "Stop" : S.active ? "Resume" : "Play");
+  $("playBtn").disabled = !AC;
   paintClock();
   if (!playing) setGlow(S.active ? .35 : 0);
 }
@@ -598,12 +672,9 @@ function tick(){
   if (!S.active) return;
   const e = elapsed();
   scheduleBreath(); reapVoices();
-  if (S.ending && S.ctx.currentTime >= S.endAt){ finish("inf"); return; }
   paintClock();
   const c = Math.floor(e / CYCLE);
-  if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (!S.ending && st.int > 15 && (S.T === Infinity || e < S.T - FADE_OUT)) buzz(15); }   /* light pulse at each in-breath (Android); none when the tone is steady */
-  const rem = S.T - e;
-  setPrompt(!S.paused && !S.ending && rem <= 60 && rem > 40);   /* final minute: shown for 20 s, then gone if ignored */
+  if (!S.paused && c !== S.lastCycle){ S.lastCycle = c; if (st.int > 15 && e < S.T - FADE_OUT) buzz(15); }   /* light pulse at each in-breath (Android); none when the tone is steady */
   if (e >= S.T) finish("done");
 }
 async function takeLock(){ try { if (navigator.wakeLock && !S.lock){ const l = await navigator.wakeLock.request("screen"); S.lock = l; l.addEventListener("release", () => { if (S.lock === l) S.lock = null; }); } } catch(e){ S.lock = null; } }
@@ -615,39 +686,22 @@ async function start(){
   buildGraph();                                   /* created inside the Play tap */
   const ready = S.ctx.resume();
   const ctx = S.ctx, g = S.g;
-  S.T = st.min ? st.min * 60 : Infinity; S.ending = false; S.t0 = ctx.currentTime + .1; S.nextBreath = S.t0; S.lastCycle = -1; S.paused = false; S.active = true; S.pendingSwap = false; S.xfEnd = 0;
+  S.T = st.min * 60; S.t0 = ctx.currentTime + .1; S.nextBreath = S.t0; S.lastCycle = -1; S.paused = false; S.active = true; S.pendingSwap = false; S.xfEnd = 0;
   g.env.gain.setValueAtTime(0, S.t0);
   g.env.gain.setValueCurveAtTime(mkCurve(200, x => ease(x)), S.t0, FADE_IN);
   g.env.gain.setValueAtTime(1, S.t0 + FADE_IN);
   S.voice = makeVoice(st.mode, STOPS[st.stop].hz); S.voice.out.gain.value = S.voice.level;
-  S.fadeAt = S.t0 + S.T - FADE_OUT; if (S.T !== Infinity) scheduleEnd(g.end);
+  g.end.gain.setValueCurveAtTime(FADE_DOWN, S.t0 + S.T - FADE_OUT, FADE_OUT);   /* 8 s fade-out at the timed end */
   scheduleBreath();
   S.timer = setInterval(tick, 200);
   takeLock(); paintSession(); startFrames(); factsRun();
   try { await ready; } catch(e){}
   S.busy = false;
 }
-/* timed end: 8 s fade-out on its own node, so +5 min can swap it without touching the tone */
-function scheduleEnd(node){ S.fadeAt = S.t0 + S.T - FADE_OUT; node.gain.setValueCurveAtTime(FADE_DOWN, S.fadeAt, FADE_OUT); }
-function extend(){
-  if (!S.active || S.T === Infinity || S.ending || !S.ctx) return;
-  const ctx = S.ctx, g = S.g, now = ctx.currentTime;
-  if (now >= S.t0 + S.T - .05) return;              /* already ending */
-  const x = (now - S.fadeAt) / FADE_OUT, v = x <= 0 ? 1 : 1 - ease(x);   /* where the fade-out is right now */
-  const n = ctx.createGain(); n.gain.value = v;      /* new end node starts at that level... */
-  g.stop.connect(n); n.connect(g.cut); g.stop.disconnect(g.end); g.end.disconnect();   /* ...and takes over in the same instant: no jump */
-  if (v < 1) n.gain.setTargetAtTime(1, now, .5);     /* if the fade-out had begun, ease back up */
-  g.end = n; S.T += EXT_S; scheduleEnd(n);
-  setPrompt(false); paintClock(); $("live").textContent = "5 minutes added.";
-}
-function setPaused(external){
+/* the browser or the phone suspended the sound (screen lock, a call): hold in place; Play continues */
+function interrupted(){
   if (!S.active || S.paused) return;
-  S.paused = true; paintSession(); dropLock(); factsStop(); setPrompt(false);
-  if (!external){
-    S.busy = true;
-    S.g.stop.gain.setTargetAtTime(0, S.ctx.currentTime, .06);
-    setTimeout(() => { if (S.paused && S.ctx) S.ctx.suspend().catch(() => {}).then(() => { S.busy = false; }); else S.busy = false; }, 450);
-  }
+  S.paused = true; paintSession(); dropLock(); factsStop();
 }
 async function resume(){
   if (!S.active || !S.paused) return;
@@ -659,15 +713,13 @@ async function resume(){
   S.busy = false;
   if (S.pendingSwap){ S.pendingSwap = false; crossfade(); }
 }
-/* kind: "done" timed end · "cancel" early Stop or Escape (0.3 s, no prompt) · "inf" Stop on no-limit (8 s fade first) */
-function finish(kind, quick){
+/* kind: "done" timed end (end screen) · "cancel" Stop or Escape: 0.3 s fade, session reset, back to the dial */
+function finish(kind){
   if (!S.active) return;
-  const played = S.T === Infinity ? elapsed() : Math.min(elapsed(), S.T);
-  const ended = { stop:st.stop, min:S.T === Infinity ? Math.round(played / 60) : Math.round(S.T / 60) };   /* includes any +5 min */
-  const showIt = kind === "done" || (kind === "inf" && played >= 300);
-  const fast = kind === "cancel" || !!quick;
+  const ended = { stop:st.stop, min:Math.round(S.T / 60) };
+  const fast = kind === "cancel";
   const ctx = S.ctx, g = S.g, voices = [S.voice].concat(S.dying.map(d => d.v));
-  S.active = false; S.paused = false; S.busy = false; S.ending = false; S.pendingSwap = false; clearInterval(S.timer); clearTimeout(S.xf);
+  S.active = false; S.paused = false; S.busy = false; S.pendingSwap = false; clearInterval(S.timer); clearTimeout(S.xf);
   if (S.raf) cancelAnimationFrame(S.raf); S.raf = 0; dropLock();
   if (ctx){
     if (fast && ctx.state === "running") g.cut.gain.setTargetAtTime(0, ctx.currentTime, .06);   /* 0.3 s fade */
@@ -675,23 +727,12 @@ function finish(kind, quick){
     setTimeout(() => { voices.forEach(v => v && v.dispose()); try { ctx.close(); } catch(e){} }, fast ? 450 : 300);
   }
   S.ctx = null; S.g = null; S.voice = null; S.dying = [];
-  factsStop(); setPrompt(false); S.T = 0;
+  factsStop(); S.T = 0;
   setGlow(0); paintSession();
-  if (showIt) showEnd(ended);                       /* otherwise straight back to the dial, no prompt */
+  if (kind === "done") showEnd(ended);             /* otherwise straight back to the dial, no prompt */
+  else $("live").textContent = "Stopped.";
 }
-function stopPressed(){
-  if (!S.active) return;
-  if (S.T !== Infinity) return finish("cancel");
-  if (S.paused) return finish("inf");               /* already silent */
-  if (S.ending) return finish("inf", true);         /* second press: short fade */
-  S.ending = true; S.endAt = S.ctx.currentTime + FADE_OUT;
-  S.g.stop.gain.cancelScheduledValues(S.ctx.currentTime);
-  S.g.stop.gain.setValueCurveAtTime(FADE_DOWN, S.ctx.currentTime, FADE_OUT);   /* 8 s fade, then the end screen if it ran 5+ minutes */
-  paintSession();
-}
-$("playBtn").onclick = () => { if (S.ending) return; if (!S.active) start(); else if (S.paused) resume(); else setPaused(false); };
-$("stopBtn").onclick = stopPressed;
-$("extBtn").onclick = extend; $("extPrompt").onclick = extend;
+$("playBtn").onclick = () => { if (!S.active) start(); else if (S.paused) resume(); else finish("cancel"); };
 document.addEventListener("keydown", e => { if (e.key === "Escape" && S.active){ e.preventDefault(); finish("cancel"); } });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return;
@@ -699,64 +740,69 @@ document.addEventListener("visibilitychange", () => {
 });
 if (reduceMQ.addEventListener) reduceMQ.addEventListener("change", () => { if (S.active && !S.paused) startFrames(); });
 
-/* ---------- intensity + mute ---------- */
+/* ---------- intensity (the arc) ---------- */
+const intWord = v => v < 25 ? "low" : v < 60 ? "medium" : "high";
 function paintInt(){
-  const v = st.int, w = v < 25 ? "low" : v < 60 ? "medium" : "high";
-  $("int").value = v; $("int").setAttribute("aria-valuetext", w + ", " + v + " percent");
-  $("intVal").textContent = w === "low" ? "Low" : w === "medium" ? "Medium" : "High";
+  const v = st.int, a = I_LO - (I_LO - I_HI) * v / 100;
+  const [ax, ay] = pol(I_LO, I_R), [bx, by] = pol(a, I_R);
+  $("iFill").setAttribute("d", `M${ax.toFixed(2)} ${ay.toFixed(2)}A${I_R} ${I_R} 0 0 0 ${bx.toFixed(2)} ${by.toFixed(2)}`);
+  $("iThumb").setAttribute("cx", bx.toFixed(2)); $("iThumb").setAttribute("cy", by.toFixed(2));
+  knobEl.setAttribute("aria-valuenow", v); knobEl.setAttribute("aria-valuetext", intWord(v) + ", " + v + " percent");
 }
-$("int").oninput = e => { st.int = +e.target.value; store.set("int", st.int); paintInt(); applyIntensity(); };
-$("muteBtn").onclick = () => {
-  st.muted = !st.muted; const b = $("muteBtn");
-  b.setAttribute("aria-label", st.muted ? "Unmute" : "Mute"); b.dataset.muted = st.muted; $("slash").toggleAttribute("hidden", !st.muted); $("waves").style.opacity = st.muted ? .35 : 1;
-  applyVol();
-};
+function setInt(v){ v = clamp(Math.round(v), 0, 100); if (v === st.int) return; st.int = v; store.set("int", v); paintInt(); applyIntensity(); }
 
-/* ---------- rolling fact line + final-minute prompt (text lives in window.COPY) ---------- */
-const F = { deck:[], last:"", show:0, hide:0, on:false };
+/* ---------- facts: one line for this frequency; while playing it changes slowly; tap to open the rest (text lives in window.COPY) ---------- */
+const F = { deck:[], last:"", t:0, swap:0, on:false };
 const rnd = (a, b) => a + Math.random() * (b - a);
-function factLines(){ const f = (window.COPY && COPY.facts) || {}; return [].concat(f.physics || [], f.tradition || [], f.invitation || []); }
+const factEl = $("fact");
+function showFact(text, fade){
+  clearTimeout(F.swap);
+  if (!fade || reduced()){ factEl.textContent = text; factEl.classList.remove("out"); return; }
+  factEl.classList.add("out");
+  F.swap = setTimeout(() => { factEl.textContent = text; factEl.classList.remove("out"); }, 3000);   /* 3 s out, 3 s in */
+}
+function rollingLines(){ const f = C().facts || {}; return stopLines(STOPS[st.stop], false).concat(f.physics || [], f.invitation || []); }
 function nextFact(){
   if (!F.deck.length){
-    F.deck = factLines().slice(); for (let i = F.deck.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [F.deck[i], F.deck[j]] = [F.deck[j], F.deck[i]]; }
+    F.deck = rollingLines(); for (let i = F.deck.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [F.deck[i], F.deck[j]] = [F.deck[j], F.deck[i]]; }
     if (F.deck.length > 1 && F.deck[F.deck.length - 1] === F.last) F.deck.unshift(F.deck.pop());   /* never repeat back to back */
   }
-  const line = F.deck.pop() || ""; F.last = line;
-  const s = STOPS[st.stop];
-  return line.replace(/\{hz\}/g, s.hz).replace(/\{area\}/g, "the " + s.chakra.toLowerCase() + " chakra");
+  return (F.last = F.deck.pop() || "");
 }
-function factsStop(){ clearTimeout(F.show); clearTimeout(F.hide); $("fact").classList.remove("on"); }
-function factsRun(delay){
-  factsStop();
-  if (!S.active || S.paused || !st.facts || !factLines().length) return;
-  F.show = setTimeout(() => {
-    if (!S.active || S.paused || !st.facts) return;
-    if (promptOn){ factsRun(3000); return; }   /* the prompt has the slot */
-    $("fact").textContent = nextFact(); $("fact").classList.add("on");
-    F.hide = setTimeout(() => $("fact").classList.remove("on"), 12000);   /* 3 s in, 6 s held, 3 s out */
-    F.show = setTimeout(factsRun, rnd(20000, 30000));                      /* next line 20-30 s after this one started */
-  }, delay === undefined ? 8000 : delay);
+function factsStop(){ clearTimeout(F.t); F.on = false; F.deck = []; showFact(leadFact(STOPS[st.stop]), false); }
+function factsRun(){
+  clearTimeout(F.t); F.on = true;
+  F.t = setTimeout(function roll(){
+    if (!S.active || S.paused) return;
+    showFact(nextFact(), true);
+    F.t = setTimeout(roll, rnd(20000, 30000));     /* a new line every 20-30 s */
+  }, 20000);
 }
-let promptOn = false;
-function setPrompt(on){
-  on = !!on && S.T !== Infinity; if (on === promptOn) return;
-  promptOn = on; const b = $("extPrompt");
-  b.classList.toggle("on", on); b.tabIndex = on ? 0 : -1;
-  if (on) $("fact").classList.remove("on");
+const li = t => { const e = document.createElement("li"); e.textContent = t; return e; };
+function renderLearnStop(){
+  const s = STOPS[st.stop]; $("lStopH").textContent = `${s.name}, ${s.hz} Hz`;
+  $("lStop").replaceChildren(...stopLines(s, true).map(li));
 }
-function paintFacts(){
-  const b = $("factsBtn"); b.setAttribute("aria-pressed", st.facts); b.textContent = st.facts ? "Facts on" : "Facts off";
-}
-$("factsBtn").onclick = () => { st.facts = !st.facts; store.set("facts", st.facts); paintFacts(); if (st.facts) factsRun(4000); else factsStop(); };
+(function renderLearn(){
+  const f = C().facts || {};
+  $("lSound").replaceChildren(...(f.physics || []).map(li));
+  $("lAssoc").replaceChildren(...(f.tradition || []).map(li));
+  $("howList").replaceChildren(...(C().how || []).map(li));
+})();
+$("factBtn").onclick = () => {
+  const open = $("learn").hidden; $("learn").hidden = !open;
+  $("factBtn").setAttribute("aria-expanded", open); $("more").textContent = open ? "Less" : "More about the sound";
+};
 
-/* ---------- end screen (natural completion only), feedback view behind "Share feedback" ---------- */
+/* ---------- end screen (timed completion only), feedback view behind "Share feedback" ---------- */
 let ended = null, answered = false;
 const logGet = () => { const l = store.get("log", []); return Array.isArray(l) ? l : []; };
+const entryHz = e => typeof e.hz === "number" ? e.hz : OLD_HZ[e.stop];   /* entries before 285 Hz was added hold only an index */
 function hasLegacy(){ try { return ["log","dur","voice","saveWords"].some(k => localStorage.getItem("reset:" + k) !== null); } catch(e){ return false; } }
 function renderCounts(){
   const log = logGet(), body = $("counts").querySelector("tbody"); body.innerHTML = "";
-  STOPS.forEach((s, i) => {
-    const c = { better:0, same:0, worse:0 }; log.forEach(e => { if (e.stop === i && c[e.a] !== undefined) c[e.a]++; });
+  STOPS.forEach(s => {
+    const c = { better:0, same:0, worse:0 }; log.forEach(e => { if (entryHz(e) === s.hz && c[e.a] !== undefined) c[e.a]++; });
     const tr = document.createElement("tr");
     [s.name + " · " + s.hz, c.better, c.same, c.worse].forEach((v, j) => { const td = document.createElement(j ? "td" : "th"); if (!j) td.scope = "row"; td.textContent = v; tr.appendChild(td); });
     body.appendChild(tr);
@@ -775,7 +821,7 @@ function show(id, focusEl){
   if (focusEl) focusEl.focus({ preventScroll:true });
 }
 function closingLine(){
-  const list = (window.COPY && COPY.closing) || []; if (!list.length) return "";
+  const list = C().closing || []; if (!list.length) return "";
   const i = (((+store.get("close", -1) | 0) + 1) % list.length + list.length) % list.length; store.set("close", i);   /* rotates in order, remembered */
   return list[i];
 }
@@ -789,7 +835,7 @@ function showEnd(e){
 }
 $("answers").addEventListener("click", e => {
   const b = e.target.closest("[data-a]"); if (!b || answered || !ended) return;
-  answered = true; const log = logGet(); log.push({ stop:ended.stop, min:ended.min, a:b.dataset.a, at:new Date().toISOString() }); store.set("log", log);
+  answered = true; const log = logGet(); log.push({ stop:ended.stop, hz:STOPS[ended.stop].hz, min:ended.min, a:b.dataset.a, at:new Date().toISOString() }); store.set("log", log);
   document.querySelectorAll("#answers .btn").forEach(x => { x.setAttribute("aria-pressed", x === b ? "true" : "false"); x.disabled = true; });
   $("endNote").textContent = b.dataset.a === "worse" ? "Noted. Try a different stop or a shorter time, or stop for today." : "Saved on this device.";
   renderCounts();
@@ -803,7 +849,7 @@ $("delBtn").onclick = () => {
   if (confirm("Delete every saved answer on this device, including anything saved by earlier versions?")){ store.clearAnswers(); renderCounts(); $("endNote").textContent = "Deleted."; }
 };
 
-renderDial(false); paintInt(); paintFacts(); paintClock(); paintSession(); renderSignal();
+renderDial(false); paintInt(); paintMode(); paintClock(); paintSession(); renderSignal();
 })();
 </script>
 </body>

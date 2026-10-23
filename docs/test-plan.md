@@ -21,9 +21,11 @@ v0.2 asked for two 0–10 ratings (distress and "stuck on it") before and after 
 - [ ] Listen at the 25% starting volume and at 100% on 852 and 963 Hz in Tone mode: no harshness or spike.
 - [ ] Atmosphere on phone speakers and on headphones: is the octave-below layer audible?
 - [ ] Turn the dial while playing: the crossfade sounds smooth; the timer keeps running.
-- [ ] Pause, Resume, Stop, Escape (keyboard) behave as described; Stop gives a short fade.
+- [ ] Play/Stop on one button and Escape (keyboard) behave as described; Stop gives a short fade and resets the clock.
+- [ ] Intensity arc: drag it on a real phone; check it never moves the dial, and dial drags never move it. Check Mend and Stillness labels stay easy to hit beside it.
 - [ ] Lock the screen mid-session: note whether sound stops; wake lock keeps the screen on while unlocked.
 - [ ] Android: a tap on each snap and each in-breath. iPhone: no error.
-- [ ] ∞: let it run 20+ minutes, then Stop: the 8 s fade, then the end screen.
+- [ ] 30 min: let it finish: the 8 s fade, then the end screen.
+- [ ] 285 Hz (Mend) on phone speakers and headphones: audible, no harshness.
 - [ ] Reduced motion on: the glow stays still; sound and the Android breath pulses unchanged.
 - [ ] Thumb reach and legibility at 320, 360, and 390 px.
