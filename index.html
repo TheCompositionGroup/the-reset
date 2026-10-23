@@ -65,7 +65,10 @@ button{cursor:pointer}
 .itrack{fill:none;stroke:var(--line);stroke-width:4;stroke-linecap:round}
 .ifill{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round}
 .ithumb{fill:var(--accent);stroke:var(--bg);stroke-width:2}
-.iknob{position:absolute;left:29%;top:72%;width:42%;height:17%;border-radius:999px;pointer-events:none}
+.iknob{position:absolute;left:29%;top:72%;width:42%;height:17%;pointer-events:none}
+.iknob:focus-visible{outline:none}
+/* keyboard focus on intensity: the arc itself is the focus ring */
+.dialwrap:has(.iknob:focus-visible) .itrack{stroke:var(--brass);stroke-width:6}
 .icap{position:absolute;left:50%;top:91%;transform:translate(-50%,-50%);font-size:.8125rem;line-height:1;color:var(--muted);pointer-events:none;white-space:nowrap}
 
 /* readout */
@@ -453,7 +456,7 @@ dialEl.addEventListener("pointerdown", e => {
   const lab = e.target.closest && e.target.closest(".lab"), p = polarOf(e);
   if (!lab && zoneOf(p) === "int"){
     drag = "int"; try { dialEl.setPointerCapture(e.pointerId); } catch(_){}
-    setInt(intOfAngle(p.a)); knobEl.focus({ preventScroll:true }); e.preventDefault(); return;
+    setInt(intOfAngle(p.a)); e.preventDefault(); return;   /* no focus move on touch or mouse, so no focus ring appears */
   }
   const i = lab ? +lab.dataset.i : fromAngle(p.a); if (i === null) return;
   drag = "freq"; try { dialEl.setPointerCapture(e.pointerId); } catch(_){}
