@@ -129,11 +129,17 @@ button{cursor:pointer}
 .answers{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
 .answers .btn{padding:.9rem .4rem;font-size:1.0625rem}
 .signal{border-left:2px solid var(--danger);padding-left:.75rem;font-size:.9375rem;line-height:1.4;margin:.9rem 0 0;text-align:left}
-.counts{width:100%;border-collapse:collapse;margin:1.75rem 0 .5rem;font-size:.9375rem;font-variant-numeric:tabular-nums}
-.counts caption{text-align:left;font-weight:600;padding-bottom:.4rem}
+.counts{width:100%;border-collapse:collapse;margin:.75rem 0 .5rem;font-size:.9375rem;font-variant-numeric:tabular-nums}
 .counts th,.counts td{padding:.4rem .3rem;border-bottom:1px solid var(--line);text-align:right}
 .counts th:first-child,.counts td:first-child{text-align:left}
 .counts thead th{font-weight:500;color:var(--muted);font-size:.875rem}
+a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.endline{font-family:var(--serif);font-size:1.125rem;line-height:1.35;text-align:center;color:var(--muted);margin:0 0 1.25rem}
+.feel{margin-top:1.5rem}
+.feel .answers .btn{padding:.5rem .4rem;font-size:.9375rem}
+.row.col{flex-direction:column;gap:0}
+.mine{margin-top:.4rem}
+.mine summary{display:inline-flex;align-items:center;min-height:2.75rem;padding:0 .6rem;font-size:.9375rem;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
 .row{display:flex;gap:.75rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem}
 
 footer{border-top:1px solid var(--line);padding:.7rem 1.25rem calc(.7rem + env(safe-area-inset-bottom,0px));font-size:.8125rem;line-height:1.4;color:var(--muted);text-align:center}
@@ -213,40 +219,45 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
     <p class="sr" id="live" role="status" aria-live="polite"></p>
 
     <p class="hint" id="noAudio" hidden>Sound isn’t available in this browser.</p>
-    <details class="how" id="how"><summary>How it works</summary><ul id="howList"></ul></details>
+    <details class="how" id="how"><summary>How it works</summary><ul id="howList"></ul>
+      <details class="mine" id="mine"><summary>Your answers</summary>
+        <p class="hint">Better / Same / Worse answers stay on this device. Three Worse answers in your last 12 sessions shows a pause notice.</p>
+        <table class="counts" id="counts" aria-label="Your answers">
+          <thead><tr><th scope="col">Stop</th><th scope="col">Better</th><th scope="col">Same</th><th scope="col">Worse</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="row"><button class="btn" id="delBtn">Delete all</button></div>
+        <p class="hint" id="delNote" role="status"></p>
+      </details>
+    </details>
   </section>
 
   <!-- 2 END (timed completion only) -->
   <section id="vEnd" class="hidden" aria-label="Session complete">
-    <h2 class="q" id="endQ" tabindex="-1"></h2>
+    <h2 class="q" id="endQ" tabindex="-1">That’s enough for now.</h2>
+    <p class="endline" id="endLine"></p>
     <p class="signal" id="signalEnd" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
-    <div class="row">
-      <button class="btn primary" id="againBtn">Begin again</button>
-      <button class="btn primary" id="doneBtn">Done</button>
-    </div>
-    <div class="row"><button class="linkbtn" id="fbOpen">Share feedback</button></div>
+    <div class="row"><button class="btn primary" id="againBtn">Begin again</button></div>
+    <div class="row col"><button class="linkbtn" id="fbOpen">Leave a banana 🍌</button><p class="hint">An idea? A suggestion? We’d love to hear it.</p></div>
   </section>
 
-  <!-- 3 FEEDBACK (opened from the end screen only) -->
-  <section id="vFb" class="hidden" aria-label="Feedback">
-    <h2 class="q" id="fbQ" tabindex="-1">How do you feel now?</h2>
-    <div class="answers" id="answers">
-      <button class="btn" data-a="better">Better</button>
-      <button class="btn" data-a="same">Same</button>
-      <button class="btn" data-a="worse">Worse</button>
+  <!-- 3 BANANA (opened from the end screen only) -->
+  <section id="vFb" class="hidden" aria-label="Leave a banana">
+    <h2 class="q" id="fbQ" tabindex="-1">Leave a banana.</h2>
+    <p class="endline">Something on your mind? Good, bad, or wonderfully weird. We’re listening.</p>
+    <div class="row"><a class="btn primary" id="bananaSend" href="mailto:banana@fancyape.com?subject=A%20banana%20for%20The%20Reset">Send a banana</a></div>
+    <p class="hint">Opens your email app. No account required.</p>
+    <div class="feel" id="feel">
+      <p class="hint">How do you feel?</p>
+      <div class="answers" id="answers">
+        <button class="btn" data-a="better">Better</button>
+        <button class="btn" data-a="same">Same</button>
+        <button class="btn" data-a="worse">Worse</button>
+      </div>
     </div>
-    <p class="hint" id="endNote" role="status">Optional. Only the stop, time and your answer are saved, on this device.</p>
+    <p class="hint" id="endNote" role="status"></p>
     <p class="signal" id="signalFb" role="status" hidden>Worse on 3 or more of your last 12 sessions. That is the stop signal in the test plan: pause and change something before continuing, and consider talking it over with someone you trust.</p>
-    <div class="row"><a class="link" id="suggest" href="https://github.com/TheCompositionGroup/the-reset/issues" target="_blank" rel="noopener noreferrer">Suggest a change</a></div>
-    <table class="counts" id="counts">
-      <caption>Your answers</caption>
-      <thead><tr><th scope="col">Stop</th><th scope="col">Better</th><th scope="col">Same</th><th scope="col">Worse</th></tr></thead>
-      <tbody></tbody>
-    </table>
-    <div class="row">
-      <button class="btn primary" id="fbBack">Back</button>
-      <button class="btn" id="delBtn">Delete all</button>
-    </div>
+    <div class="row"><button class="linkbtn" id="fbBack">Back</button></div>
   </section>
 </main>
 
@@ -321,6 +332,7 @@ window.COPY = {
     "Your settings, and any answers you give at the end, stay on this device."
   ],
   closing: [
+    "Take the good with you. Leave the rest.",
     "Drink water. Be nice to people.",
     "Pass it forward.",
     "Enjoy your day."
@@ -831,8 +843,8 @@ function closingLine(){
 function showEnd(e){
   ended = e; answered = false;
   document.querySelectorAll("#answers .btn").forEach(b => { b.setAttribute("aria-pressed","false"); b.disabled = false; });
-  $("endNote").textContent = "Optional. Only the stop, time and your answer are saved, on this device.";
-  $("endQ").textContent = closingLine();
+  $("feel").hidden = false; $("endNote").textContent = "";
+  $("endLine").textContent = closingLine();
   renderCounts();
   show("vEnd", $("endQ"));
 }
@@ -840,19 +852,18 @@ $("answers").addEventListener("click", e => {
   const b = e.target.closest("[data-a]"); if (!b || answered || !ended) return;
   answered = true; const log = logGet(); log.push({ stop:ended.stop, hz:STOPS[ended.stop].hz, min:ended.min, a:b.dataset.a, at:new Date().toISOString() }); store.set("log", log);
   document.querySelectorAll("#answers .btn").forEach(x => { x.setAttribute("aria-pressed", x === b ? "true" : "false"); x.disabled = true; });
-  $("endNote").textContent = b.dataset.a === "worse" ? "Noted. Try a different stop or a shorter time, or stop for today." : "Saved on this device.";
+  $("feel").hidden = true; $("endNote").textContent = b.dataset.a === "worse" ? "Thanks. Try a different stop or a shorter time, or stop for today." : "Thanks.";
   renderCounts();
 });
-$("fbOpen").onclick = () => { renderCounts(); show("vFb", $("fbQ")); };
+$("fbOpen").onclick = () => show("vFb", $("fbQ"));
 $("fbBack").onclick = () => show("vEnd", $("endQ"));
 $("againBtn").onclick = () => show("vMain", $("playBtn"));   /* the dial, with the last stop, time, sound and intensity */
-$("doneBtn").onclick = () => show("vMain", $("dial"));
 document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("vFb").classList.contains("hidden")){ e.preventDefault(); show("vEnd", $("endQ")); } });
 $("delBtn").onclick = () => {
-  if (confirm("Delete every saved answer on this device, including anything saved by earlier versions?")){ store.clearAnswers(); renderCounts(); $("endNote").textContent = "Deleted."; }
+  if (confirm("Delete every saved answer on this device, including anything saved by earlier versions?")){ store.clearAnswers(); renderCounts(); $("delNote").textContent = "Deleted."; }
 };
 
-renderDial(); paintInt(); paintMode(); paintClock(); paintSession(); renderSignal();
+renderDial(); paintInt(); paintMode(); paintClock(); paintSession(); renderCounts();
 })();
 </script>
 </body>
