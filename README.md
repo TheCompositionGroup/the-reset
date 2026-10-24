@@ -7,7 +7,7 @@ A free, private, sound-only web app. Turn the dial, choose a time, press play, l
 ## What it does
 1. **Turn the dial** to one of eight stops: Mend, Ground, Flow, Power, Heart, Voice, Vision, Stillness (285 to 963 Hz). Each shows its frequency and, except Mend, a chakra name.
 2. **Set your time** on the wheel beside Play: 5, 10, 20 or 30 minutes (default 10).
-3. **Press play.** Press again to stop; stopping ends the session and resets the clock.
+3. **Press play.** Press again to stop; stopping ends the session and resets the clock. After the first minute, stopping takes you to the ending; before that, back to the dial.
    - **Intensity** is the short arc at the bottom of the dial: low is steady, high is a deeper slow swell and fuller atmosphere. Loudness is your device volume.
    - **Sound** switches between *Tone* (a soft sine) and *Atmosphere* (a soft layered drone).
    - One fact about the current frequency sits under Play and changes slowly while playing. Tap it for more: this frequency, measured sound science, and where the frequencies come from. All text is in one `COPY` block in `index.html`.
