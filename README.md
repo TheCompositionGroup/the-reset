@@ -31,7 +31,7 @@ You can turn the dial while playing; the sound crossfades over 2 seconds and the
 - Your last stop, time, sound and intensity are remembered in this browser. If you answer the question, the stop, minutes, answer, and date and time are saved here too, and nothing else. If Worse is your answer on 3 or more of your last 12 sessions, a quiet notice suggests pausing. *Delete all* removes them.
 
 ## Feedback
-Use [GitHub Issues](https://github.com/TheCompositionGroup/the-reset/issues): what did you try, and what would you change? Inside the app, *Leave a banana* opens an email to banana@fancyape.com.
+Use [GitHub Issues](https://github.com/TheCompositionGroup/the-reset/issues): what did you try, and what would you change? Inside the app, *Leave a banana* opens an email to bananas@fancyape.com.
 
 ## Contributors
 - The Composition Group LLC · Fancy Ape
