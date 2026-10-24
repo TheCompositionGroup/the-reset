@@ -326,7 +326,7 @@ window.COPY = {
     "Drag the short arc at the bottom of the dial to set intensity. Low is a steady tone; high is a deeper, slow swell. Loudness is your device volume.",
     "Roll the time to 5, 10, 20 or 30 minutes before you start. While it plays, the same box counts down.",
     "Sound switches between Tone, one pure sine wave, and Atmosphere, a soft layered drone around it.",
-    "Press play. Press it again to stop; stopping ends the session and resets the clock. Escape also stops.",
+    "Press play. Press it again to stop. Stopping after the first minute takes you to the ending; before that, back to the dial. Escape also stops.",
     "Best with headphones, at a low volume.",
     "Sound may pause if your screen locks. If it does, press play to continue.",
     "Your settings, and any answers you give at the end, stay on this device."
@@ -724,11 +724,13 @@ async function resume(){
   S.busy = false;
   if (S.pendingSwap){ S.pendingSwap = false; crossfade(); }
 }
-/* kind: "done" timed end (end screen) · "cancel" Stop or Escape: 0.3 s fade, session reset, back to the dial */
+/* kind: "done" timed end (end screen) · "cancel" Stop or Escape: 0.3 s fade, session reset; the end screen shows only if at least 60 s was played (minutes saved = minutes actually played), otherwise back to the dial */
 function finish(kind){
   if (!S.active) return;
-  const ended = { stop:st.stop, min:Math.round(S.T / 60) };
-  const fast = kind === "cancel";
+  const played = elapsed();   /* audio-clock time, so a suspended stretch is not counted */
+  const early = kind === "cancel";
+  const ended = { stop:st.stop, min: early ? Math.max(1, Math.round(played / 60)) : Math.round(S.T / 60) };
+  const fast = early;
   const ctx = S.ctx, g = S.g, voices = [S.voice].concat(S.dying.map(d => d.v));
   S.active = false; S.paused = false; S.busy = false; S.pendingSwap = false; clearInterval(S.timer); clearTimeout(S.xf);
   if (S.raf) cancelAnimationFrame(S.raf); S.raf = 0; dropLock();
@@ -740,7 +742,7 @@ function finish(kind){
   S.ctx = null; S.g = null; S.voice = null; S.dying = [];
   factsStop(); S.T = 0;
   setGlow(0); paintSession();
-  if (kind === "done") showEnd(ended);             /* otherwise straight back to the dial, no prompt */
+  if (kind === "done" || played >= 60) showEnd(ended);             /* otherwise straight back to the dial, no prompt */
   else $("live").textContent = "Stopped.";
 }
 $("playBtn").onclick = e => {

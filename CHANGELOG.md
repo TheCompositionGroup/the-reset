@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.6.2 (unreleased)
+- Changed: **Stop or Escape after at least 60 seconds of play now shows the ending**, the same screen as a timed finish, instead of going straight back to the dial. The 0.3 s fade is unchanged. Under 60 seconds still returns to the dial with no ending.
+- Changed: the minutes saved with an answer are the minutes actually played (rounded, at least 1), not the timer setting. Time while the browser has the sound suspended (screen lock, a call) is not counted. A timed finish still saves the timer setting.
+- Changed: the "How it works" Play line describes this.
+
 ## v0.6.0 (unreleased)
 - Changed: **the end of a session is simpler.** The end screen reads "That's enough for now." with the rotating closing line under it (new first line: "Take the good with you. Leave the rest."). One primary button, Begin again; Done is gone. A small "Leave a banana 🍌" button opens the banana view. The stop-signal notice is unchanged.
 - Changed: **feedback is now "Leave a banana."** The view has a "Send a banana" link that opens the person's email app (mailto:bananas@fancyape.com; no account, nothing sent by the page) and one optional "How do you feel?" row (Better / Same / Worse). Same saving logic and log format; after a tap it shows "Thanks." (after Worse: "Thanks. Try a different stop or a shorter time, or stop for today.") A Back link and Escape return to the end screen.
