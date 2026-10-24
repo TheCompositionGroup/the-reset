@@ -27,7 +27,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 - If any text input is ever added back, the v0.2.2 crisis rules return with it, all together: the `crisisRe` keyword check (including the bare `suicid` stem and the indirect phrasings), the stated-intent threshold for any model flag, the quiet dismissible 988 notice, and the fixed phrase test. The full rules, regex, notice text, prompt line, and phrase list are in `docs/crisis-rules.md`.
 
 ### 4. Nothing leaves the device
-- No network calls at all: no `fetch`, XHR, WebSocket, beacons, web fonts, CDN, analytics, telemetry, trackers, or accounts. The only exceptions are exactly two plain links the person taps: the footer "Fancy Ape" link (https://fancyape.com), opened in a new tab with `noopener noreferrer`, and the "Send a banana" `mailto:bananas@fancyape.com` link, which only opens the person's own email app. The GitHub Issues link is in the README, not in the app. Nothing else; the page itself sends nothing.
+- No network calls at all: no `fetch`, XHR, WebSocket, beacons, web fonts, CDN, analytics, telemetry, trackers, or accounts. The only exceptions are exactly three plain links the person taps: the "Fancy Ape Home" link at the top and the footer "Fancy Ape" link (both https://fancyape.com), each opened in a new tab with `noopener noreferrer`, and the "Send a banana" `mailto:bananas@fancyape.com` link, which only opens the person's own email app. The GitHub Issues link is in the README, not in the app. Nothing else; the page itself sends nothing.
 - Storage is `localStorage` on this device only, under `reset3:` keys: stop (saved as its Hz), time, sound, intensity, the closing-line position, and the answer log. Each log entry is ordered and dated: the stop (index and Hz), the minutes, Better/Same/Worse, and the date and time. Nothing else is saved, and there is no text field to save from.
 - Delete all (with confirmation) removes the log, including any data left by v0.2 under `reset:` keys. Never delete a person's data silently.
 
@@ -66,7 +66,7 @@ These rules apply to every change to `index.html`, `README.md`, and `docs/`. If 
 
 ## Editing checklist
 - Grep user-facing text for the banned terms in Rule 1 before committing (the cited book title is the one allowed hit for "healing").
-- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html` (the footer "Fancy Ape" link and the "Send a banana" `mailto:` are the only two allowed `href`s; the three inline `data:image/png` icon links in `<head>` are not external).
+- Confirm no `http(s)://`, `fetch`, XHR, WebSocket, external `src`/`href` in `index.html` (the "Fancy Ape Home" link, the footer "Fancy Ape" link and the "Send a banana" `mailto:` are the only three allowed `href`s; the three inline `data:image/png` icon links in `<head>` are not external).
 - Confirm nothing but stop, time, sound, intensity, closing-line position, and the answer log is stored.
 - Update `CHANGELOG.md` for any behavior change.
 - Test sound, fades, and haptics on a real phone before merging anything that touches audio.
