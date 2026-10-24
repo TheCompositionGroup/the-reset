@@ -2,9 +2,10 @@
 
 ## v0.6.0 (unreleased)
 - Changed: **the end of a session is simpler.** The end screen reads "That's enough for now." with the rotating closing line under it (new first line: "Take the good with you. Leave the rest."). One primary button, Begin again; Done is gone. A small "Leave a banana 🍌" button opens the banana view. The stop-signal notice is unchanged.
-- Changed: **feedback is now "Leave a banana."** The view has a "Send a banana" link that opens the person's email app (mailto:banana@fancyape.com; no account, nothing sent by the page) and one optional "How do you feel?" row (Better / Same / Worse). Same saving logic and log format; after a tap it shows "Thanks." (after Worse: "Thanks. Try a different stop or a shorter time, or stop for today.") A Back link and Escape return to the end screen.
+- Changed: **feedback is now "Leave a banana."** The view has a "Send a banana" link that opens the person's email app (mailto:bananas@fancyape.com; no account, nothing sent by the page) and one optional "How do you feel?" row (Better / Same / Worse). Same saving logic and log format; after a tap it shows "Thanks." (after Worse: "Thanks. Try a different stop or a shorter time, or stop for today.") A Back link and Escape return to the end screen.
 - Removed: the GitHub "Suggest a change" link and the counts table from the in-app feedback view. The GitHub Issues link stays in the README.
 - New: **Your answers** in "How it works" holds the counts table and Delete all, with the line "Better / Same / Worse answers stay on this device. Three Worse answers in your last 12 sessions shows a pause notice."
+- Fixed: feedback address is bananas@fancyape.com.
 - Unchanged: the log format, the stop signal (3 Worse of the last 12), and storage keys.
 
 ## v0.5.3 (unreleased)
