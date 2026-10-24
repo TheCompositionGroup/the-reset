@@ -72,7 +72,7 @@ button{cursor:pointer}
 .readout{text-align:center;margin:.4rem 0 0;min-height:1.6rem}
 .chakra{font-size:.8125rem;font-weight:400;letter-spacing:.14em;color:color-mix(in srgb,var(--muted) 82%,var(--bg));margin-top:.1rem}
 
-/* transport: [time] [Play/Stop] [Sound] */
+/* transport: [time] [Sound]; Play/Pause is in the dial */
 .pill{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:.5rem .6rem;min-height:2.75rem;min-width:2.75rem;font-size:.9375rem;font-weight:500;font-variant-numeric:tabular-nums}
 .transport{display:flex;justify-content:center;align-items:center;gap:1.5rem;margin:.75rem 0 0}
 /* time wheel: three visible rows (one faded value above and below). The box has 12px of invisible padding top and bottom (cancelled by negative margins) so each half is a 44px touch target. */
@@ -92,7 +92,7 @@ button{cursor:pointer}
 .wheel.run .wclock{visibility:visible}
 /* Play takes the selected stop's colour, darkened 30% toward ink so the light icon keeps at least 3.6:1 contrast on every stop */
 .play{--pc:color-mix(in srgb,var(--glow-c,var(--accent)) 70%,#1F2A2E);position:relative;width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--pc);background:var(--pc);color:#F3F5F2;display:grid;place-items:center;padding:0}
-/* Play/Stop sits in the centre of the dial face, above the dial, so a press there is never a frequency press */
+/* Play/Pause sits in the centre of the dial face, above the dial, so a press there is never a frequency press */
 .playwrap{position:absolute;left:50%;top:50%;width:36%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:2}
 .playwrap .play{width:100%;height:100%}
 .play svg{width:38%;height:38%}
@@ -140,6 +140,8 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;text-decorat
 .row.col{flex-direction:column;gap:0}
 .mine{margin-top:.4rem}
 .mine summary{display:inline-flex;align-items:center;min-height:2.75rem;padding:0 .6rem;font-size:.9375rem;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
+.row[hidden]{display:none}
+.endrow{margin-top:.25rem}
 .row{display:flex;gap:.75rem;align-items:center;justify-content:center;flex-wrap:wrap;margin-top:1rem}
 
 footer{border-top:1px solid var(--line);padding:.7rem 1.25rem calc(.7rem + env(safe-area-inset-bottom,0px));font-size:.8125rem;line-height:1.4;color:var(--muted);text-align:center}
@@ -209,6 +211,7 @@ footer a{color:inherit;text-underline-offset:.2em;display:inline-block;min-heigh
       </div>
       <button class="pill sound" id="modeBtn"><svg viewBox="0 0 44 16" aria-hidden="true" focusable="false"><g class="w w-tone"><path d="M2 8Q7 1 12 8T22 8T32 8T42 8"/></g><g class="w w-atm"><path d="M2 8Q12 1 22 8T42 8" opacity=".45"/><path d="M2 8Q7 3 12 8T22 8T32 8T42 8"/><path d="M4 8Q9 13 14 8T24 8T34 8T44 8" opacity=".6"/></g></svg><span id="modeVal"></span></button>
     </div>
+    <div class="row endrow" id="endRow" hidden><button class="linkbtn" id="endSession">End session</button></div>
 
     <button class="factbtn" id="factBtn" aria-expanded="false" aria-controls="learn"><span class="fact" id="fact"></span><span class="more" id="more">More about the sound</span></button>
     <div class="learn" id="learn" hidden>
@@ -326,7 +329,7 @@ window.COPY = {
     "Drag the short arc at the bottom of the dial to set intensity. Low is a steady tone; high is a deeper, slow swell. Loudness is your device volume.",
     "Roll the time to 5, 10, 20 or 30 minutes before you start. While it plays, the same box counts down.",
     "Sound switches between Tone, one pure sine wave, and Atmosphere, a soft layered drone around it.",
-    "Press play. Press it again to stop. Stopping after the first minute takes you to the ending; before that, back to the dial. Escape also stops.",
+    "Press play. Press again to pause, and again to continue. While paused, End session finishes early: after the first minute it takes you to the ending. Escape also ends.",
     "Best with headphones, at a low volume.",
     "Sound may pause if your screen locks. If it does, press play to continue.",
     "Your settings, and any answers you give at the end, stay on this device."
@@ -570,7 +573,7 @@ const depthOf = v => .9 * v / 100;            /* pulse depth: share of the level
 const bedOf = v => .4 + 1.2 * v / 100;        /* atmosphere bed (octave below, upper harmonics, noise) */
 const INT_TAU = .15;                           /* s; every intensity change is a smooth ramp, never a step */
 
-const S = { active:false, paused:false, ctx:null, g:null, voice:null, dying:[], t0:0, T:0, nextBreath:0, lastCycle:-1, timer:0, raf:0, lock:null, busy:false, pendingSwap:false, xf:0, xfEnd:0 };
+const S = { active:false, paused:false, ctx:null, g:null, voice:null, dying:[], t0:0, T:0, nextBreath:0, lastCycle:-1, timer:0, raf:0, lock:null, busy:false, pendingSwap:false, xf:0, xfEnd:0, pz:0 };
 
 function noiseBuffer(ctx){
   const n = ctx.sampleRate * 8, f = Math.floor(ctx.sampleRate * .5), raw = new Float32Array(n);
@@ -626,7 +629,7 @@ function crossfade(){
 function reapVoices(){ if (!S.ctx) return; S.dying = S.dying.filter(d => { if (S.ctx.currentTime < d.at) return true; d.v.dispose(); return false; }); }
 function buildGraph(){
   const ctx = new AC({ latencyHint:"playback" });
-  /* voice -> dry (steady share) + pd -> breath (pulse share) -> env (5 s fade-in) -> stop (interruption hold) -> end (timed fade-out) -> cut (Stop) -> vol -> compressor */
+  /* voice -> dry (steady share) + pd -> breath (pulse share) -> env (5 s fade-in) -> stop (pause and interruption hold) -> end (timed fade-out) -> cut (End session, Escape) -> vol -> compressor */
   const g = { dry:ctx.createGain(), pd:ctx.createGain(), breath:ctx.createGain(), env:ctx.createGain(), stop:ctx.createGain(), end:ctx.createGain(), cut:ctx.createGain(), vol:ctx.createGain(), comp:ctx.createDynamicsCompressor() };
   g.dry.gain.value = 1 - depthOf(st.int); g.pd.gain.value = depthOf(st.int);
   g.breath.gain.value = 0; g.env.gain.value = 0; g.stop.gain.value = 1; g.end.gain.value = 1; g.cut.gain.value = 1; g.vol.gain.value = MASTER;
@@ -662,11 +665,12 @@ function paintClock(){
     wPos = MINS.indexOf(st.min); paintWheel();
   }
 }
-/* one button: Play when idle (or after an interruption), Stop while sound is playing */
+/* one button: Play when idle, Pause while sound is playing, Play (Resume) while paused or after an interruption; End session shows only while paused */
 function paintSession(){
   const playing = S.active && !S.paused;
-  $("playIcon").setAttribute("d", playing ? "M6.5 6.5h11v11h-11z" : "M8 5v14l11-7z");
-  $("playBtn").setAttribute("aria-label", playing ? "Stop" : S.active ? "Resume" : "Play");
+  $("playIcon").setAttribute("d", playing ? "M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" : "M8 5v14l11-7z");
+  $("playBtn").setAttribute("aria-label", playing ? "Pause" : S.active ? "Resume" : "Play");
+  $("endRow").hidden = !(S.active && S.paused);
   $("playBtn").disabled = !AC;
   paintClock();
   if (!playing) setGlow(S.active ? .35 : 0);
@@ -714,17 +718,25 @@ function interrupted(){
   if (!S.active || S.paused) return;
   S.paused = true; paintSession(); dropLock(); factsStop();
 }
+/* Pause: about 0.45 s fade to silence, then the audio clock is suspended so the clock and elapsed time freeze */
+function pause(){
+  if (!S.active || S.paused || S.busy) return;
+  const ctx = S.ctx;
+  S.paused = true; paintSession(); dropLock(); factsStop();
+  S.g.stop.gain.setTargetAtTime(0, ctx.currentTime, .1);
+  clearTimeout(S.pz); S.pz = setTimeout(() => { if (S.active && S.paused && S.ctx === ctx) ctx.suspend().catch(() => {}); }, 450);
+}
 async function resume(){
   if (!S.active || !S.paused) return;
-  S.busy = true;
+  S.busy = true; clearTimeout(S.pz);
   const ready = S.ctx.resume();                    /* inside the tap */
-  S.paused = false; S.g.stop.gain.setTargetAtTime(1, S.ctx.currentTime, .1);
+  S.paused = false; S.g.stop.gain.setTargetAtTime(1, S.ctx.currentTime, .25);   /* about 1 s back in */
   takeLock(); paintSession(); startFrames(); factsRun();
   try { await ready; } catch(e){}
   S.busy = false;
   if (S.pendingSwap){ S.pendingSwap = false; crossfade(); }
 }
-/* kind: "done" timed end (end screen) · "cancel" Stop or Escape: 0.3 s fade, session reset; the end screen shows only if at least 60 s was played (minutes saved = minutes actually played), otherwise back to the dial */
+/* kind: "done" timed end (end screen) · "cancel" End session or Escape: 0.3 s fade, session reset; the end screen shows only if at least 60 s was played (minutes saved = minutes actually played), otherwise back to the dial */
 function finish(kind){
   if (!S.active) return;
   const played = elapsed();   /* audio-clock time, so a suspended stretch is not counted */
@@ -732,7 +744,7 @@ function finish(kind){
   const ended = { stop:st.stop, min: early ? Math.max(1, Math.round(played / 60)) : Math.round(S.T / 60) };
   const fast = early;
   const ctx = S.ctx, g = S.g, voices = [S.voice].concat(S.dying.map(d => d.v));
-  S.active = false; S.paused = false; S.busy = false; S.pendingSwap = false; clearInterval(S.timer); clearTimeout(S.xf);
+  S.active = false; S.paused = false; S.busy = false; S.pendingSwap = false; clearInterval(S.timer); clearTimeout(S.xf); clearTimeout(S.pz);
   if (S.raf) cancelAnimationFrame(S.raf); S.raf = 0; dropLock();
   if (ctx){
     if (fast && ctx.state === "running") g.cut.gain.setTargetAtTime(0, ctx.currentTime, .06);   /* 0.3 s fade */
@@ -745,9 +757,10 @@ function finish(kind){
   if (kind === "done" || played >= 60) showEnd(ended);             /* otherwise straight back to the dial, no prompt */
   else $("live").textContent = "Stopped.";
 }
+$("endSession").onclick = () => finish("cancel");
 $("playBtn").onclick = e => {
   if (e.detail > 0) e.currentTarget.blur();   /* a tap or click leaves no focus ring; keyboard focus stays */
-  if (!S.active) start(); else if (S.paused) resume(); else finish("cancel");
+  if (!S.active) start(); else if (S.paused) resume(); else pause();
 };
 document.addEventListener("keydown", e => { if (e.key === "Escape" && S.active){ e.preventDefault(); finish("cancel"); } });
 document.addEventListener("visibilitychange", () => {

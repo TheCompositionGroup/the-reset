@@ -7,14 +7,14 @@ A free, private, sound-only web app. Turn the dial, choose a time, press play, l
 ## What it does
 1. **Turn the dial** to one of eight stops: Mend, Ground, Flow, Power, Heart, Voice, Vision, Stillness (285 to 963 Hz). Each shows its frequency and, except Mend, a chakra name.
 2. **Set your time** on the wheel beside Play: 5, 10, 20 or 30 minutes (default 10).
-3. **Press play.** Press again to stop; stopping ends the session and resets the clock. After the first minute, stopping takes you to the ending; before that, back to the dial.
+3. **Press play.** Press again to pause (the time left holds still) and again to resume. While paused, *End session* finishes early: after the first minute it takes you to the ending; before that, back to the dial. Escape also ends the session.
    - **Intensity** is the short arc at the bottom of the dial: low is steady, high is a deeper slow swell and fuller atmosphere. Loudness is your device volume.
    - **Sound** switches between *Tone* (a soft sine) and *Atmosphere* (a soft layered drone).
    - One fact about the current frequency sits under Play and changes slowly while playing. Tap it for more: this frequency, measured sound science, and where the frequencies come from. All text is in one `COPY` block in `index.html`.
    - **How it works** opens the usage notes.
 4. **At a timed finish**, "That's enough for now." and a short closing line, then **Begin again**. A small *Leave a banana* button opens a page with a *Send a banana* email link and an optional "How do you feel?" (Better, Same, Worse). Your saved answers and Delete all are under *How it works*. Your answers are a rough self-report, not proof that a frequency does anything.
 
-You can turn the dial while playing; the sound crossfades over 2 seconds and the timer keeps running. Sound fades in over 5 seconds and out over 8 at a timed end; Stop and Escape end at once with a short fade.
+You can turn the dial while playing; the sound crossfades over 2 seconds and the timer keeps running. Sound fades in over 5 seconds and out over 8 at a timed end; Pause fades out over about half a second and Resume fades back in over about a second; End session and Escape end at once with a short fade.
 
 ## Where the frequencies come from
 - 396, 417, 528, 639, 741, and 852 Hz are the modern Solfeggio set popularised by Joseph Puleo and Leonard Horowitz in *Healing Codes for the Biological Apocalypse* (1999). 963 Hz is a later addition to that set. Some later lists also add 174 and 285 Hz; the app includes 285 Hz as Mend and labels the tissue-repair claim attached to it as an untested wellness claim. Nothing in this app claims these tones do what that book says.

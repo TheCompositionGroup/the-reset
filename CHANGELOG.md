@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.7.0 (unreleased)
+- Changed: **the centre button is Play / Pause.** Idle it is Play; while playing it is Pause (two bars); while paused it is Play and resumes ("Play", "Pause", "Resume" for screen readers). Pause fades out over about 0.45 s, then the audio clock is suspended so the time left freezes; the screen wake lock is released and the rolling facts and glow stop (the glow holds dim). Resume restarts the clock, fades in over about 1 s, retakes the wake lock, and applies any dial or sound change made while paused.
+- New: **End session**, a small text button under the time, shown only while paused. It ends the session with the 0.3 s fade: after at least 60 s played it shows the ending with the minutes actually played; under 60 s it returns to the dial. Escape does the same, whether playing or paused.
+- Changed: a phone-side interruption (screen lock, a call) uses the same paused state, so Resume and End session work after it too.
+- Unchanged: the 8 s fade at a timed end; the 5 s fade in on Play.
+- Changed: the "How it works" Play line, README step 3 and the test plan describe this.
+
 ## v0.6.2 (unreleased)
 - Changed: **Stop or Escape after at least 60 seconds of play now shows the ending**, the same screen as a timed finish, instead of going straight back to the dial. The 0.3 s fade is unchanged. Under 60 seconds still returns to the dial with no ending.
 - Changed: the minutes saved with an answer are the minutes actually played (rounded, at least 1), not the timer setting. Time while the browser has the sound suspended (screen lock, a call) is not counted. A timed finish still saves the timer setting.

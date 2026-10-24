@@ -11,7 +11,7 @@
 v0.2 asked for two 0–10 ratings (distress and "stuck on it") before and after each session. v0.3.0 replaces them with one optional Better / Same / Worse tap after a natural finish.
 - The ratings belonged to the reflection flow (typed or spoken check-in, reading, correction). That flow is gone, and the app now collects no text and no scores.
 - Two sliders before and after is a lot to ask of someone about to listen to a tone. One tap fits a sound-only screen and is easier to answer honestly.
-- The cost: the new measure is coarser (three answers), is taken only after, and only after a session of at least a minute (a timed finish, or Stop after 60 s). It cannot show change from a starting level, and a Stop before 60 s records nothing. Results from v0.2 and v0.3.0 are not comparable. Read Better / Same / Worse as a rough self-report, not as evidence of an effect.
+- The cost: the new measure is coarser (three answers), is taken only after, and only after a session of at least a minute (a timed finish, or End session / Escape after 60 s). It cannot show change from a starting level, and ending early before 60 s records nothing. Results from v0.2 and v0.3.0 are not comparable. Read Better / Same / Worse as a rough self-report, not as evidence of an effect.
 
 ## Later (v0.4)
 - Blind comparison of 528 Hz, 639 Hz, and a neutral control tone, at the same level, length, and soundscape, with the stop labels hidden. Same Better / Same / Worse tap afterwards. This is the first test that could separate a frequency from the setting, the soundscape, or expectation. v0.3.0 cannot.
@@ -21,7 +21,7 @@ v0.2 asked for two 0–10 ratings (distress and "stuck on it") before and after 
 - [ ] Listen at the 25% starting volume and at 100% on 852 and 963 Hz in Tone mode: no harshness or spike.
 - [ ] Atmosphere on phone speakers and on headphones: is the octave-below layer audible?
 - [ ] Turn the dial while playing: the crossfade sounds smooth; the timer keeps running.
-- [ ] Play/Stop on one button and Escape (keyboard) behave as described; Stop gives a short fade and resets the clock; after 60 s of play it shows the ending (saved minutes = minutes played), before that it returns to the dial.
+- [ ] Play/Pause on one button: Pause fades out and the clock holds still; Resume continues the clock. While paused, End session (and Escape) gives a short fade and resets the clock; after 60 s of play it shows the ending (saved minutes = minutes played), before that it returns to the dial.
 - [ ] Intensity arc: drag it on a real phone; check it never moves the dial, and dial drags never move it. Check Mend and Stillness labels stay easy to hit beside it.
 - [ ] Lock the screen mid-session: note whether sound stops; wake lock keeps the screen on while unlocked.
 - [ ] Android: a tap on each snap and each in-breath. iPhone: no error.
