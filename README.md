@@ -12,7 +12,7 @@ A free, private, sound-only web app. Turn the dial, choose a time, press play, l
    - **Sound** switches between *Tone* (a soft sine) and *Atmosphere* (a soft layered drone).
    - One fact about the current frequency sits under Play and changes slowly while playing. Tap it for more: this frequency, measured sound science, and where the frequencies come from. All text is in one `COPY` block in `index.html`.
    - **How it works** opens the usage notes.
-4. **At a timed finish**, a short closing line, then **Begin again** or **Done**. A small *Share feedback* link opens the optional question "How do you feel now?" (Better, Same, Worse), a link to suggest a change, and your saved answers. Your answers are a rough self-report, not proof that a frequency does anything.
+4. **At a timed finish**, "That's enough for now." and a short closing line, then **Begin again**. A small *Leave a banana* button opens a page with a *Send a banana* email link and an optional "How do you feel?" (Better, Same, Worse). Your saved answers and Delete all are under *How it works*. Your answers are a rough self-report, not proof that a frequency does anything.
 
 You can turn the dial while playing; the sound crossfades over 2 seconds and the timer keeps running. Sound fades in over 5 seconds and out over 8 at a timed end; Stop and Escape end at once with a short fade.
 
@@ -31,7 +31,7 @@ You can turn the dial while playing; the sound crossfades over 2 seconds and the
 - Your last stop, time, sound and intensity are remembered in this browser. If you answer the question, the stop, minutes, answer, and date and time are saved here too, and nothing else. If Worse is your answer on 3 or more of your last 12 sessions, a quiet notice suggests pausing. *Delete all* removes them.
 
 ## Feedback
-Use [GitHub Issues](https://github.com/TheCompositionGroup/the-reset/issues): what did you try, and what would you change? The same link is in the app under *Share feedback*.
+Use [GitHub Issues](https://github.com/TheCompositionGroup/the-reset/issues): what did you try, and what would you change? Inside the app, *Leave a banana* opens an email to bananas@fancyape.com.
 
 ## Contributors
 - The Composition Group LLC · Fancy Ape
