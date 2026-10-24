@@ -90,7 +90,8 @@ button{cursor:pointer}
 .wheel.run{cursor:default;pointer-events:none}
 .wheel.run .wview,.wheel.run .wunit{visibility:hidden}
 .wheel.run .wclock{visibility:visible}
-.play{position:relative;width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--accent);background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;padding:0}
+/* Play takes the selected stop's colour, darkened 30% toward ink so the light icon keeps at least 3.6:1 contrast on every stop */
+.play{--pc:color-mix(in srgb,var(--glow-c,var(--accent)) 70%,#1F2A2E);position:relative;width:5.5rem;height:5.5rem;border-radius:50%;border:1.5px solid var(--pc);background:var(--pc);color:#F3F5F2;display:grid;place-items:center;padding:0}
 /* Play/Stop sits in the centre of the dial face, above the dial, so a press there is never a frequency press */
 .playwrap{position:absolute;left:50%;top:50%;width:36%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:2}
 .playwrap .play{width:100%;height:100%}
@@ -730,7 +731,10 @@ function finish(kind){
   if (kind === "done") showEnd(ended);             /* otherwise straight back to the dial, no prompt */
   else $("live").textContent = "Stopped.";
 }
-$("playBtn").onclick = () => { if (!S.active) start(); else if (S.paused) resume(); else finish("cancel"); };
+$("playBtn").onclick = e => {
+  if (e.detail > 0) e.currentTarget.blur();   /* a tap or click leaves no focus ring; keyboard focus stays */
+  if (!S.active) start(); else if (S.paused) resume(); else finish("cancel");
+};
 document.addEventListener("keydown", e => { if (e.key === "Escape" && S.active){ e.preventDefault(); finish("cancel"); } });
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) return;

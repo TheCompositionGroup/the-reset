@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.3 (unreleased)
+- Changed: Play/Stop takes the selected stop's colour, darkened 30% toward ink; the icon contrast is at least 3.6:1 on every stop (lowest is 528 Hz at 3.68:1). The colour changes instantly when the dial turns, because the app animates only opacity and transform.
+- Fixed: tapping Play no longer leaves a focus ring; keyboard focus still shows.
+
 ## v0.5.2 (unreleased)
 - Changed: the small dot beside the dial pointer is gone; the highlighted tick and pointer mark the stop. The intensity knob is a short line like the dial pointer. Intensity starts at 50% (the middle of the arc) for new visitors; a saved value is kept.
 - Changed: the Sound button keeps one fixed width (7.75rem) in both modes. A small waveform replaces the "Sound" caption: one wave for Tone, three layered waves for Atmosphere. The screen-reader label is unchanged.
