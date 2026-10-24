@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.7.1 (unreleased)
+- New: a small "Fancy Ape Home" link above the title, opening https://fancyape.com in a new tab (44 px tap target, no animation). Nothing else on the screen changes.
+
 ## v0.7.0 (unreleased)
 - Changed: **the centre button is Play / Pause.** Idle it is Play; while playing it is Pause (two bars); while paused it is Play and resumes ("Play", "Pause", "Resume" for screen readers). Pause fades out over about 0.45 s, then the audio clock is suspended so the time left freezes; the screen wake lock is released and the rolling facts and glow stop (the glow holds dim). Resume restarts the clock, fades in over about 1 s, retakes the wake lock, and applies any dial or sound change made while paused.
 - New: **End session**, a small text button under the time, shown only while paused. It ends the session with the 0.3 s fade: after at least 60 s played it shows the ending with the minutes actually played; under 60 s it returns to the dial. Escape does the same, whether playing or paused.
